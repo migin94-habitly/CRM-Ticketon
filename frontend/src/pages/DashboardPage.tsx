@@ -153,7 +153,7 @@ export default function DashboardPage() {
                   </Pie>
                   <Tooltip
                     contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
-                    formatter={(v: number, _: string, p: { payload: { stage_name: string } }) => [v, p.payload.stage_name]}
+                    formatter={(v: number) => [v, 'Deals']}
                   />
                 </PieChart>
               </ResponsiveContainer>

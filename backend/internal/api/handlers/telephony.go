@@ -170,7 +170,7 @@ func (h *TelephonyHandler) GetRecordingURL(c *gin.Context) {
 		c.JSON(http.StatusNotFound, models.APIResponse{Error: "call not found"})
 		return
 	}
-	if call.RecordingURL == "" {
+	if call.RecordingURL == nil || *call.RecordingURL == "" {
 		c.JSON(http.StatusNotFound, models.APIResponse{Error: "no recording available"})
 		return
 	}
@@ -178,7 +178,7 @@ func (h *TelephonyHandler) GetRecordingURL(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{
 		Success: true,
 		Data: gin.H{
-			"url":       call.RecordingURL,
+			"url":       *call.RecordingURL,
 			"expires_in": 3600,
 		},
 	})

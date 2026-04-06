@@ -248,7 +248,7 @@ func (h *AnalyticsHandler) callAI(entityType, entityID string, entity interface{
 		// Fallback: rule-based scoring
 		score.Score = 65
 		score.Sentiment = "neutral"
-		score.RawJSON = `{"insights":["Enable AI API key for detailed analysis"]}`
+		s := `{"insights":["Enable AI API key for detailed analysis"]}`; score.RawJSON = &s
 		return score
 	}
 
@@ -272,8 +272,9 @@ Data: %s`, entityType, string(contextJSON))
 	if result != nil {
 		score.Score = result.Score
 		score.Sentiment = result.Sentiment
-		rawJSON, _ := json.Marshal(result)
-		score.RawJSON = string(rawJSON)
+		rawJSONBytes, _ := json.Marshal(result)
+		rawJSONStr := string(rawJSONBytes)
+		score.RawJSON = &rawJSONStr
 	} else {
 		score.Score = 50
 		score.Sentiment = "neutral"
