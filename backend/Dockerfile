@@ -1,13 +1,15 @@
 FROM golang:1.22-alpine AS builder
 
 WORKDIR /app
-RUN apk add --no-cache git
 
+# Copy vendor directory and source — no internet needed
 COPY go.mod go.sum ./
-RUN go mod download
-
+COPY vendor/ ./vendor/
+COPY mimetype-stub/ ./mimetype-stub/
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o crm-server ./cmd/server
+
+RUN CGO_ENABLED=0 GOOS=linux \
+    go build -mod=vendor -ldflags="-w -s" -o crm-server ./cmd/server
 
 FROM alpine:3.19
 RUN apk --no-cache add ca-certificates tzdata

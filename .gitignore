@@ -1,11 +1,11 @@
-# Frontend
+# Frontend build artifacts
 frontend/node_modules/
 frontend/dist/
 
-# Go
+# Go binary
 backend/bin/
 *.exe
 
-# Env
+# Env files
 .env
 *.local
