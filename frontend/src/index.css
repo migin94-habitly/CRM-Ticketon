@@ -23,7 +23,7 @@
            transition-colors duration-150 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .btn-secondary {
-    @apply bg-dark-700 hover:bg-dark-600 text-dark-100 px-4 py-2 rounded-lg font-medium
+    @apply bg-dark-700 hover:bg-slate-600 text-dark-100 px-4 py-2 rounded-lg font-medium
            transition-colors duration-150 flex items-center gap-2 border border-slate-700;
   }
   .btn-danger {

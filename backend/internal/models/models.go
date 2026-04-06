@@ -16,15 +16,15 @@ const (
 )
 
 type User struct {
-	ID          string    `db:"id" json:"id"`
-	Email       string    `db:"email" json:"email"`
-	Password    string    `db:"password" json:"-"`
-	FirstName   string    `db:"first_name" json:"first_name"`
-	LastName    string    `db:"last_name" json:"last_name"`
-	Role        Role      `db:"role" json:"role"`
-	Avatar      string    `db:"avatar" json:"avatar,omitempty"`
-	PhoneNumber string    `db:"phone_number" json:"phone_number,omitempty"`
-	IsActive    bool      `db:"is_active" json:"is_active"`
+	ID          string     `db:"id" json:"id"`
+	Email       string     `db:"email" json:"email"`
+	Password    string     `db:"password" json:"-"`
+	FirstName   string     `db:"first_name" json:"first_name"`
+	LastName    string     `db:"last_name" json:"last_name"`
+	Role        Role       `db:"role" json:"role"`
+	Avatar      *string    `db:"avatar" json:"avatar,omitempty"`
+	PhoneNumber *string    `db:"phone_number" json:"phone_number,omitempty"`
+	IsActive    bool       `db:"is_active" json:"is_active"`
 	LastLoginAt *time.Time `db:"last_login_at" json:"last_login_at,omitempty"`
 	CreatedAt   time.Time  `db:"created_at" json:"created_at"`
 	UpdatedAt   time.Time  `db:"updated_at" json:"updated_at"`
@@ -65,17 +65,17 @@ type Contact struct {
 	ID          string         `db:"id" json:"id"`
 	FirstName   string         `db:"first_name" json:"first_name"`
 	LastName    string         `db:"last_name" json:"last_name"`
-	Email       string         `db:"email" json:"email,omitempty"`
-	Phone       string         `db:"phone" json:"phone,omitempty"`
-	Company     string         `db:"company" json:"company,omitempty"`
-	Position    string         `db:"position" json:"position,omitempty"`
+	Email       *string        `db:"email" json:"email,omitempty"`
+	Phone       *string        `db:"phone" json:"phone,omitempty"`
+	Company     *string        `db:"company" json:"company,omitempty"`
+	Position    *string        `db:"position" json:"position,omitempty"`
 	Status      ContactStatus  `db:"status" json:"status"`
-	Source      string         `db:"source" json:"source,omitempty"`
+	Source      *string        `db:"source" json:"source,omitempty"`
 	AssignedTo  *string        `db:"assigned_to" json:"assigned_to,omitempty"`
 	Tags        []string       `db:"-" json:"tags,omitempty"`
-	Notes       string         `db:"notes" json:"notes,omitempty"`
-	Avatar      string         `db:"avatar" json:"avatar,omitempty"`
-	WhatsAppID  string         `db:"whatsapp_id" json:"whatsapp_id,omitempty"`
+	Notes       *string        `db:"notes" json:"notes,omitempty"`
+	Avatar      *string        `db:"avatar" json:"avatar,omitempty"`
+	WhatsAppID  *string        `db:"whatsapp_id" json:"whatsapp_id,omitempty"`
 	CreatedAt   time.Time      `db:"created_at" json:"created_at"`
 	UpdatedAt   time.Time      `db:"updated_at" json:"updated_at"`
 	// Computed
@@ -102,9 +102,9 @@ type CreateContactRequest struct {
 type Pipeline struct {
 	ID          string           `db:"id" json:"id"`
 	Name        string           `db:"name" json:"name"`
-	Description string           `db:"description" json:"description,omitempty"`
+	Description *string          `db:"description" json:"description,omitempty"`
 	IsDefault   bool             `db:"is_default" json:"is_default"`
-	CreatedBy   string           `db:"created_by" json:"created_by"`
+	CreatedBy   *string          `db:"created_by" json:"created_by,omitempty"`
 	CreatedAt   time.Time        `db:"created_at" json:"created_at"`
 	UpdatedAt   time.Time        `db:"updated_at" json:"updated_at"`
 	Stages      []PipelineStage  `db:"-" json:"stages,omitempty"`
@@ -159,8 +159,8 @@ type Deal struct {
 	AssignedTo  *string      `db:"assigned_to" json:"assigned_to,omitempty"`
 	Priority    DealPriority `db:"priority" json:"priority"`
 	CloseDate   *time.Time   `db:"close_date" json:"close_date,omitempty"`
-	Notes       string       `db:"notes" json:"notes,omitempty"`
-	LostReason  string       `db:"lost_reason" json:"lost_reason,omitempty"`
+	Notes       *string      `db:"notes" json:"notes,omitempty"`
+	LostReason  *string      `db:"lost_reason" json:"lost_reason,omitempty"`
 	CreatedAt   time.Time    `db:"created_at" json:"created_at"`
 	UpdatedAt   time.Time    `db:"updated_at" json:"updated_at"`
 	// Computed
@@ -213,7 +213,7 @@ type Activity struct {
 	ID          string         `db:"id" json:"id"`
 	Type        ActivityType   `db:"type" json:"type"`
 	Subject     string         `db:"subject" json:"subject"`
-	Description string         `db:"description" json:"description,omitempty"`
+	Description *string        `db:"description" json:"description,omitempty"`
 	Status      ActivityStatus `db:"status" json:"status"`
 	DealID      *string        `db:"deal_id" json:"deal_id,omitempty"`
 	ContactID   *string        `db:"contact_id" json:"contact_id,omitempty"`
@@ -257,16 +257,16 @@ const (
 
 type CallRecord struct {
 	ID           string        `db:"id" json:"id"`
-	ExternalID   string        `db:"external_id" json:"external_id,omitempty"`
+	ExternalID   *string       `db:"external_id" json:"external_id,omitempty"`
 	Direction    CallDirection `db:"direction" json:"direction"`
 	Status       CallStatus    `db:"status" json:"status"`
 	FromNumber   string        `db:"from_number" json:"from_number"`
 	ToNumber     string        `db:"to_number" json:"to_number"`
 	Duration     int           `db:"duration" json:"duration"` // seconds
-	RecordingURL string        `db:"recording_url" json:"recording_url,omitempty"`
-	RecordingKey string        `db:"recording_key" json:"recording_key,omitempty"` // S3 key
-	Transcript   string        `db:"transcript" json:"transcript,omitempty"`
-	AIAnalysis   string        `db:"ai_analysis" json:"ai_analysis,omitempty"`
+	RecordingURL *string       `db:"recording_url" json:"recording_url,omitempty"`
+	RecordingKey *string       `db:"recording_key" json:"recording_key,omitempty"` // S3 key
+	Transcript   *string       `db:"transcript" json:"transcript,omitempty"`
+	AIAnalysis   *string       `db:"ai_analysis" json:"ai_analysis,omitempty"`
 	ContactID    *string       `db:"contact_id" json:"contact_id,omitempty"`
 	DealID       *string       `db:"deal_id" json:"deal_id,omitempty"`
 	UserID       *string       `db:"user_id" json:"user_id,omitempty"`
@@ -288,7 +288,7 @@ const (
 
 type WhatsAppMessage struct {
 	ID          string           `db:"id" json:"id"`
-	ExternalID  string           `db:"external_id" json:"external_id,omitempty"`
+	ExternalID  *string          `db:"external_id" json:"external_id,omitempty"`
 	ContactID   *string          `db:"contact_id" json:"contact_id,omitempty"`
 	DealID      *string          `db:"deal_id" json:"deal_id,omitempty"`
 	UserID      *string          `db:"user_id" json:"user_id,omitempty"`
@@ -296,8 +296,8 @@ type WhatsAppMessage struct {
 	FromNumber  string           `db:"from_number" json:"from_number"`
 	ToNumber    string           `db:"to_number" json:"to_number"`
 	Body        string           `db:"body" json:"body"`
-	MediaURL    string           `db:"media_url" json:"media_url,omitempty"`
-	MediaType   string           `db:"media_type" json:"media_type,omitempty"`
+	MediaURL    *string          `db:"media_url" json:"media_url,omitempty"`
+	MediaType   *string          `db:"media_type" json:"media_type,omitempty"`
 	Status      string           `db:"status" json:"status"` // sent, delivered, read, failed
 	SentAt      *time.Time       `db:"sent_at" json:"sent_at,omitempty"`
 	ReadAt      *time.Time       `db:"read_at" json:"read_at,omitempty"`
@@ -321,7 +321,7 @@ type AIScore struct {
 	Sentiment    string    `db:"sentiment" json:"sentiment"` // positive, neutral, negative
 	Insights     []string  `db:"-" json:"insights,omitempty"`
 	Suggestions  []string  `db:"-" json:"suggestions,omitempty"`
-	RawJSON      string    `db:"raw_json" json:"raw_json,omitempty"`
+	RawJSON      *string   `db:"raw_json" json:"raw_json,omitempty"`
 	GeneratedAt  time.Time `db:"generated_at" json:"generated_at"`
 }
 

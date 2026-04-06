@@ -56,7 +56,7 @@ export default function SettingsPage() {
   );
 }
 
-function ProfileTab({ user }: { user: ReturnType<typeof useAppSelector<typeof import('../store').RootState, typeof import('../store').RootState['auth']['user']>> }) {
+function ProfileTab({ user }: { user: import('../types').User | null }) {
   return (
     <div className="card p-5 space-y-4">
       <h2 className="font-semibold text-white">My Profile</h2>

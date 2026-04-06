@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Plus, Phone, Mail, Calendar, FileText, ListTodo, MessageSquare } from 'lucide-react';
 import { activitiesAPI } from '../api';
-import type { Activity } from '../types';
+import type { Activity, ActivityType } from '../types';
 import { formatDateTime } from '../utils/format';
 import toast from 'react-hot-toast';
 
@@ -27,7 +27,7 @@ export default function ActivitiesPage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ type: 'call', subject: '', description: '', due_date: '' });
+  const [form, setForm] = useState<{ type: ActivityType; subject: string; description: string; due_date: string }>({ type: "call", subject: "", description: "", due_date: "" });
 
   const load = () => {
     setLoading(true);
@@ -77,7 +77,7 @@ export default function ActivitiesPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="label">Type</label>
-                <select className="input" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
+                <select className="input" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as ActivityType }))}>
                   {Object.keys(typeIcons).map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
                 </select>
               </div>
