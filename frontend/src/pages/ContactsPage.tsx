@@ -1,0 +1,186 @@
+import { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Search, Plus, Phone, Mail, Briefcase, Filter } from 'lucide-react';
+import { contactsAPI } from '../api';
+import type { Contact } from '../types';
+import { formatDate, statusColor, initials } from '../utils/format';
+import ContactModal from '../components/contacts/ContactModal';
+import toast from 'react-hot-toast';
+
+export default function ContactsPage() {
+  const navigate = useNavigate();
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editContact, setEditContact] = useState<Contact | null>(null);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    contactsAPI.list({ page, limit: 20, search, status })
+      .then((r) => {
+        setContacts(r.data.data || []);
+        setTotal(r.data.total || 0);
+      })
+      .finally(() => setLoading(false));
+  }, [page, search, status]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm('Delete this contact?')) return;
+    await contactsAPI.delete(id);
+    toast.success('Contact deleted');
+    load();
+  };
+
+  return (
+    <div className="space-y-4 animate-in">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-white">Contacts</h1>
+          <p className="text-slate-500 text-sm">{total} total contacts</p>
+        </div>
+        <button className="btn-primary" onClick={() => { setEditContact(null); setShowModal(true); }}>
+          <Plus className="w-4 h-4" /> Add Contact
+        </button>
+      </div>
+
+      {/* Filters */}
+      <div className="card p-4 flex flex-wrap gap-3">
+        <div className="relative flex-1 min-w-48">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <input
+            className="input pl-9 py-1.5 text-sm"
+            placeholder="Search name, email, phone..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Filter className="w-4 h-4 text-slate-500" />
+          <select
+            className="input py-1.5 text-sm"
+            value={status}
+            onChange={(e) => { setStatus(e.target.value); setPage(1); }}
+          >
+            <option value="">All statuses</option>
+            <option value="new">New</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="lost">Lost</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="card overflow-hidden">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-slate-700/50">
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Contact</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Company</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Status</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Source</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Deals</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Added</th>
+              <th className="px-4 py-3" />
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan={7} className="text-center py-12 text-slate-500">Loading...</td></tr>
+            ) : contacts.length === 0 ? (
+              <tr><td colSpan={7} className="text-center py-12 text-slate-500">No contacts found</td></tr>
+            ) : contacts.map((c) => (
+              <tr
+                key={c.id}
+                className="table-row cursor-pointer"
+                onClick={() => navigate(`/contacts/${c.id}`)}
+              >
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-primary-700 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0">
+                      {initials(c.first_name, c.last_name)}
+                    </div>
+                    <div>
+                      <div className="font-medium text-slate-200">{c.first_name} {c.last_name}</div>
+                      {c.email && (
+                        <div className="flex items-center gap-1 text-slate-500 text-xs">
+                          <Mail className="w-3 h-3" />{c.email}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-1 text-slate-400">
+                    {c.company && <><Briefcase className="w-3 h-3" /><span>{c.company}</span></>}
+                    {c.position && <span className="text-slate-600">· {c.position}</span>}
+                  </div>
+                </td>
+                <td className="px-4 py-3">
+                  <span className={`badge ${statusColor(c.status)}`}>{c.status}</span>
+                </td>
+                <td className="px-4 py-3 text-slate-400">{c.source || '—'}</td>
+                <td className="px-4 py-3 text-slate-400">{c.deals_count || 0}</td>
+                <td className="px-4 py-3 text-slate-500">{formatDate(c.created_at)}</td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                    {c.phone && (
+                      <a href={`tel:${c.phone}`} className="p-1 rounded text-slate-500 hover:text-primary-400 hover:bg-dark-700">
+                        <Phone className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setEditContact(c); setShowModal(true); }}
+                      className="text-xs text-slate-500 hover:text-primary-400 px-2 py-1 rounded hover:bg-dark-700"
+                    >Edit</button>
+                    <button
+                      onClick={(e) => handleDelete(c.id, e)}
+                      className="text-xs text-slate-500 hover:text-red-400 px-2 py-1 rounded hover:bg-dark-700"
+                    >Del</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Pagination */}
+        {total > 20 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-700/50">
+            <span className="text-xs text-slate-500">
+              Showing {(page - 1) * 20 + 1}–{Math.min(page * 20, total)} of {total}
+            </span>
+            <div className="flex gap-1">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="btn-secondary py-1 px-3 text-xs"
+              >Prev</button>
+              <button
+                onClick={() => setPage(p => p + 1)}
+                disabled={page * 20 >= total}
+                className="btn-secondary py-1 px-3 text-xs"
+              >Next</button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {showModal && (
+        <ContactModal
+          contact={editContact}
+          onClose={() => setShowModal(false)}
+          onSaved={() => { setShowModal(false); load(); }}
+        />
+      )}
+    </div>
+  );
+}
