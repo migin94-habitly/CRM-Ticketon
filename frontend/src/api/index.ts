@@ -4,21 +4,18 @@ import type {
   WhatsAppMessage, DashboardMetrics, PaginatedResponse, APIResponse,
 } from '../types';
 
-// ── Auth ─────────────────────────────────────────────────────────────────────
 export const authAPI = {
   login: (email: string, password: string) =>
     api.post<{ token: string; expires_at: number; user: User }>('/auth/login', { email, password }),
   me: () => api.get<APIResponse<User>>('/auth/me'),
 };
 
-// ── Users ────────────────────────────────────────────────────────────────────
 export const usersAPI = {
   list: () => api.get<APIResponse<User[]>>('/users'),
   create: (data: Partial<User> & { password: string }) => api.post<APIResponse>('/users', data),
   update: (id: string, data: Partial<User>) => api.put<APIResponse>(`/users/${id}`, data),
 };
 
-// ── Contacts ─────────────────────────────────────────────────────────────────
 export const contactsAPI = {
   list: (params?: Record<string, unknown>) =>
     api.get<PaginatedResponse<Contact>>('/contacts', { params }),
@@ -31,22 +28,20 @@ export const contactsAPI = {
   messages: (id: string) => api.get<APIResponse<WhatsAppMessage[]>>(`/contacts/${id}/messages`),
 };
 
-// ── Pipelines ────────────────────────────────────────────────────────────────
 export const pipelinesAPI = {
   list: () => api.get<APIResponse<Pipeline[]>>('/pipelines'),
   get: (id: string) => api.get<APIResponse<Pipeline>>(`/pipelines/${id}`),
   create: (data: Partial<Pipeline>) => api.post<APIResponse>('/pipelines', data),
   update: (id: string, data: Partial<Pipeline>) => api.put<APIResponse>(`/pipelines/${id}`, data),
   delete: (id: string) => api.delete<APIResponse>(`/pipelines/${id}`),
-  addStage: (pipelineId: string, data: Record<string, unknown>) =>
+  addStage: (pipelineId: string, data: object) =>
     api.post<APIResponse>(`/pipelines/${pipelineId}/stages`, data),
-  updateStage: (pipelineId: string, stageId: string, data: Record<string, unknown>) =>
+  updateStage: (pipelineId: string, stageId: string, data: object) =>
     api.put<APIResponse>(`/pipelines/${pipelineId}/stages/${stageId}`, data),
   deleteStage: (pipelineId: string, stageId: string) =>
     api.delete<APIResponse>(`/pipelines/${pipelineId}/stages/${stageId}`),
 };
 
-// ── Deals ────────────────────────────────────────────────────────────────────
 export const dealsAPI = {
   list: (params?: Record<string, unknown>) =>
     api.get<PaginatedResponse<Deal>>('/deals', { params }),
@@ -60,7 +55,6 @@ export const dealsAPI = {
     api.post<APIResponse>(`/deals/${dealId}/activities`, data),
 };
 
-// ── Activities ────────────────────────────────────────────────────────────────
 export const activitiesAPI = {
   list: (params?: Record<string, unknown>) =>
     api.get<APIResponse<Activity[]>>('/activities', { params }),
@@ -69,7 +63,6 @@ export const activitiesAPI = {
   delete: (id: string) => api.delete<APIResponse>(`/activities/${id}`),
 };
 
-// ── Telephony ─────────────────────────────────────────────────────────────────
 export const telephonyAPI = {
   listCalls: (params?: Record<string, unknown>) =>
     api.get<PaginatedResponse<CallRecord>>('/telephony/calls', { params }),
@@ -78,10 +71,9 @@ export const telephonyAPI = {
   getCall: (id: string) => api.get<APIResponse<CallRecord>>(`/telephony/calls/${id}`),
   getRecordingURL: (id: string) =>
     api.get<APIResponse<{ url: string; expires_in: number }>>(`/telephony/calls/${id}/recording`),
-  updateCall: (id: string, data: Record<string, unknown>) => api.patch<APIResponse>(`/telephony/calls/${id}`, data),
+  updateCall: (id: string, data: object) => api.patch<APIResponse>(`/telephony/calls/${id}`, data),
 };
 
-// ── WhatsApp ──────────────────────────────────────────────────────────────────
 export const whatsappAPI = {
   conversations: () => api.get<APIResponse>('/whatsapp/conversations'),
   messages: (params?: Record<string, unknown>) =>
@@ -91,7 +83,6 @@ export const whatsappAPI = {
   markRead: (id: string) => api.patch<APIResponse>(`/whatsapp/messages/${id}/read`, {}),
 };
 
-// ── Analytics ─────────────────────────────────────────────────────────────────
 export const analyticsAPI = {
   dashboard: (period?: string) =>
     api.get<APIResponse<DashboardMetrics>>('/analytics/dashboard', { params: { period } }),

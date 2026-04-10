@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, Mail, Briefcase, MessageSquare, Edit } from 'lucide-react';
 import { contactsAPI } from '../api';
@@ -15,20 +15,19 @@ export default function ContactDetailPage() {
   const [tab, setTab] = useState<'activities' | 'calls' | 'messages'>('activities');
   const [editOpen, setEditOpen] = useState(false);
 
-  const load = useCallback(() => {
+  const load = () => {
     if (!id) return;
     contactsAPI.get(id).then(r => setContact(r.data.data || null));
     contactsAPI.activities(id).then(r => setActivities(r.data.data || []));
     contactsAPI.calls(id).then(r => setCalls(r.data.data || []));
-  }, [id]);
+  };
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load(); }, [id]);
 
   if (!contact) return <div className="text-slate-500 animate-pulse">Loading...</div>;
 
   return (
     <div className="space-y-4 animate-in max-w-4xl">
-      {/* Back + header */}
       <button onClick={() => navigate('/contacts')} className="flex items-center gap-1 text-slate-500 hover:text-white text-sm transition mb-2">
         <ArrowLeft className="w-4 h-4" /> Contacts
       </button>
@@ -74,7 +73,6 @@ export default function ContactDetailPage() {
         <div className="text-xs text-slate-600 mt-3">Added {formatDate(contact.created_at)}</div>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-1 border-b border-slate-700">
         {(['activities', 'calls', 'messages'] as const).map(t => (
           <button
@@ -87,7 +85,6 @@ export default function ContactDetailPage() {
         ))}
       </div>
 
-      {/* Tab content */}
       {tab === 'activities' && (
         <div className="space-y-2">
           {activities.length === 0 ? (

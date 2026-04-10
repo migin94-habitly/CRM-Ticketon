@@ -56,7 +56,6 @@ export default function DealsPage() {
         </div>
       </div>
 
-      {/* Filters */}
       <div className="card p-3 flex gap-3">
         <div className="relative flex-1 min-w-48">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -66,7 +65,6 @@ export default function DealsPage() {
         <Filter className="w-4 h-4 text-slate-500 self-center" />
       </div>
 
-      {/* Table */}
       <div className="card overflow-hidden">
         <table className="w-full text-sm">
           <thead>

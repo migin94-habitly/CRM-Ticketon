@@ -48,7 +48,6 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* AI Insights banner */}
       <div className="card p-5 border border-primary-500/30 bg-primary-500/5">
         <div className="flex items-center gap-2 mb-3">
           <Zap className="w-5 h-5 text-primary-400" />
@@ -64,7 +63,6 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* KPI metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="stat-card">
           <TrendingUp className="w-5 h-5 text-green-400" />
@@ -92,7 +90,6 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Revenue trend */}
       <div className="card p-5">
         <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-green-400" /> Revenue Trend
@@ -115,7 +112,6 @@ export default function AnalyticsPage() {
         </ResponsiveContainer>
       </div>
 
-      {/* Sales Forecast */}
       {forecast.length > 0 && (
         <div className="card p-5">
           <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
@@ -137,7 +133,6 @@ export default function AnalyticsPage() {
         </div>
       )}
 
-      {/* Activity breakdown + Top performers */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="card p-5">
           <h3 className="font-semibold text-white mb-4">Activity Breakdown</h3>
@@ -183,7 +178,6 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Pipeline health */}
       <div className="card p-5">
         <h3 className="font-semibold text-white mb-4">Pipeline Health</h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

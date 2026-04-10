@@ -19,18 +19,6 @@ func NewDealsHandler(db *sqlx.DB) *DealsHandler {
 	return &DealsHandler{db: db}
 }
 
-// ListDeals godoc
-// @Summary      List deals
-// @Tags         deals
-// @Security     BearerAuth
-// @Produce      json
-// @Param        page         query  int     false  "Page"
-// @Param        limit        query  int     false  "Limit"
-// @Param        pipeline_id  query  string  false  "Filter by pipeline"
-// @Param        stage_id     query  string  false  "Filter by stage"
-// @Param        assigned_to  query  string  false  "Filter by assignee"
-// @Success      200  {object}  models.PaginatedResponse
-// @Router       /deals [get]
 func (h *DealsHandler) ListDeals(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
@@ -98,14 +86,12 @@ func (h *DealsHandler) ListDeals(c *gin.Context) {
 			"created_at": row.CreatedAt, "updated_at": row.UpdatedAt,
 			"stage": map[string]string{"name": row.StageName, "color": row.StageColor},
 		}
-		// Load contact summary
 		if row.ContactID != nil {
 			var ct models.Contact
 			if h.db.Get(&ct, `SELECT id, first_name, last_name, email, phone, company FROM contacts WHERE id=$1`, *row.ContactID) == nil {
 				d["contact"] = ct
 			}
 		}
-		// Load assignee
 		if row.AssignedTo != nil {
 			var u models.User
 			if h.db.Get(&u, `SELECT id, first_name, last_name, email, avatar FROM users WHERE id=$1`, *row.AssignedTo) == nil {
@@ -123,14 +109,6 @@ func (h *DealsHandler) ListDeals(c *gin.Context) {
 	})
 }
 
-// GetDeal godoc
-// @Summary      Get deal by ID
-// @Tags         deals
-// @Security     BearerAuth
-// @Param        id  path  string  true  "Deal ID"
-// @Produce      json
-// @Success      200  {object}  models.Deal
-// @Router       /deals/{id} [get]
 func (h *DealsHandler) GetDeal(c *gin.Context) {
 	id := c.Param("id")
 	var deal models.Deal
@@ -138,21 +116,17 @@ func (h *DealsHandler) GetDeal(c *gin.Context) {
 		c.JSON(http.StatusNotFound, models.APIResponse{Error: "deal not found"})
 		return
 	}
-	// Load stage
 	var stage models.PipelineStage
 	if h.db.Get(&stage, `SELECT * FROM pipeline_stages WHERE id=$1`, deal.StageID) == nil {
 		deal.Stage = &stage
 	}
-	// Load contact
 	if deal.ContactID != nil {
 		var ct models.Contact
 		if h.db.Get(&ct, `SELECT * FROM contacts WHERE id=$1`, *deal.ContactID) == nil {
 			deal.Contact = &ct
 		}
 	}
-	// Load activities
 	h.db.Select(&deal.Activities, `SELECT * FROM activities WHERE deal_id=$1 ORDER BY created_at DESC LIMIT 20`, id)
-	// Load AI score
 	var score models.AIScore
 	if h.db.Get(&score, `SELECT * FROM ai_scores WHERE entity_type='deal' AND entity_id=$1 ORDER BY generated_at DESC LIMIT 1`, id) == nil {
 		deal.AIScore = &score
@@ -160,15 +134,6 @@ func (h *DealsHandler) GetDeal(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: deal})
 }
 
-// CreateDeal godoc
-// @Summary      Create deal
-// @Tags         deals
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        body  body      models.CreateDealRequest  true  "Deal data"
-// @Success      201   {object}  models.APIResponse
-// @Router       /deals [post]
 func (h *DealsHandler) CreateDeal(c *gin.Context) {
 	var req models.CreateDealRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -178,12 +143,20 @@ func (h *DealsHandler) CreateDeal(c *gin.Context) {
 	if req.Currency == "" { req.Currency = "USD" }
 	if req.Priority == "" { req.Priority = models.PriorityMedium }
 
+	closeDate, err := models.ParseCloseDate(req.CloseDate)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.APIResponse{Error: err.Error()})
+		return
+	}
+	contactID := models.NilIfEmptyUUIDPtr(req.ContactID)
+	assignedTo := models.NilIfEmptyUUIDPtr(req.AssignedTo)
+
 	id := uuid.New().String()
-	_, err := h.db.Exec(`
+	_, err = h.db.Exec(`
 		INSERT INTO deals (id, title, value, currency, pipeline_id, stage_id, contact_id, assigned_to, priority, close_date, notes)
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-		id, req.Title, req.Value, req.Currency, req.PipelineID, req.StageID,
-		req.ContactID, req.AssignedTo, req.Priority, req.CloseDate, req.Notes,
+		id, req.Title, float64(req.Value), req.Currency, req.PipelineID, req.StageID,
+		contactID, assignedTo, req.Priority, closeDate, req.Notes,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.APIResponse{Error: err.Error()})
@@ -192,15 +165,6 @@ func (h *DealsHandler) CreateDeal(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.APIResponse{Success: true, Message: "deal created", Data: gin.H{"id": id}})
 }
 
-// UpdateDeal godoc
-// @Summary      Update deal
-// @Tags         deals
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        id    path  string  true  "Deal ID"
-// @Success      200   {object}  models.APIResponse
-// @Router       /deals/{id} [put]
 func (h *DealsHandler) UpdateDeal(c *gin.Context) {
 	id := c.Param("id")
 	var req models.CreateDealRequest
@@ -208,12 +172,20 @@ func (h *DealsHandler) UpdateDeal(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.APIResponse{Error: err.Error()})
 		return
 	}
-	_, err := h.db.Exec(`
+	closeDate, err := models.ParseCloseDate(req.CloseDate)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.APIResponse{Error: err.Error()})
+		return
+	}
+	contactID := models.NilIfEmptyUUIDPtr(req.ContactID)
+	assignedTo := models.NilIfEmptyUUIDPtr(req.AssignedTo)
+
+	_, err = h.db.Exec(`
 		UPDATE deals SET title=$1, value=$2, currency=$3, pipeline_id=$4, stage_id=$5,
 		contact_id=$6, assigned_to=$7, priority=$8, close_date=$9, notes=$10, updated_at=NOW()
 		WHERE id=$11`,
-		req.Title, req.Value, req.Currency, req.PipelineID, req.StageID,
-		req.ContactID, req.AssignedTo, req.Priority, req.CloseDate, req.Notes, id,
+		req.Title, float64(req.Value), req.Currency, req.PipelineID, req.StageID,
+		contactID, assignedTo, req.Priority, closeDate, req.Notes, id,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.APIResponse{Error: err.Error()})
@@ -222,16 +194,6 @@ func (h *DealsHandler) UpdateDeal(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "deal updated"})
 }
 
-// MoveDeal godoc
-// @Summary      Move deal to another stage
-// @Tags         deals
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        id    path  string               true  "Deal ID"
-// @Param        body  body  models.MoveDealRequest  true  "Stage data"
-// @Success      200   {object}  models.APIResponse
-// @Router       /deals/{id}/move [patch]
 func (h *DealsHandler) MoveDeal(c *gin.Context) {
 	id := c.Param("id")
 	var req models.MoveDealRequest
@@ -247,20 +209,12 @@ func (h *DealsHandler) MoveDeal(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "deal moved"})
 }
 
-// DeleteDeal godoc
-// @Summary      Delete deal
-// @Tags         deals
-// @Security     BearerAuth
-// @Param        id  path  string  true  "Deal ID"
-// @Success      200  {object}  models.APIResponse
-// @Router       /deals/{id} [delete]
 func (h *DealsHandler) DeleteDeal(c *gin.Context) {
 	id := c.Param("id")
 	h.db.Exec(`DELETE FROM deals WHERE id=$1`, id)
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "deal deleted"})
 }
 
-// GetDealActivities returns activities for a deal
 func (h *DealsHandler) GetDealActivities(c *gin.Context) {
 	id := c.Param("id")
 	var activities []models.Activity
@@ -268,7 +222,6 @@ func (h *DealsHandler) GetDealActivities(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: activities})
 }
 
-// CreateDealActivity creates an activity for a deal
 func (h *DealsHandler) CreateDealActivity(c *gin.Context) {
 	dealID := c.Param("id")
 	var req models.CreateActivityRequest

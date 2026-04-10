@@ -18,13 +18,6 @@ func NewActivitiesHandler(db *sqlx.DB) *ActivitiesHandler {
 	return &ActivitiesHandler{db: db}
 }
 
-// ListActivities godoc
-// @Summary      List activities
-// @Tags         activities
-// @Security     BearerAuth
-// @Produce      json
-// @Success      200  {object}  models.APIResponse
-// @Router       /activities [get]
 func (h *ActivitiesHandler) ListActivities(c *gin.Context) {
 	userID := middleware.GetUserID(c)
 	role := middleware.GetUserRole(c)
@@ -34,7 +27,6 @@ func (h *ActivitiesHandler) ListActivities(c *gin.Context) {
 	          LEFT JOIN users u ON u.id = a.user_id WHERE 1=1`
 	args := []interface{}{}
 
-	// Viewers/sales see only their activities
 	if role == "sales" || role == "viewer" {
 		query += ` AND a.user_id=$1`
 		args = append(args, userID)
@@ -54,15 +46,6 @@ func (h *ActivitiesHandler) ListActivities(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: activities})
 }
 
-// CreateActivity godoc
-// @Summary      Create activity
-// @Tags         activities
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        body  body  models.CreateActivityRequest  true  "Activity data"
-// @Success      201   {object}  models.APIResponse
-// @Router       /activities [post]
 func (h *ActivitiesHandler) CreateActivity(c *gin.Context) {
 	var req models.CreateActivityRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -84,14 +67,6 @@ func (h *ActivitiesHandler) CreateActivity(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.APIResponse{Success: true, Data: gin.H{"id": id}})
 }
 
-// GetActivity godoc
-// @Summary      Get activity by ID
-// @Tags         activities
-// @Security     BearerAuth
-// @Param        id  path  string  true  "Activity ID"
-// @Produce      json
-// @Success      200  {object}  models.Activity
-// @Router       /activities/{id} [get]
 func (h *ActivitiesHandler) GetActivity(c *gin.Context) {
 	id := c.Param("id")
 	var a models.Activity
@@ -102,15 +77,6 @@ func (h *ActivitiesHandler) GetActivity(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: a})
 }
 
-// UpdateActivity godoc
-// @Summary      Update activity
-// @Tags         activities
-// @Security     BearerAuth
-// @Accept       json
-// @Param        id  path  string  true  "Activity ID"
-// @Produce      json
-// @Success      200  {object}  models.APIResponse
-// @Router       /activities/{id} [put]
 func (h *ActivitiesHandler) UpdateActivity(c *gin.Context) {
 	id := c.Param("id")
 	var req struct {
@@ -132,13 +98,6 @@ func (h *ActivitiesHandler) UpdateActivity(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "activity updated"})
 }
 
-// DeleteActivity godoc
-// @Summary      Delete activity
-// @Tags         activities
-// @Security     BearerAuth
-// @Param        id  path  string  true  "Activity ID"
-// @Success      200  {object}  models.APIResponse
-// @Router       /activities/{id} [delete]
 func (h *ActivitiesHandler) DeleteActivity(c *gin.Context) {
 	id := c.Param("id")
 	h.db.Exec(`DELETE FROM activities WHERE id=$1`, id)

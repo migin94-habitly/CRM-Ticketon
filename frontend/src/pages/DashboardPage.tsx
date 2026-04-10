@@ -4,7 +4,7 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
 import {
-  TrendingUp, Users, Phone, DollarSign,
+  TrendingUp, Users, Phone, MessageSquare, DollarSign,
   Target, Zap, Award, ArrowUpRight, ArrowDownRight,
 } from 'lucide-react';
 import { analyticsAPI } from '../api';
@@ -26,11 +26,16 @@ export default function DashboardPage() {
   if (loading) return <DashboardSkeleton />;
   if (!metrics) return <div className="text-slate-500">Failed to load metrics</div>;
 
+  const pipelineBreakdown = metrics.pipeline_breakdown ?? [];
+  const activityBreakdown = metrics.activity_breakdown ?? [];
+  const revenueByMonth = metrics.revenue_by_month ?? [];
+  const topPerformers = metrics.top_performers ?? [];
+  const aiInsights = metrics.ai_insights ?? [];
+
   const conversionUp = metrics.conversion_rate >= 30;
 
   return (
     <div className="space-y-6 animate-in">
-      {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-white">Dashboard</h1>
@@ -51,7 +56,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           title="Total Revenue"
@@ -91,16 +95,14 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Revenue chart */}
         <div className="card p-5 lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-white">Revenue by Month</h3>
             <TrendingUp className="w-4 h-4 text-slate-500" />
           </div>
           <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={metrics.revenue_by_month}>
+            <AreaChart data={revenueByMonth}>
               <defs>
                 <linearGradient id="wonGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
@@ -120,11 +122,10 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* Pipeline breakdown */}
         <div className="card p-5">
           <h3 className="font-semibold text-white mb-4">Pipeline Stages</h3>
           <div className="space-y-3">
-            {metrics.pipeline_breakdown.map((s) => (
+            {pipelineBreakdown.map((s) => (
               <div key={s.stage_id}>
                 <div className="flex justify-between text-xs text-slate-400 mb-1">
                   <span>{s.stage_name}</span>
@@ -142,12 +143,12 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
-          {metrics.pipeline_breakdown.length > 0 && (
+          {pipelineBreakdown.length > 0 && (
             <div className="mt-4">
               <ResponsiveContainer width="100%" height={120}>
                 <PieChart>
-                  <Pie data={metrics.pipeline_breakdown} dataKey="count" cx="50%" cy="50%" outerRadius={50} innerRadius={30}>
-                    {metrics.pipeline_breakdown.map((entry, i) => (
+                  <Pie data={pipelineBreakdown} dataKey="count" cx="50%" cy="50%" outerRadius={50} innerRadius={30}>
+                    {pipelineBreakdown.map((entry, i) => (
                       <Cell key={i} fill={entry.color} />
                     ))}
                   </Pie>
@@ -162,13 +163,11 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Bottom row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Activity breakdown */}
         <div className="card p-5">
           <h3 className="font-semibold text-white mb-4">Activities</h3>
           <ResponsiveContainer width="100%" height={160}>
-            <BarChart data={metrics.activity_breakdown}>
+            <BarChart data={activityBreakdown}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
               <XAxis dataKey="type" tick={{ fill: '#64748b', fontSize: 10 }} />
               <YAxis tick={{ fill: '#64748b', fontSize: 10 }} />
@@ -178,14 +177,13 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* Top performers */}
         <div className="card p-5">
           <div className="flex items-center gap-2 mb-4">
             <Award className="w-4 h-4 text-yellow-400" />
             <h3 className="font-semibold text-white">Top Performers</h3>
           </div>
           <div className="space-y-3">
-            {metrics.top_performers.slice(0, 4).map((p, i) => (
+            {topPerformers.slice(0, 4).map((p, i) => (
               <div key={p.user_id} className="flex items-center gap-3">
                 <div className="text-xs text-slate-600 w-4 font-bold">{i + 1}</div>
                 <div className="w-7 h-7 bg-primary-700 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0">
@@ -198,20 +196,19 @@ export default function DashboardPage() {
                 <div className="text-xs text-green-400 font-semibold">{p.calls_made} calls</div>
               </div>
             ))}
-            {metrics.top_performers.length === 0 && (
+            {topPerformers.length === 0 && (
               <div className="text-slate-500 text-xs">No data yet</div>
             )}
           </div>
         </div>
 
-        {/* AI Insights */}
         <div className="card p-5">
           <div className="flex items-center gap-2 mb-4">
             <Zap className="w-4 h-4 text-primary-400" />
             <h3 className="font-semibold text-white">AI Insights</h3>
           </div>
           <div className="space-y-2.5">
-            {metrics.ai_insights.map((insight, i) => (
+            {aiInsights.map((insight, i) => (
               <div key={i} className="flex gap-2 text-xs text-slate-400">
                 <div className="w-1 h-1 rounded-full bg-primary-400 mt-1.5 shrink-0" />
                 {insight}

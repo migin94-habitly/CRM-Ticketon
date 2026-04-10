@@ -38,7 +38,6 @@ func AuthMiddleware(jwtManager *auth.JWTManager) gin.HandlerFunc {
 	}
 }
 
-// RequireRoles checks that user has one of the allowed roles
 func RequireRoles(roles ...string) gin.HandlerFunc {
 	allowed := make(map[string]bool, len(roles))
 	for _, r := range roles {

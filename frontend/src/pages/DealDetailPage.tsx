@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, DollarSign, Phone, Edit, Zap } from 'lucide-react';
 import { dealsAPI, analyticsAPI } from '../api';
@@ -14,10 +14,10 @@ export default function DealDetailPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
 
-  const load = useCallback(() => {
+  const load = () => {
     if (!id) return;
     dealsAPI.get(id).then(r => setDeal(r.data.data || null));
-  }, [id]);
+  };
 
   const analyze = async () => {
     if (!id) return;
@@ -30,7 +30,7 @@ export default function DealDetailPage() {
       .finally(() => setAnalyzing(false));
   };
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load(); }, [id]);
 
   if (!deal) return <div className="text-slate-500 animate-pulse">Loading...</div>;
 
@@ -44,7 +44,6 @@ export default function DealDetailPage() {
       </button>
 
       <div className="grid grid-cols-3 gap-4">
-        {/* Main info */}
         <div className="card p-5 col-span-2">
           <div className="flex items-start justify-between">
             <div>
@@ -93,7 +92,6 @@ export default function DealDetailPage() {
           )}
         </div>
 
-        {/* AI Score */}
         <div className="card p-5 flex flex-col items-center gap-3">
           <div className="flex items-center gap-2 w-full">
             <Zap className="w-4 h-4 text-primary-400" />
@@ -143,7 +141,6 @@ export default function DealDetailPage() {
         </div>
       </div>
 
-      {/* Activities */}
       <div className="card p-5">
         <h3 className="font-semibold text-white mb-3">Activity Timeline</h3>
         {deal.activities && deal.activities.length > 0 ? (

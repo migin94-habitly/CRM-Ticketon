@@ -22,16 +22,6 @@ func NewAuthHandler(db *sqlx.DB, jwtManager *auth.JWTManager) *AuthHandler {
 	return &AuthHandler{db: db, jwtManager: jwtManager}
 }
 
-// Login godoc
-// @Summary      Login
-// @Description  Authenticate user and receive JWT token
-// @Tags         auth
-// @Accept       json
-// @Produce      json
-// @Param        body  body      models.LoginRequest  true  "Credentials"
-// @Success      200   {object}  models.LoginResponse
-// @Failure      401   {object}  models.APIResponse
-// @Router       /auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req models.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -68,14 +58,6 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	})
 }
 
-// Me godoc
-// @Summary      Get current user
-// @Description  Returns the currently authenticated user
-// @Tags         auth
-// @Security     BearerAuth
-// @Produce      json
-// @Success      200  {object}  models.User
-// @Router       /auth/me [get]
 func (h *AuthHandler) Me(c *gin.Context) {
 	userID := middleware.GetUserID(c)
 	var user models.User
@@ -87,13 +69,6 @@ func (h *AuthHandler) Me(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: user})
 }
 
-// GetUsers godoc
-// @Summary      List users
-// @Tags         users
-// @Security     BearerAuth
-// @Produce      json
-// @Success      200  {object}  models.APIResponse
-// @Router       /users [get]
 func (h *AuthHandler) GetUsers(c *gin.Context) {
 	var users []models.User
 	if err := h.db.Select(&users, `SELECT id, email, first_name, last_name, role, avatar, phone_number, is_active, last_login_at, created_at, updated_at FROM users ORDER BY created_at DESC`); err != nil {
@@ -103,15 +78,6 @@ func (h *AuthHandler) GetUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: users})
 }
 
-// CreateUser godoc
-// @Summary      Create user
-// @Tags         users
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        body  body      models.CreateUserRequest  true  "User data"
-// @Success      201   {object}  models.APIResponse
-// @Router       /users [post]
 func (h *AuthHandler) CreateUser(c *gin.Context) {
 	var req models.CreateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -139,21 +105,11 @@ func (h *AuthHandler) CreateUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.APIResponse{Success: true, Message: "user created", Data: gin.H{"id": id}})
 }
 
-// UpdateUser godoc
-// @Summary      Update user
-// @Tags         users
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        id    path      string  true  "User ID"
-// @Success      200   {object}  models.APIResponse
-// @Router       /users/{id} [put]
 func (h *AuthHandler) UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	callerID := middleware.GetUserID(c)
 	callerRole := middleware.GetUserRole(c)
 
-	// Non-admin can only update themselves
 	if callerRole != "admin" && callerID != id {
 		c.JSON(http.StatusForbidden, models.APIResponse{Error: "insufficient permissions"})
 		return
@@ -186,7 +142,6 @@ func (h *AuthHandler) UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "user updated"})
 }
 
-// SeedAdmin creates default admin if no users exist
 func SeedAdmin(db *sqlx.DB) error {
 	var count int
 	db.Get(&count, `SELECT COUNT(*) FROM users`)

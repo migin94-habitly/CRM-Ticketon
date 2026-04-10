@@ -25,7 +25,6 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-dark-900 flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-14 h-14 bg-primary-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-primary-600/30">
             <Zap className="w-7 h-7 text-white" />
@@ -34,7 +33,6 @@ export default function LoginPage() {
           <p className="text-slate-500 text-sm mt-1">Sales Intelligence Platform</p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="card p-6 space-y-4">
           <h2 className="text-lg font-semibold text-white text-center mb-2">Sign In</h2>
 

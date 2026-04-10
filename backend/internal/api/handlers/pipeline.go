@@ -18,13 +18,6 @@ func NewPipelineHandler(db *sqlx.DB) *PipelineHandler {
 	return &PipelineHandler{db: db}
 }
 
-// ListPipelines godoc
-// @Summary      List pipelines
-// @Tags         pipeline
-// @Security     BearerAuth
-// @Produce      json
-// @Success      200  {object}  models.APIResponse
-// @Router       /pipelines [get]
 func (h *PipelineHandler) ListPipelines(c *gin.Context) {
 	var pipelines []models.Pipeline
 	if err := h.db.Select(&pipelines, `SELECT * FROM pipelines ORDER BY created_at ASC`); err != nil {
@@ -41,14 +34,6 @@ func (h *PipelineHandler) ListPipelines(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: pipelines})
 }
 
-// GetPipeline godoc
-// @Summary      Get pipeline with stages
-// @Tags         pipeline
-// @Security     BearerAuth
-// @Param        id  path  string  true  "Pipeline ID"
-// @Produce      json
-// @Success      200  {object}  models.Pipeline
-// @Router       /pipelines/{id} [get]
 func (h *PipelineHandler) GetPipeline(c *gin.Context) {
 	id := c.Param("id")
 	var p models.Pipeline
@@ -60,15 +45,6 @@ func (h *PipelineHandler) GetPipeline(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: p})
 }
 
-// CreatePipeline godoc
-// @Summary      Create pipeline
-// @Tags         pipeline
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        body  body  models.CreatePipelineRequest  true  "Pipeline data"
-// @Success      201   {object}  models.APIResponse
-// @Router       /pipelines [post]
 func (h *PipelineHandler) CreatePipeline(c *gin.Context) {
 	var req models.CreatePipelineRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -89,7 +65,6 @@ func (h *PipelineHandler) CreatePipeline(c *gin.Context) {
 		return
 	}
 
-	// Create default stages if none provided
 	stages := req.Stages
 	if len(stages) == 0 {
 		stages = []models.CreateStageRequest{
@@ -117,15 +92,6 @@ func (h *PipelineHandler) CreatePipeline(c *gin.Context) {
 	})
 }
 
-// UpdatePipeline godoc
-// @Summary      Update pipeline
-// @Tags         pipeline
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        id    path  string  true  "Pipeline ID"
-// @Success      200   {object}  models.APIResponse
-// @Router       /pipelines/{id} [put]
 func (h *PipelineHandler) UpdatePipeline(c *gin.Context) {
 	id := c.Param("id")
 	var req models.CreatePipelineRequest
@@ -138,28 +104,12 @@ func (h *PipelineHandler) UpdatePipeline(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "pipeline updated"})
 }
 
-// DeletePipeline godoc
-// @Summary      Delete pipeline
-// @Tags         pipeline
-// @Security     BearerAuth
-// @Param        id  path  string  true  "Pipeline ID"
-// @Success      200  {object}  models.APIResponse
-// @Router       /pipelines/{id} [delete]
 func (h *PipelineHandler) DeletePipeline(c *gin.Context) {
 	id := c.Param("id")
 	h.db.Exec(`DELETE FROM pipelines WHERE id=$1`, id)
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "pipeline deleted"})
 }
 
-// AddStage godoc
-// @Summary      Add stage to pipeline
-// @Tags         pipeline
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        id    path  string  true  "Pipeline ID"
-// @Success      201   {object}  models.APIResponse
-// @Router       /pipelines/{id}/stages [post]
 func (h *PipelineHandler) AddStage(c *gin.Context) {
 	pipelineID := c.Param("id")
 	var req models.CreateStageRequest
@@ -177,16 +127,6 @@ func (h *PipelineHandler) AddStage(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.APIResponse{Success: true, Data: gin.H{"id": stageID}})
 }
 
-// UpdateStage godoc
-// @Summary      Update pipeline stage
-// @Tags         pipeline
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        id        path  string  true  "Pipeline ID"
-// @Param        stage_id  path  string  true  "Stage ID"
-// @Success      200       {object}  models.APIResponse
-// @Router       /pipelines/{id}/stages/{stage_id} [put]
 func (h *PipelineHandler) UpdateStage(c *gin.Context) {
 	stageID := c.Param("stage_id")
 	var req models.CreateStageRequest
@@ -202,14 +142,6 @@ func (h *PipelineHandler) UpdateStage(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "stage updated"})
 }
 
-// DeleteStage godoc
-// @Summary      Delete pipeline stage
-// @Tags         pipeline
-// @Security     BearerAuth
-// @Param        id        path  string  true  "Pipeline ID"
-// @Param        stage_id  path  string  true  "Stage ID"
-// @Success      200       {object}  models.APIResponse
-// @Router       /pipelines/{id}/stages/{stage_id} [delete]
 func (h *PipelineHandler) DeleteStage(c *gin.Context) {
 	stageID := c.Param("stage_id")
 	h.db.Exec(`DELETE FROM pipeline_stages WHERE id=$1`, stageID)

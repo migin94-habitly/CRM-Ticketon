@@ -25,23 +25,23 @@ s3:
   region: "us-east-1"
   access_key: ""
   secret_key: ""
-  endpoint: ""  # For MinIO: http://localhost:9000
+  endpoint: ""
 
 telephony:
-  provider: "asterisk"  # asterisk | twilio | zadarma | sipuni
+  provider: "asterisk"
   api_url: ""
   api_key: ""
   webhook_url: "http://your-server/api/v1/webhooks/telephony"
 
 whatsapp:
-  provider: "meta"  # meta | wazzup | chat-api
+  provider: "meta"
   api_url: "https://graph.facebook.com/v18.0"
   api_key: ""
   webhook_url: "http://your-server/api/v1/webhooks/whatsapp"
   phone_id: ""
 
 ai:
-  provider: "openai"  # openai | anthropic | local
-  api_key: ""         # Set via AI_API_KEY env var
+  provider: "openai"
+  api_key: ""
   model: "gpt-4o-mini"
   base_url: "https://api.openai.com/v1/chat/completions"

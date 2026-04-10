@@ -24,7 +24,6 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(middleware.Logger(log))
 
-	// CORS
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
@@ -34,17 +33,14 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 		MaxAge:           12 * 3600,
 	}))
 
-	// Health check
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok", "version": "1.0.0"})
 	})
 
-	// Swagger UI
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	jwtManager := auth.NewJWTManager(cfg.JWT.Secret, cfg.JWT.ExpiryHours)
 
-	// Handlers
 	authH := handlers.NewAuthHandler(db, jwtManager)
 	contactsH := handlers.NewContactsHandler(db)
 	pipelineH := handlers.NewPipelineHandler(db)
@@ -54,19 +50,15 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 	analyticsH := handlers.NewAnalyticsHandler(db, &cfg.AI)
 	activitiesH := handlers.NewActivitiesHandler(db)
 
-	// Public routes
 	r.POST("/api/v1/auth/login", authH.Login)
 	r.GET("/api/v1/webhooks/whatsapp", whatsappH.WebhookVerify)
 	r.POST("/api/v1/webhooks/whatsapp", whatsappH.WebhookHandler)
 	r.POST("/api/v1/webhooks/telephony", telephonyH.WebhookHandler)
 
-	// Protected routes
 	api := r.Group("/api/v1", middleware.AuthMiddleware(jwtManager))
 	{
-		// Auth
 		api.GET("/auth/me", authH.Me)
 
-		// Users (admin only for create/delete)
 		users := api.Group("/users")
 		{
 			users.GET("", middleware.RequireRoles("admin", "manager"), authH.GetUsers)
@@ -74,7 +66,6 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 			users.PUT("/:id", authH.UpdateUser)
 		}
 
-		// Contacts
 		contacts := api.Group("/contacts")
 		{
 			contacts.GET("", contactsH.ListContacts)
@@ -88,7 +79,6 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 			contacts.GET("/:id/messages", contactsH.GetContactMessages)
 		}
 
-		// Pipelines
 		pipelines := api.Group("/pipelines")
 		{
 			pipelines.GET("", pipelineH.ListPipelines)
@@ -101,7 +91,6 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 			pipelines.DELETE("/:id/stages/:stage_id", middleware.RequireRoles("admin", "manager"), pipelineH.DeleteStage)
 		}
 
-		// Deals
 		deals := api.Group("/deals")
 		{
 			deals.GET("", dealsH.ListDeals)
@@ -114,7 +103,6 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 			deals.POST("/:id/activities", dealsH.CreateDealActivity)
 		}
 
-		// Activities
 		activities := api.Group("/activities")
 		{
 			activities.GET("", activitiesH.ListActivities)
@@ -124,7 +112,6 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 			activities.DELETE("/:id", activitiesH.DeleteActivity)
 		}
 
-		// Telephony
 		telephony := api.Group("/telephony")
 		{
 			telephony.GET("/calls", telephonyH.ListCalls)
@@ -134,7 +121,6 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 			telephony.GET("/calls/:id/recording", telephonyH.GetRecordingURL)
 		}
 
-		// WhatsApp
 		whatsapp := api.Group("/whatsapp")
 		{
 			whatsapp.GET("/conversations", whatsappH.GetConversations)
@@ -143,7 +129,6 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 			whatsapp.PATCH("/messages/:id/read", whatsappH.MarkMessageRead)
 		}
 
-		// Analytics
 		analytics := api.Group("/analytics")
 		{
 			analytics.GET("/dashboard", analyticsH.GetDashboard)

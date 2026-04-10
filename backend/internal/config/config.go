@@ -82,7 +82,6 @@ func Load() *Config {
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	// Defaults
 	viper.SetDefault("server.port", "8080")
 	viper.SetDefault("server.mode", "debug")
 	viper.SetDefault("database.host", "localhost")
@@ -102,7 +101,6 @@ func Load() *Config {
 		log.Fatalf("Failed to unmarshal config: %v", err)
 	}
 
-	// Override from env
 	if port := viper.GetString("SERVER_PORT"); port != "" {
 		cfg.Server.Port = port
 	}

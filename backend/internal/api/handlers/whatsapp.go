@@ -17,15 +17,6 @@ func NewWhatsAppHandler(db *sqlx.DB) *WhatsAppHandler {
 	return &WhatsAppHandler{db: db}
 }
 
-// SendMessage godoc
-// @Summary      Send WhatsApp message
-// @Tags         whatsapp
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        body  body  models.SendWhatsAppRequest  true  "Message data"
-// @Success      201   {object}  models.APIResponse
-// @Router       /whatsapp/messages [post]
 func (h *WhatsAppHandler) SendMessage(c *gin.Context) {
 	var req models.SendWhatsAppRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -34,8 +25,7 @@ func (h *WhatsAppHandler) SendMessage(c *gin.Context) {
 	}
 
 	userID := c.GetString("user_id")
-	// Get sender's WhatsApp number from config
-	fromNumber := "+10000000000" // In production: from config/integration settings
+	fromNumber := "+10000000000"
 
 	msgID := uuid.New().String()
 	_, err := h.db.Exec(`
@@ -49,10 +39,6 @@ func (h *WhatsAppHandler) SendMessage(c *gin.Context) {
 		return
 	}
 
-	// In production: call Meta WhatsApp Business API / Wazzup / Chat-API
-	// POST to https://graph.facebook.com/v18.0/{phone_number_id}/messages
-	// with Bearer token
-
 	c.JSON(http.StatusCreated, models.APIResponse{
 		Success: true,
 		Message: "message sent",
@@ -60,13 +46,6 @@ func (h *WhatsAppHandler) SendMessage(c *gin.Context) {
 	})
 }
 
-// ListMessages godoc
-// @Summary      List WhatsApp conversations
-// @Tags         whatsapp
-// @Security     BearerAuth
-// @Produce      json
-// @Success      200  {object}  models.APIResponse
-// @Router       /whatsapp/messages [get]
 func (h *WhatsAppHandler) ListMessages(c *gin.Context) {
 	contactID := c.Query("contact_id")
 	dealID := c.Query("deal_id")
@@ -91,7 +70,6 @@ func (h *WhatsAppHandler) ListMessages(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: messages})
 }
 
-// GetConversations returns unique conversations grouped by contact
 func (h *WhatsAppHandler) GetConversations(c *gin.Context) {
 	type Conversation struct {
 		ContactID   *string `db:"contact_id" json:"contact_id"`
@@ -142,14 +120,7 @@ func (h *WhatsAppHandler) GetConversations(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: result})
 }
 
-// WhatsAppWebhook handles incoming messages from WhatsApp provider
-// @Summary      WhatsApp webhook
-// @Tags         whatsapp
-// @Accept       json
-// @Produce      json
-// @Router       /webhooks/whatsapp [post]
 func (h *WhatsAppHandler) WebhookHandler(c *gin.Context) {
-	// Meta / WhatsApp Business API webhook format
 	var payload struct {
 		Object string `json:"object"`
 		Entry  []struct {
@@ -179,7 +150,6 @@ func (h *WhatsAppHandler) WebhookHandler(c *gin.Context) {
 	for _, entry := range payload.Entry {
 		for _, change := range entry.Changes {
 			for _, msg := range change.Value.Messages {
-				// Try to match contact
 				var contactID *string
 				var ct models.Contact
 				if h.db.Get(&ct, `SELECT id FROM contacts WHERE phone=$1 OR whatsapp_id=$1 LIMIT 1`, msg.From) == nil {
@@ -202,12 +172,10 @@ func (h *WhatsAppHandler) WebhookHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"received": true})
 }
 
-// WhatsApp webhook verification (GET)
 func (h *WhatsAppHandler) WebhookVerify(c *gin.Context) {
 	mode := c.Query("hub.mode")
 	token := c.Query("hub.verify_token")
 	challenge := c.Query("hub.challenge")
-	// In production: verify token against config
 	if mode == "subscribe" && token != "" {
 		c.String(http.StatusOK, challenge)
 		return
@@ -215,7 +183,6 @@ func (h *WhatsAppHandler) WebhookVerify(c *gin.Context) {
 	c.JSON(http.StatusForbidden, gin.H{"error": "verification failed"})
 }
 
-// MarkMessageRead marks a message as read
 func (h *WhatsAppHandler) MarkMessageRead(c *gin.Context) {
 	id := c.Param("id")
 	h.db.Exec(`UPDATE whatsapp_messages SET read_at=NOW() WHERE id=$1`, id)

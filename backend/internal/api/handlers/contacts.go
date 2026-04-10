@@ -20,16 +20,6 @@ func NewContactsHandler(db *sqlx.DB) *ContactsHandler {
 	return &ContactsHandler{db: db}
 }
 
-// ListContacts godoc
-// @Summary      List contacts
-// @Tags         contacts
-// @Security     BearerAuth
-// @Produce      json
-// @Param        page    query  int     false  "Page number"
-// @Param        limit   query  int     false  "Items per page"
-// @Param        search  query  string  false  "Search by name/email/phone"
-// @Success      200  {object}  models.PaginatedResponse
-// @Router       /contacts [get]
 func (h *ContactsHandler) ListContacts(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
@@ -97,14 +87,6 @@ func (h *ContactsHandler) ListContacts(c *gin.Context) {
 	})
 }
 
-// GetContact godoc
-// @Summary      Get contact by ID
-// @Tags         contacts
-// @Security     BearerAuth
-// @Produce      json
-// @Param        id   path  string  true  "Contact ID"
-// @Success      200  {object}  models.Contact
-// @Router       /contacts/{id} [get]
 func (h *ContactsHandler) GetContact(c *gin.Context) {
 	id := c.Param("id")
 	var ct models.Contact
@@ -113,7 +95,6 @@ func (h *ContactsHandler) GetContact(c *gin.Context) {
 		return
 	}
 	h.db.Select(&ct.Tags, `SELECT tag FROM contact_tags WHERE contact_id=$1`, ct.ID)
-	// Load assigned user
 	if ct.AssignedTo != nil {
 		var u models.User
 		if h.db.Get(&u, `SELECT id, first_name, last_name, email, role, avatar FROM users WHERE id=$1`, *ct.AssignedTo) == nil {
@@ -123,15 +104,6 @@ func (h *ContactsHandler) GetContact(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: ct})
 }
 
-// CreateContact godoc
-// @Summary      Create contact
-// @Tags         contacts
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        body  body      models.CreateContactRequest  true  "Contact data"
-// @Success      201   {object}  models.APIResponse
-// @Router       /contacts [post]
 func (h *ContactsHandler) CreateContact(c *gin.Context) {
 	var req models.CreateContactRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -160,15 +132,6 @@ func (h *ContactsHandler) CreateContact(c *gin.Context) {
 	c.JSON(http.StatusCreated, models.APIResponse{Success: true, Message: "contact created", Data: gin.H{"id": id}})
 }
 
-// UpdateContact godoc
-// @Summary      Update contact
-// @Tags         contacts
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        id    path  string  true  "Contact ID"
-// @Success      200   {object}  models.APIResponse
-// @Router       /contacts/{id} [put]
 func (h *ContactsHandler) UpdateContact(c *gin.Context) {
 	id := c.Param("id")
 	var req models.CreateContactRequest
@@ -189,7 +152,6 @@ func (h *ContactsHandler) UpdateContact(c *gin.Context) {
 		return
 	}
 
-	// Refresh tags
 	h.db.Exec(`DELETE FROM contact_tags WHERE contact_id=$1`, id)
 	for _, tag := range req.Tags {
 		h.db.Exec(`INSERT INTO contact_tags (contact_id, tag) VALUES ($1,$2)`, id, tag)
@@ -198,13 +160,6 @@ func (h *ContactsHandler) UpdateContact(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "contact updated"})
 }
 
-// DeleteContact godoc
-// @Summary      Delete contact
-// @Tags         contacts
-// @Security     BearerAuth
-// @Param        id  path  string  true  "Contact ID"
-// @Success      200  {object}  models.APIResponse
-// @Router       /contacts/{id} [delete]
 func (h *ContactsHandler) DeleteContact(c *gin.Context) {
 	id := c.Param("id")
 	if _, err := h.db.Exec(`DELETE FROM contacts WHERE id=$1`, id); err != nil {
@@ -214,7 +169,6 @@ func (h *ContactsHandler) DeleteContact(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "contact deleted"})
 }
 
-// GetContactActivities returns all activities for a contact
 func (h *ContactsHandler) GetContactActivities(c *gin.Context) {
 	id := c.Param("id")
 	var activities []models.Activity
@@ -222,7 +176,6 @@ func (h *ContactsHandler) GetContactActivities(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: activities})
 }
 
-// GetContactCalls returns all calls for a contact
 func (h *ContactsHandler) GetContactCalls(c *gin.Context) {
 	id := c.Param("id")
 	var calls []models.CallRecord
@@ -230,7 +183,6 @@ func (h *ContactsHandler) GetContactCalls(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: calls})
 }
 
-// GetContactMessages returns WhatsApp messages for a contact
 func (h *ContactsHandler) GetContactMessages(c *gin.Context) {
 	id := c.Param("id")
 	var messages []models.WhatsAppMessage
@@ -238,7 +190,6 @@ func (h *ContactsHandler) GetContactMessages(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: messages})
 }
 
-// ExportContacts exports contacts as JSON
 func (h *ContactsHandler) ExportContacts(c *gin.Context) {
 	role := middleware.GetUserRole(c)
 	if role == "viewer" {
