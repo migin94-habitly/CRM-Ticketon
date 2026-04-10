@@ -1,9 +1,9 @@
 FROM node:20-alpine AS builder
 
 WORKDIR /app
+# Copy pre-installed node_modules (no npm ci — no internet access in build env)
 COPY package*.json ./
-RUN npm ci
-
+COPY node_modules ./node_modules
 COPY . .
 RUN npm run build
 
