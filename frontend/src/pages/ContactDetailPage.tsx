@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, Mail, Briefcase, MessageSquare, Edit } from 'lucide-react';
 import { contactsAPI } from '../api';
@@ -15,14 +15,14 @@ export default function ContactDetailPage() {
   const [tab, setTab] = useState<'activities' | 'calls' | 'messages'>('activities');
   const [editOpen, setEditOpen] = useState(false);
 
-  const load = () => {
+  const load = useCallback(() => {
     if (!id) return;
     contactsAPI.get(id).then(r => setContact(r.data.data || null));
     contactsAPI.activities(id).then(r => setActivities(r.data.data || []));
     contactsAPI.calls(id).then(r => setCalls(r.data.data || []));
-  };
+  }, [id]);
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => { load(); }, [load]);
 
   if (!contact) return <div className="text-slate-500 animate-pulse">Loading...</div>;
 
