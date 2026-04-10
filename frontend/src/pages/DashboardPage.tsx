@@ -4,7 +4,7 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
 import {
-  TrendingUp, Users, Phone, MessageSquare, DollarSign,
+  TrendingUp, Users, Phone, DollarSign,
   Target, Zap, Award, ArrowUpRight, ArrowDownRight,
 } from 'lucide-react';
 import { analyticsAPI } from '../api';
