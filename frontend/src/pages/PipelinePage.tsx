@@ -5,6 +5,7 @@ import { pipelinesAPI, dealsAPI } from '../api';
 import type { Pipeline, Deal } from '../types';
 import { formatCurrency, initials } from '../utils/format';
 import DealModal from '../components/deals/DealModal';
+import ConfigureModal from '../components/pipeline/ConfigureModal';
 import toast from 'react-hot-toast';
 
 export default function PipelinePage() {
@@ -12,6 +13,7 @@ export default function PipelinePage() {
   const [selectedPipeline, setSelectedPipeline] = useState<Pipeline | null>(null);
   const [dealsByStage, setDealsByStage] = useState<Record<string, Deal[]>>({});
   const [showModal, setShowModal] = useState(false);
+  const [showConfigure, setShowConfigure] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const loadPipelines = async () => {
@@ -110,7 +112,11 @@ export default function PipelinePage() {
           >
             {pipelines.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
-          <button className="btn-secondary text-sm py-1.5">
+          <button
+            className="btn-secondary text-sm py-1.5"
+            onClick={() => setShowConfigure(true)}
+            disabled={!selectedPipeline}
+          >
             <Settings className="w-4 h-4" /> Configure
           </button>
           <button className="btn-primary text-sm py-1.5" onClick={() => setShowModal(true)}>
@@ -216,6 +222,27 @@ export default function PipelinePage() {
         <DealModal
           onClose={() => setShowModal(false)}
           onSaved={() => { setShowModal(false); if (selectedPipeline) loadDeals(selectedPipeline); }}
+        />
+      )}
+
+      {showConfigure && selectedPipeline && (
+        <ConfigureModal
+          pipeline={selectedPipeline}
+          allPipelines={pipelines}
+          onClose={() => setShowConfigure(false)}
+          onSaved={(updated) => {
+            setPipelines(prev => prev.map(p => p.id === updated.id ? updated : p));
+            setSelectedPipeline(updated);
+            setShowConfigure(false);
+            loadDeals(updated);
+          }}
+          onDeleted={() => {
+            setShowConfigure(false);
+            loadPipelines();
+          }}
+          onPipelineCreated={() => {
+            loadPipelines();
+          }}
         />
       )}
     </div>
