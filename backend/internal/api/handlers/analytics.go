@@ -46,7 +46,12 @@ func (h *AnalyticsHandler) GetDashboard(c *gin.Context) {
 		since = time.Now().AddDate(0, -1, 0)
 	}
 
-	m := &models.DashboardMetrics{}
+	m := &models.DashboardMetrics{
+		PipelineBreakdown: []models.PipelineMetric{},
+		ActivityBreakdown: []models.ActivityMetric{},
+		RevenueByMonth:    []models.MonthlyRevenue{},
+		TopPerformers:     []models.UserPerformance{},
+	}
 
 	// Total deals & value
 	h.db.QueryRow(`SELECT COUNT(*), COALESCE(SUM(value),0) FROM deals`).Scan(&m.TotalDeals, &m.TotalValue)
