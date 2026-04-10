@@ -12,7 +12,9 @@ RUN CGO_ENABLED=0 GOOS=linux \
     go build -mod=vendor -ldflags="-w -s" -o crm-server ./cmd/server
 
 FROM alpine:3.19
-RUN apk --no-cache add ca-certificates tzdata
+# Copy SSL certs from builder (golang:alpine already has ca-certificates installed)
+# This avoids `apk add` which requires network access to Alpine mirrors
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
 WORKDIR /app
 COPY --from=builder /app/crm-server .
