@@ -24,14 +24,6 @@ func NewAnalyticsHandler(db *sqlx.DB, cfg *config.AIConfig) *AnalyticsHandler {
 	return &AnalyticsHandler{db: db, cfg: cfg}
 }
 
-// GetDashboard godoc
-// @Summary      Get dashboard metrics
-// @Tags         analytics
-// @Security     BearerAuth
-// @Produce      json
-// @Param        period  query  string  false  "Period: week, month, quarter, year (default: month)"
-// @Success      200     {object}  models.DashboardMetrics
-// @Router       /analytics/dashboard [get]
 func (h *AnalyticsHandler) GetDashboard(c *gin.Context) {
 	period := c.DefaultQuery("period", "month")
 	var since time.Time
@@ -53,17 +45,14 @@ func (h *AnalyticsHandler) GetDashboard(c *gin.Context) {
 		TopPerformers:     []models.UserPerformance{},
 	}
 
-	// Total deals & value
 	h.db.QueryRow(`SELECT COUNT(*), COALESCE(SUM(value),0) FROM deals`).Scan(&m.TotalDeals, &m.TotalValue)
 
-	// Won
 	h.db.QueryRow(`
 		SELECT COUNT(*), COALESCE(SUM(d.value),0)
 		FROM deals d
 		JOIN pipeline_stages ps ON ps.id = d.stage_id
 		WHERE ps.is_won = true`).Scan(&m.WonDeals, &m.WonValue)
 
-	// Lost
 	h.db.QueryRow(`
 		SELECT COUNT(*) FROM deals d
 		JOIN pipeline_stages ps ON ps.id = d.stage_id
@@ -74,18 +63,14 @@ func (h *AnalyticsHandler) GetDashboard(c *gin.Context) {
 		m.AvgDealValue = m.TotalValue / float64(m.TotalDeals)
 	}
 
-	// Contacts
 	h.db.QueryRow(`SELECT COUNT(*) FROM contacts`).Scan(&m.TotalContacts)
 	h.db.QueryRow(`SELECT COUNT(*) FROM contacts WHERE created_at >= NOW() - INTERVAL '1 day'`).Scan(&m.NewContactsToday)
 
-	// Calls
 	h.db.QueryRow(`SELECT COUNT(*), COALESCE(SUM(duration),0) FROM call_records WHERE created_at >= $1`, since).
 		Scan(&m.TotalCalls, &m.TotalCallDuration)
 
-	// Messages
 	h.db.QueryRow(`SELECT COUNT(*) FROM whatsapp_messages WHERE created_at >= $1`, since).Scan(&m.TotalMessages)
 
-	// Pipeline breakdown
 	rows, _ := h.db.Queryx(`
 		SELECT ps.id as stage_id, ps.name as stage_name, ps.color,
 		       COUNT(d.id) as count, COALESCE(SUM(d.value),0) as value
@@ -102,7 +87,6 @@ func (h *AnalyticsHandler) GetDashboard(c *gin.Context) {
 		rows.Close()
 	}
 
-	// Activity breakdown
 	actRows, _ := h.db.Queryx(`
 		SELECT type, COUNT(*) as count FROM activities
 		WHERE created_at >= $1 GROUP BY type ORDER BY count DESC`, since)
@@ -115,7 +99,6 @@ func (h *AnalyticsHandler) GetDashboard(c *gin.Context) {
 		actRows.Close()
 	}
 
-	// Revenue by month (last 6 months)
 	revRows, _ := h.db.Queryx(`
 		SELECT TO_CHAR(d.updated_at, 'YYYY-MM') as month,
 		       COALESCE(SUM(CASE WHEN ps.is_won THEN d.value ELSE 0 END),0) as won,
@@ -133,7 +116,6 @@ func (h *AnalyticsHandler) GetDashboard(c *gin.Context) {
 		revRows.Close()
 	}
 
-	// Top performers
 	perfRows, _ := h.db.Queryx(`
 		SELECT u.id as user_id, u.first_name || ' ' || u.last_name as name,
 		       COALESCE(u.avatar,'') as avatar,
@@ -156,7 +138,6 @@ func (h *AnalyticsHandler) GetDashboard(c *gin.Context) {
 		perfRows.Close()
 	}
 
-	// AI insights
 	m.AIInsights = h.generateInsights(m)
 
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: m})
@@ -185,18 +166,9 @@ func (h *AnalyticsHandler) generateInsights(m *models.DashboardMetrics) []string
 	return insights
 }
 
-// AnalyzeDeal godoc
-// @Summary      AI analysis for a deal
-// @Tags         analytics
-// @Security     BearerAuth
-// @Param        id  path  string  true  "Deal ID"
-// @Produce      json
-// @Success      200  {object}  models.AIScore
-// @Router       /analytics/deals/{id} [get]
 func (h *AnalyticsHandler) AnalyzeDeal(c *gin.Context) {
 	dealID := c.Param("id")
 
-	// Check cache
 	var cached models.AIScore
 	err := h.db.Get(&cached, `
 		SELECT * FROM ai_scores
@@ -208,7 +180,6 @@ func (h *AnalyticsHandler) AnalyzeDeal(c *gin.Context) {
 		return
 	}
 
-	// Build context from deal + activities + calls
 	var deal models.Deal
 	h.db.Get(&deal, `SELECT * FROM deals WHERE id=$1`, dealID)
 
@@ -222,14 +193,6 @@ func (h *AnalyticsHandler) AnalyzeDeal(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: score})
 }
 
-// AnalyzeCall godoc
-// @Summary      AI analysis for a call recording
-// @Tags         analytics
-// @Security     BearerAuth
-// @Param        id  path  string  true  "Call ID"
-// @Produce      json
-// @Success      200  {object}  models.AIScore
-// @Router       /analytics/calls/{id} [get]
 func (h *AnalyticsHandler) AnalyzeCall(c *gin.Context) {
 	callID := c.Param("id")
 	var call models.CallRecord
@@ -250,14 +213,12 @@ func (h *AnalyticsHandler) callAI(entityType, entityID string, entity interface{
 	}
 
 	if h.cfg.APIKey == "" {
-		// Fallback: rule-based scoring
 		score.Score = 65
 		score.Sentiment = "neutral"
 		s := `{"insights":["Enable AI API key for detailed analysis"]}`; score.RawJSON = &s
 		return score
 	}
 
-	// Build prompt
 	contextJSON, _ := json.Marshal(map[string]interface{}{
 		"entity":     entity,
 		"activities": activities,
@@ -285,7 +246,6 @@ Data: %s`, entityType, string(contextJSON))
 		score.Sentiment = "neutral"
 	}
 
-	// Persist
 	h.db.Exec(`
 		INSERT INTO ai_scores (id, entity_type, entity_id, score, sentiment, raw_json, generated_at)
 		VALUES ($1,$2,$3,$4,$5,$6,$7)`,
@@ -347,12 +307,6 @@ func (h *AnalyticsHandler) openAICall(prompt string) *aiResult {
 	return &result
 }
 
-// GetSalesForecast godoc
-// @Summary      AI sales forecast
-// @Tags         analytics
-// @Security     BearerAuth
-// @Produce      json
-// @Router       /analytics/forecast [get]
 func (h *AnalyticsHandler) GetSalesForecast(c *gin.Context) {
 	type ForecastItem struct {
 		Month    string  `json:"month"`
@@ -360,7 +314,6 @@ func (h *AnalyticsHandler) GetSalesForecast(c *gin.Context) {
 		Pipeline float64 `json:"pipeline"`
 	}
 
-	// Simple weighted pipeline forecast
 	var items []ForecastItem
 	rows, _ := h.db.Queryx(`
 		SELECT

@@ -49,7 +49,6 @@
   }
 }
 
-/* Kanban scroll */
 .kanban-container {
   display: flex;
   gap: 1rem;
@@ -62,17 +61,14 @@
   max-width: 280px;
 }
 
-/* Audio player */
 .wave-player { filter: invert(0.8); }
 
-/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .animate-in { animation: fadeIn 0.2s ease-out; }
 
-/* Sidebar */
 .sidebar-link {
   @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400
          hover:text-white hover:bg-dark-700 transition-colors text-sm font-medium;
@@ -81,7 +77,6 @@
   @apply bg-primary-600/20 text-primary-400 hover:bg-primary-600/30 hover:text-primary-300;
 }
 
-/* Score ring */
 .score-ring {
   stroke-dasharray: 100;
   transition: stroke-dashoffset 0.8s ease;

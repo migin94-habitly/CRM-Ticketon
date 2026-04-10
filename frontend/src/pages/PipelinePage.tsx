@@ -15,25 +15,43 @@ export default function PipelinePage() {
   const [loading, setLoading] = useState(true);
 
   const loadPipelines = async () => {
-    const r = await pipelinesAPI.list();
-    const all = r.data.data || [];
-    setPipelines(all);
-    const def = all.find(p => p.is_default) || all[0];
-    if (def) setSelectedPipeline(def);
+    setLoading(true);
+    try {
+      const r = await pipelinesAPI.list();
+      const all = r.data.data || [];
+      setPipelines(all);
+      const def = all.find(p => p.is_default) || all[0];
+      if (def) {
+        setSelectedPipeline(def);
+      } else {
+        setSelectedPipeline(null);
+        setLoading(false);
+      }
+    } catch {
+      toast.error('Failed to load pipelines');
+      setSelectedPipeline(null);
+      setLoading(false);
+    }
   };
 
   const loadDeals = async (pipeline: Pipeline) => {
     setLoading(true);
-    const r = await dealsAPI.list({ pipeline_id: pipeline.id, limit: 200 });
-    const deals = r.data.data || [];
-    const grouped: Record<string, Deal[]> = {};
-    for (const stage of pipeline.stages) grouped[stage.id] = [];
-    for (const deal of deals) {
-      if (grouped[deal.stage_id]) grouped[deal.stage_id].push(deal);
-      else grouped[deal.stage_id] = [deal];
+    try {
+      const r = await dealsAPI.list({ pipeline_id: pipeline.id, limit: 100 });
+      const deals = r.data.data || [];
+      const grouped: Record<string, Deal[]> = {};
+      const stages = pipeline.stages ?? [];
+      for (const stage of stages) grouped[stage.id] = [];
+      for (const deal of deals) {
+        if (grouped[deal.stage_id]) grouped[deal.stage_id].push(deal);
+        else grouped[deal.stage_id] = [deal];
+      }
+      setDealsByStage(grouped);
+    } catch {
+      toast.error('Failed to load deals');
+    } finally {
+      setLoading(false);
     }
-    setDealsByStage(grouped);
-    setLoading(false);
   };
 
   useEffect(() => { loadPipelines(); }, []);
@@ -44,7 +62,6 @@ export default function PipelinePage() {
     const { draggableId, source, destination } = result;
     if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
-    // Optimistic update
     setDealsByStage(prev => {
       const next = { ...prev };
       const srcDeals = [...(next[source.droppableId] || [])];
@@ -77,14 +94,12 @@ export default function PipelinePage() {
 
   return (
     <div className="space-y-4 animate-in">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-white">Pipeline</h1>
           <p className="text-slate-500 text-sm">Kanban board view</p>
         </div>
         <div className="flex gap-2 items-center">
-          {/* Pipeline selector */}
           <select
             className="input py-1.5 text-sm w-48"
             value={selectedPipeline?.id || ''}
@@ -111,12 +126,11 @@ export default function PipelinePage() {
       ) : (
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="kanban-container pb-4">
-            {selectedPipeline.stages.map(stage => {
+            {(selectedPipeline.stages ?? []).map(stage => {
               const deals = dealsByStage[stage.id] || [];
               const total = stageTotal(stage.id);
               return (
                 <div key={stage.id} className="kanban-column shrink-0">
-                  {/* Stage header */}
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-full" style={{ background: stage.color }} />

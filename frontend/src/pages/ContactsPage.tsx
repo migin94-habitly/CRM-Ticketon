@@ -40,7 +40,6 @@ export default function ContactsPage() {
 
   return (
     <div className="space-y-4 animate-in">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-white">Contacts</h1>
@@ -51,7 +50,6 @@ export default function ContactsPage() {
         </button>
       </div>
 
-      {/* Filters */}
       <div className="card p-4 flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-48">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -78,7 +76,6 @@ export default function ContactsPage() {
         </div>
       </div>
 
-      {/* Table */}
       <div className="card overflow-hidden">
         <table className="w-full text-sm">
           <thead>
@@ -152,7 +149,6 @@ export default function ContactsPage() {
           </tbody>
         </table>
 
-        {/* Pagination */}
         {total > 20 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-slate-700/50">
             <span className="text-xs text-slate-500">

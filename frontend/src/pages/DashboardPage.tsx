@@ -36,7 +36,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 animate-in">
-      {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-white">Dashboard</h1>
@@ -57,7 +56,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           title="Total Revenue"
@@ -97,9 +95,7 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Revenue chart */}
         <div className="card p-5 lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-white">Revenue by Month</h3>
@@ -126,7 +122,6 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* Pipeline breakdown */}
         <div className="card p-5">
           <h3 className="font-semibold text-white mb-4">Pipeline Stages</h3>
           <div className="space-y-3">
@@ -168,9 +163,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Bottom row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Activity breakdown */}
         <div className="card p-5">
           <h3 className="font-semibold text-white mb-4">Activities</h3>
           <ResponsiveContainer width="100%" height={160}>
@@ -184,7 +177,6 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* Top performers */}
         <div className="card p-5">
           <div className="flex items-center gap-2 mb-4">
             <Award className="w-4 h-4 text-yellow-400" />
@@ -210,7 +202,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* AI Insights */}
         <div className="card p-5">
           <div className="flex items-center gap-2 mb-4">
             <Zap className="w-4 h-4 text-primary-400" />

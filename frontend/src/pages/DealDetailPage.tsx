@@ -44,7 +44,6 @@ export default function DealDetailPage() {
       </button>
 
       <div className="grid grid-cols-3 gap-4">
-        {/* Main info */}
         <div className="card p-5 col-span-2">
           <div className="flex items-start justify-between">
             <div>
@@ -93,7 +92,6 @@ export default function DealDetailPage() {
           )}
         </div>
 
-        {/* AI Score */}
         <div className="card p-5 flex flex-col items-center gap-3">
           <div className="flex items-center gap-2 w-full">
             <Zap className="w-4 h-4 text-primary-400" />
@@ -143,7 +141,6 @@ export default function DealDetailPage() {
         </div>
       </div>
 
-      {/* Activities */}
       <div className="card p-5">
         <h3 className="font-semibold text-white mb-3">Activity Timeline</h3>
         {deal.activities && deal.activities.length > 0 ? (

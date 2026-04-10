@@ -25,7 +25,6 @@ func RunMigrations(db *sqlx.DB) error {
 	schema := `
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Users
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -41,7 +40,6 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
--- Pipelines
 CREATE TABLE IF NOT EXISTS pipelines (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
@@ -52,7 +50,6 @@ CREATE TABLE IF NOT EXISTS pipelines (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
--- Pipeline stages
 CREATE TABLE IF NOT EXISTS pipeline_stages (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     pipeline_id UUID NOT NULL REFERENCES pipelines(id) ON DELETE CASCADE,
@@ -65,7 +62,6 @@ CREATE TABLE IF NOT EXISTS pipeline_stages (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
--- Contacts
 CREATE TABLE IF NOT EXISTS contacts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     first_name VARCHAR(100) NOT NULL,
@@ -84,14 +80,12 @@ CREATE TABLE IF NOT EXISTS contacts (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
--- Contact tags
 CREATE TABLE IF NOT EXISTS contact_tags (
     contact_id UUID NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
     tag VARCHAR(100) NOT NULL,
     PRIMARY KEY (contact_id, tag)
 );
 
--- Deals
 CREATE TABLE IF NOT EXISTS deals (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255) NOT NULL,
@@ -109,7 +103,6 @@ CREATE TABLE IF NOT EXISTS deals (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
--- Activities
 CREATE TABLE IF NOT EXISTS activities (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     type VARCHAR(50) NOT NULL,
@@ -125,7 +118,6 @@ CREATE TABLE IF NOT EXISTS activities (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
--- Call records
 CREATE TABLE IF NOT EXISTS call_records (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     external_id VARCHAR(255),
@@ -146,7 +138,6 @@ CREATE TABLE IF NOT EXISTS call_records (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
--- WhatsApp messages
 CREATE TABLE IF NOT EXISTS whatsapp_messages (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     external_id VARCHAR(255),
@@ -165,7 +156,6 @@ CREATE TABLE IF NOT EXISTS whatsapp_messages (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
--- AI scores
 CREATE TABLE IF NOT EXISTS ai_scores (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     entity_type VARCHAR(50) NOT NULL,
@@ -176,7 +166,6 @@ CREATE TABLE IF NOT EXISTS ai_scores (
     generated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
--- Indexes
 CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email);
 CREATE INDEX IF NOT EXISTS idx_contacts_assigned_to ON contacts(assigned_to);
 CREATE INDEX IF NOT EXISTS idx_deals_pipeline_id ON deals(pipeline_id);

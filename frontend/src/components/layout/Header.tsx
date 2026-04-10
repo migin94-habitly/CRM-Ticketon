@@ -15,7 +15,6 @@ export default function Header() {
 
   return (
     <header className="h-14 bg-dark-950 border-b border-slate-800 flex items-center px-6 gap-4 shrink-0">
-      {/* Search */}
       <div className="flex-1 max-w-md relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
         <input
@@ -26,7 +25,6 @@ export default function Header() {
 
       <div className="flex-1" />
 
-      {/* Actions */}
       <button className="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-dark-800 transition">
         <Bell className="w-4 h-4" />
         <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary-500 rounded-full" />

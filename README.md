@@ -148,19 +148,19 @@ crm-ticketon/
 ├── backend/
 │   ├── cmd/server/main.go
 │   ├── internal/
-│   │   ├── api/handlers/    # auth, contacts, deals, pipeline,
-│   │   │                    # activities, telephony, whatsapp, analytics
-│   │   ├── api/middleware/  # JWT auth, RBAC, logger
+│   │   ├── api/handlers/
+│   │   │
+│   │   ├── api/middleware/
 │   │   ├── api/router.go
-│   │   ├── models/          # Domain models
-│   │   ├── repository/      # DB + migrations
+│   │   ├── models/
+│   │   ├── repository/
 │   │   └── config/
 │   ├── pkg/auth/jwt.go
 │   └── configs/config.yaml
 ├── frontend/
 │   └── src/
-│       ├── pages/           # Dashboard, Contacts, Deals, Pipeline,
-│       │                    # Telephony, WhatsApp, Analytics, Settings
+│       ├── pages/
+│       │
 │       ├── components/
 │       ├── api/
 │       ├── store/
@@ -175,7 +175,7 @@ crm-ticketon/
 ### Telephony (`configs/config.yaml`)
 ```yaml
 telephony:
-  provider: "twilio"    # asterisk | twilio | zadarma | sipuni
+  provider: "twilio"
   api_key: "..."
   webhook_url: "https://your-crm/api/v1/webhooks/telephony"
 ```
@@ -192,7 +192,7 @@ whatsapp:
 ### AI (OpenAI / Anthropic / Local)
 ```yaml
 ai:
-  api_key: "sk-..."    # env: AI_API_KEY
+  api_key: "sk-..."
   model: "gpt-4o-mini"
 ```
 Без ключа — работает rule-based scoring.

@@ -4,8 +4,6 @@ import (
 	"time"
 )
 
-// ─── User & Auth ──────────────────────────────────────────────────────────────
-
 type Role string
 
 const (
@@ -50,8 +48,6 @@ type CreateUserRequest struct {
 	PhoneNumber string `json:"phone_number,omitempty"`
 }
 
-// ─── Contact ──────────────────────────────────────────────────────────────────
-
 type ContactStatus string
 
 const (
@@ -78,7 +74,6 @@ type Contact struct {
 	WhatsAppID  *string        `db:"whatsapp_id" json:"whatsapp_id,omitempty"`
 	CreatedAt   time.Time      `db:"created_at" json:"created_at"`
 	UpdatedAt   time.Time      `db:"updated_at" json:"updated_at"`
-	// Computed
 	AssignedUser *User `db:"-" json:"assigned_user,omitempty"`
 	DealsCount   int   `db:"-" json:"deals_count,omitempty"`
 }
@@ -97,8 +92,6 @@ type CreateContactRequest struct {
 	Notes      string        `json:"notes,omitempty"`
 }
 
-// ─── Pipeline & Stages ────────────────────────────────────────────────────────
-
 type Pipeline struct {
 	ID          string           `db:"id" json:"id"`
 	Name        string           `db:"name" json:"name"`
@@ -116,7 +109,7 @@ type PipelineStage struct {
 	Name       string    `db:"name" json:"name"`
 	Color      string    `db:"color" json:"color"`
 	Position   int       `db:"position" json:"position"`
-	Probability int      `db:"probability" json:"probability"` // 0-100%
+	Probability int      `db:"probability" json:"probability"`
 	IsWon      bool      `db:"is_won" json:"is_won"`
 	IsLost     bool      `db:"is_lost" json:"is_lost"`
 	CreatedAt  time.Time `db:"created_at" json:"created_at"`
@@ -137,8 +130,6 @@ type CreateStageRequest struct {
 	IsWon       bool   `json:"is_won,omitempty"`
 	IsLost      bool   `json:"is_lost,omitempty"`
 }
-
-// ─── Deal ─────────────────────────────────────────────────────────────────────
 
 type DealPriority string
 
@@ -163,7 +154,6 @@ type Deal struct {
 	LostReason  *string      `db:"lost_reason" json:"lost_reason,omitempty"`
 	CreatedAt   time.Time    `db:"created_at" json:"created_at"`
 	UpdatedAt   time.Time    `db:"updated_at" json:"updated_at"`
-	// Computed
 	Contact      *Contact      `db:"-" json:"contact,omitempty"`
 	AssignedUser *User         `db:"-" json:"assigned_user,omitempty"`
 	Stage        *PipelineStage `db:"-" json:"stage,omitempty"`
@@ -172,23 +162,21 @@ type Deal struct {
 }
 
 type CreateDealRequest struct {
-	Title      string       `json:"title" binding:"required"`
-	Value      float64      `json:"value,omitempty"`
-	Currency   string       `json:"currency,omitempty"`
-	PipelineID string       `json:"pipeline_id" binding:"required"`
-	StageID    string       `json:"stage_id" binding:"required"`
-	ContactID  *string      `json:"contact_id,omitempty"`
-	AssignedTo *string      `json:"assigned_to,omitempty"`
-	Priority   DealPriority `json:"priority,omitempty"`
-	CloseDate  *time.Time   `json:"close_date,omitempty"`
-	Notes      string       `json:"notes,omitempty"`
+	Title      string          `json:"title" binding:"required"`
+	Value      FlexibleFloat64 `json:"value,omitempty"`
+	Currency   string          `json:"currency,omitempty"`
+	PipelineID string          `json:"pipeline_id" binding:"required"`
+	StageID    string          `json:"stage_id" binding:"required"`
+	ContactID  *string         `json:"contact_id,omitempty"`
+	AssignedTo *string         `json:"assigned_to,omitempty"`
+	Priority   DealPriority    `json:"priority,omitempty"`
+	CloseDate  *string         `json:"close_date,omitempty"`
+	Notes      string          `json:"notes,omitempty"`
 }
 
 type MoveDealRequest struct {
 	StageID string `json:"stage_id" binding:"required"`
 }
-
-// ─── Activity ─────────────────────────────────────────────────────────────────
 
 type ActivityType string
 
@@ -219,7 +207,7 @@ type Activity struct {
 	ContactID   *string        `db:"contact_id" json:"contact_id,omitempty"`
 	UserID      string         `db:"user_id" json:"user_id"`
 	DueDate     *time.Time     `db:"due_date" json:"due_date,omitempty"`
-	Duration    int            `db:"duration" json:"duration,omitempty"` // seconds
+	Duration    int            `db:"duration" json:"duration,omitempty"`
 	CreatedAt   time.Time      `db:"created_at" json:"created_at"`
 	UpdatedAt   time.Time      `db:"updated_at" json:"updated_at"`
 	User        *User          `db:"-" json:"user,omitempty"`
@@ -234,8 +222,6 @@ type CreateActivityRequest struct {
 	DueDate     *time.Time     `json:"due_date,omitempty"`
 	Duration    int            `json:"duration,omitempty"`
 }
-
-// ─── Call Recording ───────────────────────────────────────────────────────────
 
 type CallDirection string
 
@@ -277,8 +263,6 @@ type CallRecord struct {
 	User         *User         `db:"-" json:"user,omitempty"`
 }
 
-// ─── WhatsApp Message ─────────────────────────────────────────────────────────
-
 type MessageDirection string
 
 const (
@@ -298,7 +282,7 @@ type WhatsAppMessage struct {
 	Body        string           `db:"body" json:"body"`
 	MediaURL    *string          `db:"media_url" json:"media_url,omitempty"`
 	MediaType   *string          `db:"media_type" json:"media_type,omitempty"`
-	Status      string           `db:"status" json:"status"` // sent, delivered, read, failed
+	Status      string           `db:"status" json:"status"`
 	SentAt      *time.Time       `db:"sent_at" json:"sent_at,omitempty"`
 	ReadAt      *time.Time       `db:"read_at" json:"read_at,omitempty"`
 	CreatedAt   time.Time        `db:"created_at" json:"created_at"`
@@ -311,14 +295,12 @@ type SendWhatsAppRequest struct {
 	DealID    *string `json:"deal_id,omitempty"`
 }
 
-// ─── AI Analytics ─────────────────────────────────────────────────────────────
-
 type AIScore struct {
 	ID           string    `db:"id" json:"id"`
-	EntityType   string    `db:"entity_type" json:"entity_type"` // deal, contact, call
+	EntityType   string    `db:"entity_type" json:"entity_type"`
 	EntityID     string    `db:"entity_id" json:"entity_id"`
-	Score        float64   `db:"score" json:"score"` // 0-100
-	Sentiment    string    `db:"sentiment" json:"sentiment"` // positive, neutral, negative
+	Score        float64   `db:"score" json:"score"`
+	Sentiment    string    `db:"sentiment" json:"sentiment"`
 	Insights     []string  `db:"-" json:"insights,omitempty"`
 	Suggestions  []string  `db:"-" json:"suggestions,omitempty"`
 	RawJSON      *string   `db:"raw_json" json:"raw_json,omitempty"`
@@ -337,7 +319,7 @@ type DashboardMetrics struct {
 	TotalContacts     int     `json:"total_contacts"`
 	NewContactsToday  int     `json:"new_contacts_today"`
 	TotalCalls        int     `json:"total_calls"`
-	TotalCallDuration int     `json:"total_call_duration"` // seconds
+	TotalCallDuration int     `json:"total_call_duration"`
 	TotalMessages     int     `json:"total_messages"`
 	PipelineBreakdown []PipelineMetric `json:"pipeline_breakdown"`
 	ActivityBreakdown []ActivityMetric `json:"activity_breakdown"`
@@ -375,8 +357,6 @@ type UserPerformance struct {
 	Score     float64 `json:"ai_score"`
 }
 
-// ─── Pagination ───────────────────────────────────────────────────────────────
-
 type PaginationQuery struct {
 	Page    int    `form:"page,default=1"`
 	Limit   int    `form:"limit,default=20"`
@@ -392,8 +372,6 @@ type PaginatedResponse struct {
 	Limit      int         `json:"limit"`
 	TotalPages int         `json:"total_pages"`
 }
-
-// ─── API Response ─────────────────────────────────────────────────────────────
 
 type APIResponse struct {
 	Success bool        `json:"success"`

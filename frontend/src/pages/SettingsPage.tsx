@@ -27,7 +27,6 @@ export default function SettingsPage() {
       </div>
 
       <div className="flex gap-4">
-        {/* Tabs sidebar */}
         <div className="w-48 shrink-0">
           <nav className="space-y-0.5">
             {tabs.filter(t => !t.adminOnly || isAdmin).map(({ id, icon: Icon, label }) => (
@@ -41,7 +40,6 @@ export default function SettingsPage() {
           </nav>
         </div>
 
-        {/* Content */}
         <div className="flex-1">
           {tab === 'profile' && <ProfileTab user={user} />}
           {tab === 'users' && <UsersTab />}

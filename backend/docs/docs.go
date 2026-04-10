@@ -1,5 +1,3 @@
-// Package docs contains Swagger documentation.
-// Run `swag init -g cmd/server/main.go -o docs` to regenerate.
 package docs
 
 import "github.com/swaggo/swag"
@@ -18,7 +16,6 @@ const docTemplate = `{
     "paths": {}
 }`
 
-// SwaggerInfo holds exported Swagger Info
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",

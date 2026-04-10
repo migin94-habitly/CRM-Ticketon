@@ -28,7 +28,6 @@ export default function ContactDetailPage() {
 
   return (
     <div className="space-y-4 animate-in max-w-4xl">
-      {/* Back + header */}
       <button onClick={() => navigate('/contacts')} className="flex items-center gap-1 text-slate-500 hover:text-white text-sm transition mb-2">
         <ArrowLeft className="w-4 h-4" /> Contacts
       </button>
@@ -74,7 +73,6 @@ export default function ContactDetailPage() {
         <div className="text-xs text-slate-600 mt-3">Added {formatDate(contact.created_at)}</div>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-1 border-b border-slate-700">
         {(['activities', 'calls', 'messages'] as const).map(t => (
           <button
@@ -87,7 +85,6 @@ export default function ContactDetailPage() {
         ))}
       </div>
 
-      {/* Tab content */}
       {tab === 'activities' && (
         <div className="space-y-2">
           {activities.length === 0 ? (

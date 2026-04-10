@@ -87,7 +87,6 @@ export default function TelephonyPage() {
         </div>
       </div>
 
-      {/* Dialer */}
       <div className="card p-5">
         <h3 className="font-semibold text-white mb-3 flex items-center gap-2">
           <Phone className="w-4 h-4 text-green-400" /> Quick Dial
@@ -109,10 +108,8 @@ export default function TelephonyPage() {
         </p>
       </div>
 
-      {/* Audio element hidden */}
       <audio ref={audioRef} className="hidden" />
 
-      {/* Call list */}
       <div className="card overflow-hidden">
         <div className="px-4 py-3 border-b border-slate-700/50">
           <h3 className="font-semibold text-white">Call Records</h3>
@@ -200,7 +197,6 @@ export default function TelephonyPage() {
         )}
       </div>
 
-      {/* AI transcript preview (when available) */}
       {calls.some(c => c.ai_analysis) && (
         <div className="card p-5">
           <h3 className="font-semibold text-white mb-3 flex items-center gap-2">

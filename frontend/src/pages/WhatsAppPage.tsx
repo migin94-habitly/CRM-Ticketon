@@ -49,7 +49,6 @@ export default function WhatsAppPage() {
       });
       toast.success('Message sent');
       setNewMsg('');
-      // Refresh messages
       const params: Record<string, unknown> = {};
       if (selectedConv.contact_id) params.contact_id = selectedConv.contact_id;
       whatsappAPI.messages(params).then(r => setMessages(r.data.data || []));
@@ -68,7 +67,6 @@ export default function WhatsAppPage() {
       </div>
 
       <div className="card flex h-[calc(100vh-200px)] overflow-hidden">
-        {/* Conversations list */}
         <div className="w-80 border-r border-slate-700/50 flex flex-col shrink-0">
           <div className="p-3 border-b border-slate-700/50">
             <input className="input text-sm py-1.5" placeholder="Search conversations..." />
@@ -111,10 +109,8 @@ export default function WhatsAppPage() {
           </div>
         </div>
 
-        {/* Chat area */}
         {selectedConv ? (
           <div className="flex-1 flex flex-col">
-            {/* Chat header */}
             <div className="p-4 border-b border-slate-700/50 flex items-center gap-3">
               <div className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center text-sm font-bold text-white">
                 {(selectedConv.contact_name || selectedConv.to_number)[0].toUpperCase()}
@@ -125,7 +121,6 @@ export default function WhatsAppPage() {
               </div>
             </div>
 
-            {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {messages.length === 0 ? (
                 <div className="text-center text-slate-500 text-sm mt-8">No messages yet</div>
@@ -153,7 +148,6 @@ export default function WhatsAppPage() {
               ))}
             </div>
 
-            {/* Input */}
             <form onSubmit={sendMessage} className="p-3 border-t border-slate-700/50 flex gap-2">
               <input
                 className="input flex-1 text-sm"

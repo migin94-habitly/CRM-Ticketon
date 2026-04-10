@@ -18,14 +18,6 @@ func NewTelephonyHandler(db *sqlx.DB) *TelephonyHandler {
 	return &TelephonyHandler{db: db}
 }
 
-// InitiateCall godoc
-// @Summary      Initiate outbound call
-// @Tags         telephony
-// @Security     BearerAuth
-// @Accept       json
-// @Produce      json
-// @Success      201  {object}  models.APIResponse
-// @Router       /telephony/calls [post]
 func (h *TelephonyHandler) InitiateCall(c *gin.Context) {
 	var req struct {
 		ToNumber  string  `json:"to_number" binding:"required"`
@@ -38,11 +30,10 @@ func (h *TelephonyHandler) InitiateCall(c *gin.Context) {
 	}
 
 	userID := c.GetString("user_id")
-	// Get user's phone number
 	var fromNumber string
 	h.db.QueryRow(`SELECT phone_number FROM users WHERE id=$1`, userID).Scan(&fromNumber)
 	if fromNumber == "" {
-		fromNumber = "+10000000000" // placeholder
+		fromNumber = "+10000000000"
 	}
 
 	callID := uuid.New().String()
@@ -57,8 +48,6 @@ func (h *TelephonyHandler) InitiateCall(c *gin.Context) {
 		return
 	}
 
-	// In production: integrate with Asterisk/FreeSWITCH/Twilio/Zadarma
-	// For now, return the call ID for WebRTC signaling
 	c.JSON(http.StatusCreated, models.APIResponse{
 		Success: true,
 		Message: "call initiated",
@@ -67,22 +56,10 @@ func (h *TelephonyHandler) InitiateCall(c *gin.Context) {
 			"from_number": fromNumber,
 			"to_number":   req.ToNumber,
 			"status":      "initiated",
-			// WebRTC offer would come here in production
 		},
 	})
 }
 
-// ListCalls godoc
-// @Summary      List call records
-// @Tags         telephony
-// @Security     BearerAuth
-// @Produce      json
-// @Param        page       query  int     false  "Page"
-// @Param        limit      query  int     false  "Limit"
-// @Param        contact_id query  string  false  "Filter by contact"
-// @Param        deal_id    query  string  false  "Filter by deal"
-// @Success      200  {object}  models.PaginatedResponse
-// @Router       /telephony/calls [get]
 func (h *TelephonyHandler) ListCalls(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
@@ -131,14 +108,6 @@ func (h *TelephonyHandler) ListCalls(c *gin.Context) {
 	})
 }
 
-// GetCall godoc
-// @Summary      Get call record by ID
-// @Tags         telephony
-// @Security     BearerAuth
-// @Param        id  path  string  true  "Call ID"
-// @Produce      json
-// @Success      200  {object}  models.CallRecord
-// @Router       /telephony/calls/{id} [get]
 func (h *TelephonyHandler) GetCall(c *gin.Context) {
 	id := c.Param("id")
 	var call models.CallRecord
@@ -155,14 +124,6 @@ func (h *TelephonyHandler) GetCall(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: call})
 }
 
-// GetRecordingURL godoc
-// @Summary      Get signed URL for call recording
-// @Tags         telephony
-// @Security     BearerAuth
-// @Param        id  path  string  true  "Call ID"
-// @Produce      json
-// @Success      200  {object}  models.APIResponse
-// @Router       /telephony/calls/{id}/recording [get]
 func (h *TelephonyHandler) GetRecordingURL(c *gin.Context) {
 	id := c.Param("id")
 	var call models.CallRecord
@@ -174,7 +135,6 @@ func (h *TelephonyHandler) GetRecordingURL(c *gin.Context) {
 		c.JSON(http.StatusNotFound, models.APIResponse{Error: "no recording available"})
 		return
 	}
-	// In production: generate pre-signed S3 URL
 	c.JSON(http.StatusOK, models.APIResponse{
 		Success: true,
 		Data: gin.H{
@@ -184,12 +144,6 @@ func (h *TelephonyHandler) GetRecordingURL(c *gin.Context) {
 	})
 }
 
-// WebhookHandler handles incoming webhooks from telephony provider
-// @Summary      Telephony webhook
-// @Tags         telephony
-// @Accept       json
-// @Produce      json
-// @Router       /webhooks/telephony [post]
 func (h *TelephonyHandler) WebhookHandler(c *gin.Context) {
 	var payload struct {
 		Event      string `json:"event"`
@@ -207,7 +161,6 @@ func (h *TelephonyHandler) WebhookHandler(c *gin.Context) {
 
 	switch payload.Event {
 	case "call.started":
-		// Find or create call record
 		var callID string
 		h.db.QueryRow(`SELECT id FROM call_records WHERE external_id=$1`, payload.ExternalID).Scan(&callID)
 		if callID == "" {
@@ -235,7 +188,6 @@ func (h *TelephonyHandler) WebhookHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"received": true})
 }
 
-// UpdateCallRecord updates a call record (e.g., associate contact/deal)
 func (h *TelephonyHandler) UpdateCallRecord(c *gin.Context) {
 	id := c.Param("id")
 	var req struct {

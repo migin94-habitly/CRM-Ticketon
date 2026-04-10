@@ -2,7 +2,6 @@ FROM golang:1.22-alpine AS builder
 
 WORKDIR /app
 
-# Copy vendor directory and source — no internet needed
 COPY go.mod go.sum ./
 COPY vendor/ ./vendor/
 COPY mimetype-stub/ ./mimetype-stub/
