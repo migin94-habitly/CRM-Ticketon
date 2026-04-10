@@ -59,7 +59,7 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
   }, [pipelineId, setValue]);
 
   useEffect(() => {
-    reset(deal || { currency: 'USD', priority: 'medium' });
+    reset(deal || { currency: 'KZT', priority: 'medium' });
     pipelinesAPI.list()
       .then((r) => setPipelines(r.data.data || []))
       .catch(() => {
@@ -134,10 +134,11 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
             <div>
               <label className="label">Currency</label>
               <select className="input" {...register('currency')}>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="RUB">RUB</option>
-                <option value="GBP">GBP</option>
+                <option value="KZT">KZT — ₸</option>
+                <option value="USD">USD — $</option>
+                <option value="EUR">EUR — €</option>
+                <option value="RUB">RUB — ₽</option>
+                <option value="GBP">GBP — £</option>
               </select>
             </div>
           </div>
