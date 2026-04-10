@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, DollarSign, Phone, Edit, Zap } from 'lucide-react';
 import { dealsAPI, analyticsAPI } from '../api';
@@ -14,10 +14,10 @@ export default function DealDetailPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
 
-  const load = useCallback(() => {
+  const load = () => {
     if (!id) return;
     dealsAPI.get(id).then(r => setDeal(r.data.data || null));
-  }, [id]);
+  };
 
   const analyze = async () => {
     if (!id) return;
@@ -30,7 +30,7 @@ export default function DealDetailPage() {
       .finally(() => setAnalyzing(false));
   };
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load(); }, [id]);
 
   if (!deal) return <div className="text-slate-500 animate-pulse">Loading...</div>;
 
