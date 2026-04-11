@@ -33,8 +33,9 @@ export const fetchMe = createAsyncThunk('auth/fetchMe', async (_, { rejectWithVa
   try {
     const res = await authAPI.me();
     return res.data.data!;
-  } catch {
-    return rejectWithValue('Failed to fetch user');
+  } catch (e: unknown) {
+    const status = (e as { response?: { status?: number } }).response?.status;
+    return rejectWithValue(status ?? 0);
   }
 });
 
@@ -66,6 +67,11 @@ const authSlice = createSlice({
       })
       .addCase(fetchMe.fulfilled, (state, action) => {
         state.user = action.payload;
+      })
+      .addCase(fetchMe.rejected, (state) => {
+        state.user = null;
+        state.token = null;
+        localStorage.removeItem('crm_token');
       });
   },
 });
