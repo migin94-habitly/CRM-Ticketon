@@ -379,3 +379,17 @@ type APIResponse struct {
 	Error   string      `json:"error,omitempty"`
 	Message string      `json:"message,omitempty"`
 }
+
+type UserActivityLog struct {
+	ID            string    `db:"id" json:"id"`
+	UserID        string    `db:"user_id" json:"user_id"`
+	UserEmail     string    `db:"user_email" json:"user_email"`
+	UserFirstName string    `db:"user_first_name" json:"user_first_name"`
+	UserLastName  string    `db:"user_last_name" json:"user_last_name"`
+	Action        string    `db:"action" json:"action"`
+	EntityType    *string   `db:"entity_type" json:"entity_type,omitempty"`
+	EntityID      *string   `db:"entity_id" json:"entity_id,omitempty"`
+	Description   *string   `db:"description" json:"description,omitempty"`
+	IPAddress     *string   `db:"ip_address" json:"ip_address,omitempty"`
+	CreatedAt     time.Time `db:"created_at" json:"created_at"`
+}

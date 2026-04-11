@@ -24,7 +24,7 @@ export default function DashboardPage() {
   }, [period]);
 
   if (loading) return <DashboardSkeleton />;
-  if (!metrics) return <div className="text-slate-500">Failed to load metrics</div>;
+  if (!metrics) return <div className="text-slate-500">Ошибка загрузки метрик</div>;
 
   const pipelineBreakdown = metrics.pipeline_breakdown ?? [];
   const activityBreakdown = metrics.activity_breakdown ?? [];
@@ -34,12 +34,14 @@ export default function DashboardPage() {
 
   const conversionUp = metrics.conversion_rate >= 30;
 
+  const PERIOD_LABELS: Record<string, string> = { week: 'Неделя', month: 'Месяц', quarter: 'Квартал', year: 'Год' };
+
   return (
     <div className="space-y-6 animate-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Dashboard</h1>
-          <p className="text-slate-500 text-sm">Sales performance overview</p>
+          <h1 className="text-xl font-bold text-white">Главная</h1>
+          <p className="text-slate-500 text-sm">Обзор показателей продаж</p>
         </div>
         <div className="flex gap-1 bg-dark-800 p-1 rounded-lg border border-slate-700">
           {['week', 'month', 'quarter', 'year'].map((p) => (
@@ -50,7 +52,7 @@ export default function DashboardPage() {
                 period === p ? 'bg-primary-600 text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
-              {p.charAt(0).toUpperCase() + p.slice(1)}
+              {PERIOD_LABELS[p] || p}
             </button>
           ))}
         </div>
@@ -58,34 +60,34 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
-          title="Total Revenue"
+          title="Общая выручка"
           value={formatCurrency(metrics.won_value)}
           icon={DollarSign}
           color="text-green-400"
           bg="bg-green-500/10"
-          change={`${metrics.won_deals} won deals`}
+          change={`${metrics.won_deals} закрытых сделок`}
           up
         />
         <KPICard
-          title="Conversion Rate"
+          title="Конверсия"
           value={`${metrics.conversion_rate.toFixed(1)}%`}
           icon={Target}
           color={conversionUp ? 'text-primary-400' : 'text-orange-400'}
           bg={conversionUp ? 'bg-primary-500/10' : 'bg-orange-500/10'}
-          change={conversionUp ? 'Above target' : 'Below target'}
+          change={conversionUp ? 'Выше целевого' : 'Ниже целевого'}
           up={conversionUp}
         />
         <KPICard
-          title="Total Contacts"
+          title="Всего контактов"
           value={metrics.total_contacts.toLocaleString()}
           icon={Users}
           color="text-blue-400"
           bg="bg-blue-500/10"
-          change={`+${metrics.new_contacts_today} today`}
+          change={`+${metrics.new_contacts_today} сегодня`}
           up
         />
         <KPICard
-          title="Calls Made"
+          title="Звонков совершено"
           value={metrics.total_calls.toLocaleString()}
           icon={Phone}
           color="text-purple-400"
@@ -98,7 +100,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="card p-5 lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-white">Revenue by Month</h3>
+            <h3 className="font-semibold text-white">Выручка по месяцам</h3>
             <TrendingUp className="w-4 h-4 text-slate-500" />
           </div>
           <ResponsiveContainer width="100%" height={200}>
@@ -115,7 +117,7 @@ export default function DashboardPage() {
               <Tooltip
                 contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
                 labelStyle={{ color: '#94a3b8' }}
-                formatter={(v: number) => [formatCurrency(v), 'Won']}
+                formatter={(v: number) => [formatCurrency(v), 'Выручка']}
               />
               <Area type="monotone" dataKey="won" stroke="#6366f1" strokeWidth={2} fill="url(#wonGrad)" />
             </AreaChart>
@@ -123,13 +125,13 @@ export default function DashboardPage() {
         </div>
 
         <div className="card p-5">
-          <h3 className="font-semibold text-white mb-4">Pipeline Stages</h3>
+          <h3 className="font-semibold text-white mb-4">Этапы воронки</h3>
           <div className="space-y-3">
             {pipelineBreakdown.map((s) => (
               <div key={s.stage_id}>
                 <div className="flex justify-between text-xs text-slate-400 mb-1">
                   <span>{s.stage_name}</span>
-                  <span>{s.count} deals</span>
+                  <span>{s.count} сделок</span>
                 </div>
                 <div className="h-1.5 bg-dark-700 rounded-full overflow-hidden">
                   <div
@@ -154,7 +156,7 @@ export default function DashboardPage() {
                   </Pie>
                   <Tooltip
                     contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
-                    formatter={(v: number) => [v, 'Deals']}
+                    formatter={(v: number) => [v, 'Сделок']}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -165,7 +167,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="card p-5">
-          <h3 className="font-semibold text-white mb-4">Activities</h3>
+          <h3 className="font-semibold text-white mb-4">Активности</h3>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={activityBreakdown}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
@@ -180,7 +182,7 @@ export default function DashboardPage() {
         <div className="card p-5">
           <div className="flex items-center gap-2 mb-4">
             <Award className="w-4 h-4 text-yellow-400" />
-            <h3 className="font-semibold text-white">Top Performers</h3>
+            <h3 className="font-semibold text-white">Лучшие сотрудники</h3>
           </div>
           <div className="space-y-3">
             {topPerformers.slice(0, 4).map((p, i) => (
@@ -191,13 +193,13 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-xs font-medium text-slate-200 truncate">{p.name}</div>
-                  <div className="text-xs text-slate-500">{p.deals_won} won · {formatCurrency(p.revenue)}</div>
+                  <div className="text-xs text-slate-500">{p.deals_won} выиграл · {formatCurrency(p.revenue)}</div>
                 </div>
-                <div className="text-xs text-green-400 font-semibold">{p.calls_made} calls</div>
+                <div className="text-xs text-green-400 font-semibold">{p.calls_made} звонков</div>
               </div>
             ))}
             {topPerformers.length === 0 && (
-              <div className="text-slate-500 text-xs">No data yet</div>
+              <div className="text-slate-500 text-xs">Нет данных</div>
             )}
           </div>
         </div>
@@ -205,7 +207,7 @@ export default function DashboardPage() {
         <div className="card p-5">
           <div className="flex items-center gap-2 mb-4">
             <Zap className="w-4 h-4 text-primary-400" />
-            <h3 className="font-semibold text-white">AI Insights</h3>
+            <h3 className="font-semibold text-white">ИИ-аналитика</h3>
           </div>
           <div className="space-y-2.5">
             {aiInsights.map((insight, i) => (
@@ -215,8 +217,8 @@ export default function DashboardPage() {
               </div>
             ))}
             <div className="mt-3 pt-3 border-t border-slate-700">
-              <div className="text-xs text-slate-500">Messages: {metrics.total_messages}</div>
-              <div className="text-xs text-slate-500">Avg deal: {formatCurrency(metrics.avg_deal_value)}</div>
+              <div className="text-xs text-slate-500">Сообщений: {metrics.total_messages}</div>
+              <div className="text-xs text-slate-500">Средняя сделка: {formatCurrency(metrics.avg_deal_value)}</div>
             </div>
           </div>
         </div>

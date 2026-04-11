@@ -10,20 +10,20 @@ export default function SettingsPage() {
   const isAdmin = user?.role === 'admin';
 
   const tabs: { id: Tab; icon: React.ElementType; label: string; adminOnly?: boolean }[] = [
-    { id: 'profile', icon: Settings, label: 'Profile' },
-    { id: 'users', icon: Users, label: 'Users', adminOnly: true },
-    { id: 'pipeline', icon: GitBranch, label: 'Pipeline', adminOnly: true },
-    { id: 'telephony', icon: Phone, label: 'Telephony', adminOnly: true },
+    { id: 'profile', icon: Settings, label: 'Профиль' },
+    { id: 'users', icon: Users, label: 'Пользователи', adminOnly: true },
+    { id: 'pipeline', icon: GitBranch, label: 'Воронка', adminOnly: true },
+    { id: 'telephony', icon: Phone, label: 'Телефония', adminOnly: true },
     { id: 'whatsapp', icon: MessageSquare, label: 'WhatsApp', adminOnly: true },
-    { id: 'ai', icon: Zap, label: 'AI Settings', adminOnly: true },
+    { id: 'ai', icon: Zap, label: 'Настройки ИИ', adminOnly: true },
     { id: 'api', icon: Key, label: 'API / Swagger', adminOnly: true },
   ];
 
   return (
     <div className="space-y-4 animate-in">
       <div>
-        <h1 className="text-xl font-bold text-white">Settings</h1>
-        <p className="text-slate-500 text-sm">Configure your CRM</p>
+        <h1 className="text-xl font-bold text-white">Настройки</h1>
+        <p className="text-slate-500 text-sm">Настройка CRM системы</p>
       </div>
 
       <div className="flex gap-4">
@@ -57,7 +57,7 @@ export default function SettingsPage() {
 function ProfileTab({ user }: { user: import('../types').User | null }) {
   return (
     <div className="card p-5 space-y-4">
-      <h2 className="font-semibold text-white">My Profile</h2>
+      <h2 className="font-semibold text-white">Мой профиль</h2>
       <div className="flex items-center gap-4">
         <div className="w-16 h-16 bg-primary-700 rounded-xl flex items-center justify-center text-xl font-bold text-white">
           {user ? `${user.first_name[0]}${user.last_name[0]}` : '?'}
@@ -75,16 +75,16 @@ function ProfileTab({ user }: { user: import('../types').User | null }) {
 function UsersTab() {
   return (
     <div className="card p-5">
-      <h2 className="font-semibold text-white mb-4">User Management</h2>
-      <p className="text-slate-500 text-sm">Manage team members and their access levels.</p>
+      <h2 className="font-semibold text-white mb-4">Управление пользователями</h2>
+      <p className="text-slate-500 text-sm">Управляйте участниками команды и их правами доступа.</p>
       <div className="mt-4 p-3 bg-dark-900 rounded-lg">
-        <div className="text-xs text-slate-500">Roles:</div>
+        <div className="text-xs text-slate-500">Роли:</div>
         <div className="grid grid-cols-2 gap-2 mt-2">
           {[
-            { role: 'Admin', desc: 'Full access to all features and settings' },
-            { role: 'Manager', desc: 'Can manage users, pipelines, and all data' },
-            { role: 'Sales', desc: 'Can manage contacts, deals, and own activities' },
-            { role: 'Viewer', desc: 'Read-only access to dashboards and contacts' },
+            { role: 'Администратор', desc: 'Полный доступ ко всем функциям и настройкам' },
+            { role: 'Менеджер', desc: 'Управление пользователями, воронками и всеми данными' },
+            { role: 'Продажи', desc: 'Управление контактами, сделками и активностями' },
+            { role: 'Просмотр', desc: 'Только просмотр дашбордов и контактов' },
           ].map(r => (
             <div key={r.role} className="p-2 rounded border border-slate-700">
               <div className="text-xs font-medium text-slate-200">{r.role}</div>
@@ -100,11 +100,11 @@ function UsersTab() {
 function PipelineTab() {
   return (
     <div className="card p-5">
-      <h2 className="font-semibold text-white mb-4">Pipeline Configuration</h2>
+      <h2 className="font-semibold text-white mb-4">Конфигурация воронки</h2>
       <p className="text-slate-500 text-sm mb-4">
-        Create and configure sales pipelines with custom stages, colors, and win probabilities.
+        Создавайте и настраивайте воронки продаж с кастомными стадиями, цветами и вероятностями.
       </p>
-      <a href="/pipeline" className="btn-primary inline-flex">Open Pipeline Builder</a>
+      <a href="/pipeline" className="btn-primary inline-flex">Открыть конструктор воронки</a>
     </div>
   );
 }
@@ -112,7 +112,7 @@ function PipelineTab() {
 function TelephonyTab() {
   return (
     <div className="card p-5 space-y-4">
-      <h2 className="font-semibold text-white">Telephony Integration</h2>
+      <h2 className="font-semibold text-white">Интеграция телефонии</h2>
       <div className="grid gap-3">
         {[
           { name: 'Asterisk / FreeSWITCH', type: 'On-premise', desc: 'SIP/VoIP server integration via AMI/ARI' },
@@ -129,7 +129,7 @@ function TelephonyTab() {
           </div>
         ))}
       </div>
-      <p className="text-xs text-slate-600">Configure provider in <code className="text-primary-400">configs/config.yaml</code></p>
+      <p className="text-xs text-slate-600">Настройте провайдера в <code className="text-primary-400">configs/config.yaml</code></p>
     </div>
   );
 }
@@ -137,7 +137,7 @@ function TelephonyTab() {
 function WhatsAppTab() {
   return (
     <div className="card p-5 space-y-4">
-      <h2 className="font-semibold text-white">WhatsApp Integration</h2>
+      <h2 className="font-semibold text-white">Интеграция WhatsApp</h2>
       <div className="grid gap-3">
         {[
           { name: 'Meta WhatsApp Business API', desc: 'Official Graph API. Requires Meta Business account.' },
@@ -151,7 +151,7 @@ function WhatsAppTab() {
         ))}
       </div>
       <div className="p-3 bg-dark-900 rounded-lg">
-        <div className="text-xs text-slate-500">Webhook URL for incoming messages:</div>
+        <div className="text-xs text-slate-500">URL вебхука для входящих сообщений:</div>
         <code className="text-xs text-primary-400 block mt-1">POST /api/v1/webhooks/whatsapp</code>
       </div>
     </div>
@@ -161,10 +161,10 @@ function WhatsAppTab() {
 function AITab() {
   return (
     <div className="card p-5 space-y-4">
-      <h2 className="font-semibold text-white">AI Analytics Settings</h2>
+      <h2 className="font-semibold text-white">Настройки ИИ-аналитики</h2>
       <div className="space-y-3">
         <div>
-          <label className="label">AI Provider</label>
+          <label className="label">Провайдер ИИ</label>
           <select className="input">
             <option>OpenAI (GPT-4o-mini)</option>
             <option>OpenAI (GPT-4o)</option>
@@ -173,18 +173,18 @@ function AITab() {
           </select>
         </div>
         <div>
-          <label className="label">API Key</label>
+          <label className="label">Ключ API</label>
           <input className="input" type="password" placeholder="sk-..." />
         </div>
       </div>
-      <p className="text-xs text-slate-600">Set AI_API_KEY env variable or configure in config.yaml</p>
+      <p className="text-xs text-slate-600">Задайте переменную AI_API_KEY или настройте в config.yaml</p>
       <div className="p-3 bg-dark-900 rounded-lg space-y-1">
-        <div className="text-xs font-medium text-slate-400">AI Features:</div>
-        <div className="text-xs text-slate-500">• Deal win probability scoring (0-100%)</div>
-        <div className="text-xs text-slate-500">• Call transcript sentiment analysis</div>
-        <div className="text-xs text-slate-500">• Pipeline health insights</div>
-        <div className="text-xs text-slate-500">• Sales forecast (weighted probability)</div>
-        <div className="text-xs text-slate-500">• Next-step recommendations</div>
+        <div className="text-xs font-medium text-slate-400">Функции ИИ:</div>
+        <div className="text-xs text-slate-500">• Оценка вероятности выигрыша сделки (0-100%)</div>
+        <div className="text-xs text-slate-500">• Анализ тональности звонков</div>
+        <div className="text-xs text-slate-500">• Анализ здоровья воронки</div>
+        <div className="text-xs text-slate-500">• Прогноз продаж (взвешенная вероятность)</div>
+        <div className="text-xs text-slate-500">• Рекомендации по следующим шагам</div>
       </div>
     </div>
   );
@@ -193,21 +193,21 @@ function AITab() {
 function APITab() {
   return (
     <div className="card p-5 space-y-4">
-      <h2 className="font-semibold text-white">API & Swagger</h2>
-      <p className="text-slate-500 text-sm">Full REST API with OpenAPI/Swagger documentation.</p>
+      <h2 className="font-semibold text-white">API и Swagger</h2>
+      <p className="text-slate-500 text-sm">Полное REST API с документацией OpenAPI/Swagger.</p>
       <div className="grid grid-cols-2 gap-3">
         <a href="/swagger/index.html" target="_blank" rel="noopener"
-          className="btn-primary justify-center">Open Swagger UI</a>
+          className="btn-primary justify-center">Открыть Swagger UI</a>
         <a href="/api/v1/health" target="_blank" rel="noopener"
-          className="btn-secondary justify-center">API Health Check</a>
+          className="btn-secondary justify-center">Проверка API</a>
       </div>
       <div className="p-3 bg-dark-900 rounded-lg space-y-1">
-        <div className="text-xs font-medium text-slate-400">Authentication:</div>
+        <div className="text-xs font-medium text-slate-400">Аутентификация:</div>
         <code className="text-xs text-primary-400">Authorization: Bearer &lt;JWT token&gt;</code>
-        <div className="text-xs text-slate-500 mt-2">POST /api/v1/auth/login → receive JWT</div>
+        <div className="text-xs text-slate-500 mt-2">POST /api/v1/auth/login → получить JWT</div>
       </div>
       <div className="p-3 bg-dark-900 rounded-lg">
-        <div className="text-xs font-medium text-slate-400 mb-2">Available Endpoints:</div>
+        <div className="text-xs font-medium text-slate-400 mb-2">Доступные эндпоинты:</div>
         {[
           '/api/v1/auth', '/api/v1/users', '/api/v1/contacts',
           '/api/v1/pipelines', '/api/v1/deals', '/api/v1/activities',

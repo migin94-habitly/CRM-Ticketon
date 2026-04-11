@@ -31,9 +31,9 @@ export default function DealsPage() {
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm('Delete this deal?')) return;
+    if (!confirm('Удалить эту сделку?')) return;
     await dealsAPI.delete(id);
-    toast.success('Deal deleted');
+    toast.success('Сделка удалена');
     load();
   };
 
@@ -43,15 +43,15 @@ export default function DealsPage() {
     <div className="space-y-4 animate-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Deals</h1>
-          <p className="text-slate-500 text-sm">{total} deals · {formatCurrency(totalValue)} pipeline</p>
+          <h1 className="text-xl font-bold text-white">Сделки</h1>
+          <p className="text-slate-500 text-sm">{total} сделок · {formatCurrency(totalValue)} в воронке</p>
         </div>
         <div className="flex gap-2">
           <button className="btn-secondary" onClick={() => navigate('/pipeline')}>
-            Pipeline View
+            Вид воронки
           </button>
           <button className="btn-primary" onClick={() => { setEditDeal(null); setShowModal(true); }}>
-            <Plus className="w-4 h-4" /> New Deal
+            <Plus className="w-4 h-4" /> Новая сделка
           </button>
         </div>
       </div>
@@ -59,7 +59,7 @@ export default function DealsPage() {
       <div className="card p-3 flex gap-3">
         <div className="relative flex-1 min-w-48">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-          <input className="input pl-9 py-1.5 text-sm" placeholder="Search deals..."
+          <input className="input pl-9 py-1.5 text-sm" placeholder="Поиск сделок..."
             value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
         </div>
         <Filter className="w-4 h-4 text-slate-500 self-center" />
@@ -69,20 +69,20 @@ export default function DealsPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-700/50">
-              <th className="text-left px-4 py-3 text-slate-500 font-medium">Deal</th>
-              <th className="text-left px-4 py-3 text-slate-500 font-medium">Contact</th>
-              <th className="text-left px-4 py-3 text-slate-500 font-medium">Stage</th>
-              <th className="text-left px-4 py-3 text-slate-500 font-medium">Value</th>
-              <th className="text-left px-4 py-3 text-slate-500 font-medium">Priority</th>
-              <th className="text-left px-4 py-3 text-slate-500 font-medium">Close Date</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Сделка</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Контакт</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Стадия</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Сумма</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Приоритет</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Дата закрытия</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} className="text-center py-12 text-slate-500">Loading...</td></tr>
+              <tr><td colSpan={7} className="text-center py-12 text-slate-500">Загрузка...</td></tr>
             ) : deals.length === 0 ? (
-              <tr><td colSpan={7} className="text-center py-12 text-slate-500">No deals found</td></tr>
+              <tr><td colSpan={7} className="text-center py-12 text-slate-500">Сделки не найдены</td></tr>
             ) : deals.map((d) => (
               <tr key={d.id} className="table-row cursor-pointer" onClick={() => navigate(`/deals/${d.id}`)}>
                 <td className="px-4 py-3">
@@ -105,7 +105,7 @@ export default function DealsPage() {
                   </div>
                 </td>
                 <td className="px-4 py-3">
-                  <span className={`badge ${priorityColor(d.priority)}`}>{d.priority}</span>
+                  <span className={`badge ${priorityColor(d.priority)}`}>{{high:'Высокий',medium:'Средний',low:'Низкий'}[d.priority]||d.priority}</span>
                 </td>
                 <td className="px-4 py-3 text-slate-500">
                   {d.close_date ? formatDate(d.close_date) : '—'}
@@ -113,9 +113,9 @@ export default function DealsPage() {
                 <td className="px-4 py-3">
                   <div className="flex gap-1" onClick={e => e.stopPropagation()}>
                     <button onClick={(e) => { e.stopPropagation(); setEditDeal(d); setShowModal(true); }}
-                      className="text-xs text-slate-500 hover:text-primary-400 px-2 py-1 rounded hover:bg-dark-700">Edit</button>
+                      className="text-xs text-slate-500 hover:text-primary-400 px-2 py-1 rounded hover:bg-dark-700">Ред.</button>
                     <button onClick={(e) => handleDelete(d.id, e)}
-                      className="text-xs text-slate-500 hover:text-red-400 px-2 py-1 rounded hover:bg-dark-700">Del</button>
+                      className="text-xs text-slate-500 hover:text-red-400 px-2 py-1 rounded hover:bg-dark-700">Удал.</button>
                   </div>
                 </td>
               </tr>
@@ -124,10 +124,10 @@ export default function DealsPage() {
         </table>
         {total > 20 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-slate-700/50">
-            <span className="text-xs text-slate-500">Showing {(page-1)*20+1}–{Math.min(page*20, total)} of {total}</span>
+            <span className="text-xs text-slate-500">Показано {(page-1)*20+1}–{Math.min(page*20, total)} из {total}</span>
             <div className="flex gap-1">
-              <button onClick={() => setPage(p => Math.max(1,p-1))} disabled={page===1} className="btn-secondary py-1 px-3 text-xs">Prev</button>
-              <button onClick={() => setPage(p => p+1)} disabled={page*20>=total} className="btn-secondary py-1 px-3 text-xs">Next</button>
+              <button onClick={() => setPage(p => Math.max(1,p-1))} disabled={page===1} className="btn-secondary py-1 px-3 text-xs">Назад</button>
+              <button onClick={() => setPage(p => p+1)} disabled={page*20>=total} className="btn-secondary py-1 px-3 text-xs">Вперёд</button>
             </div>
           </div>
         )}

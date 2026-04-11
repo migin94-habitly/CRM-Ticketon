@@ -204,3 +204,18 @@ export interface APIResponse<T = unknown> {
   error?: string;
   message?: string;
 }
+
+
+export interface AuditLog {
+  id: string;
+  user_id: string;
+  user_email: string;
+  user_first_name: string;
+  user_last_name: string;
+  action: string;
+  entity_type?: string;
+  entity_id?: string;
+  description?: string;
+  ip_address?: string;
+  created_at: string;
+}

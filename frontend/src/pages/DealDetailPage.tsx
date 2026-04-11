@@ -32,7 +32,7 @@ export default function DealDetailPage() {
 
   useEffect(() => { load(); }, [id]);
 
-  if (!deal) return <div className="text-slate-500 animate-pulse">Loading...</div>;
+  if (!deal) return <div className="text-slate-500 animate-pulse">Загрузка...</div>;
 
   const score = aiScore || deal.ai_score;
   const scoreOffset = score ? 100 - score.score : 100;
@@ -40,7 +40,7 @@ export default function DealDetailPage() {
   return (
     <div className="space-y-4 animate-in max-w-4xl">
       <button onClick={() => navigate('/deals')} className="flex items-center gap-1 text-slate-500 hover:text-white text-sm">
-        <ArrowLeft className="w-4 h-4" /> Deals
+        <ArrowLeft className="w-4 h-4" /> Сделки
       </button>
 
       <div className="grid grid-cols-3 gap-4">
@@ -54,17 +54,17 @@ export default function DealDetailPage() {
                     {deal.stage.name}
                   </span>
                 )}
-                <span className={`badge ${priorityColor(deal.priority)}`}>{deal.priority} priority</span>
+                <span className={`badge ${priorityColor(deal.priority)}`}>{({high:'Высокий',medium:'Средний',low:'Низкий'}[deal.priority]||deal.priority)+' приоритет'}</span>
               </div>
             </div>
             <button onClick={() => setEditOpen(true)} className="btn-secondary text-xs py-1.5">
-              <Edit className="w-3.5 h-3.5" /> Edit
+              <Edit className="w-3.5 h-3.5" /> Редактировать
             </button>
           </div>
 
           <div className="grid grid-cols-3 gap-4 mt-5 pt-4 border-t border-slate-700">
             <div>
-              <div className="text-xs text-slate-500">Value</div>
+              <div className="text-xs text-slate-500">Сумма</div>
               <div className="flex items-center gap-1 text-xl font-bold text-green-400 mt-0.5">
                 <DollarSign className="w-4 h-4" />
                 {formatCurrency(deal.value, deal.currency)}
@@ -72,7 +72,7 @@ export default function DealDetailPage() {
             </div>
             {deal.contact && (
               <div>
-                <div className="text-xs text-slate-500">Contact</div>
+                <div className="text-xs text-slate-500">Контакт</div>
                 <div className="text-sm text-slate-200 mt-0.5">{deal.contact.first_name} {deal.contact.last_name}</div>
                 {deal.contact.phone && (
                   <a href={`tel:${deal.contact.phone}`} className="flex items-center gap-1 text-xs text-slate-500 hover:text-green-400 mt-0.5">
@@ -82,8 +82,8 @@ export default function DealDetailPage() {
               </div>
             )}
             <div>
-              <div className="text-xs text-slate-500">Close Date</div>
-              <div className="text-sm text-slate-200 mt-0.5">{deal.close_date ? formatDate(deal.close_date) : 'Not set'}</div>
+              <div className="text-xs text-slate-500">Дата закрытия</div>
+              <div className="text-sm text-slate-200 mt-0.5">{deal.close_date ? formatDate(deal.close_date) : 'Не задана'}</div>
             </div>
           </div>
 
@@ -95,7 +95,7 @@ export default function DealDetailPage() {
         <div className="card p-5 flex flex-col items-center gap-3">
           <div className="flex items-center gap-2 w-full">
             <Zap className="w-4 h-4 text-primary-400" />
-            <span className="font-semibold text-white text-sm">AI Win Score</span>
+            <span className="font-semibold text-white text-sm">ИИ-оценка сделки</span>
           </div>
 
           {score ? (
@@ -117,7 +117,7 @@ export default function DealDetailPage() {
                 score.sentiment === 'positive' ? 'bg-green-500/10 text-green-400' :
                 score.sentiment === 'negative' ? 'bg-red-500/10 text-red-400' :
                 'bg-yellow-500/10 text-yellow-400'
-              }`}>{score.sentiment}</div>
+              }`}>{({positive:'позитивный',negative:'негативный',neutral:'нейтральный'}[score.sentiment]||score.sentiment)}</div>
 
               {score.insights && score.insights.length > 0 && (
                 <div className="w-full space-y-1.5 text-xs text-slate-400">
@@ -132,17 +132,17 @@ export default function DealDetailPage() {
               <div className="w-20 h-20 rounded-full border-4 border-dark-700 flex items-center justify-center text-slate-600">
                 <Zap className="w-8 h-8" />
               </div>
-              <p className="text-xs text-slate-500 text-center">No AI analysis yet</p>
+              <p className="text-xs text-slate-500 text-center">Анализ ИИ ещё не проводился</p>
             </div>
           )}
           <button onClick={analyze} disabled={analyzing} className="btn-primary w-full justify-center text-xs py-1.5 mt-auto">
-            {analyzing ? 'Analyzing...' : 'Run AI Analysis'}
+            {analyzing ? 'Анализируем...' : 'Запустить анализ ИИ'}
           </button>
         </div>
       </div>
 
       <div className="card p-5">
-        <h3 className="font-semibold text-white mb-3">Activity Timeline</h3>
+        <h3 className="font-semibold text-white mb-3">История активностей</h3>
         {deal.activities && deal.activities.length > 0 ? (
           <div className="space-y-2">
             {deal.activities.map(a => (
@@ -156,7 +156,7 @@ export default function DealDetailPage() {
             ))}
           </div>
         ) : (
-          <div className="text-slate-500 text-sm">No activities yet</div>
+          <div className="text-slate-500 text-sm">Активностей нет</div>
         )}
       </div>
 

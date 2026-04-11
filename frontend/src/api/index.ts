@@ -83,6 +83,10 @@ export const whatsappAPI = {
   markRead: (id: string) => api.patch<APIResponse>(`/whatsapp/messages/${id}/read`, {}),
 };
 
+export const auditLogAPI = {
+  list: () => api.get<APIResponse>('/audit-log'),
+};
+
 export const analyticsAPI = {
   dashboard: (period?: string) =>
     api.get<APIResponse<DashboardMetrics>>('/analytics/dashboard', { params: { period } }),

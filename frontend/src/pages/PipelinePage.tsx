@@ -30,7 +30,7 @@ export default function PipelinePage() {
         setLoading(false);
       }
     } catch {
-      toast.error('Failed to load pipelines');
+      toast.error('Ошибка загрузки воронок');
       setSelectedPipeline(null);
       setLoading(false);
     }
@@ -50,7 +50,7 @@ export default function PipelinePage() {
       }
       setDealsByStage(grouped);
     } catch {
-      toast.error('Failed to load deals');
+      toast.error('Ошибка загрузки сделок');
     } finally {
       setLoading(false);
     }
@@ -86,7 +86,7 @@ export default function PipelinePage() {
     try {
       await dealsAPI.move(draggableId, destination.droppableId);
     } catch {
-      toast.error('Failed to move deal');
+      toast.error('Ошибка перемещения сделки');
       loadDeals(selectedPipeline);
     }
   };
@@ -98,8 +98,8 @@ export default function PipelinePage() {
     <div className="space-y-4 animate-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Pipeline</h1>
-          <p className="text-slate-500 text-sm">Kanban board view</p>
+          <h1 className="text-xl font-bold text-white">Воронка</h1>
+          <p className="text-slate-500 text-sm">Канбан-доска</p>
         </div>
         <div className="flex gap-2 items-center">
           <select
@@ -117,18 +117,18 @@ export default function PipelinePage() {
             onClick={() => setShowConfigure(true)}
             disabled={!selectedPipeline}
           >
-            <Settings className="w-4 h-4" /> Configure
+            <Settings className="w-4 h-4" /> Настроить
           </button>
           <button className="btn-primary text-sm py-1.5" onClick={() => setShowModal(true)}>
-            <Plus className="w-4 h-4" /> Add Deal
+            <Plus className="w-4 h-4" /> Добавить сделку
           </button>
         </div>
       </div>
 
       {loading ? (
-        <div className="text-slate-500 text-center py-20">Loading pipeline...</div>
+        <div className="text-slate-500 text-center py-20">Загрузка воронки...</div>
       ) : !selectedPipeline ? (
-        <div className="text-slate-500 text-center py-20">No pipelines. Create one in Settings.</div>
+        <div className="text-slate-500 text-center py-20">Воронок нет. Создайте в Настройках.</div>
       ) : (
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="kanban-container pb-4">
@@ -187,7 +187,7 @@ export default function PipelinePage() {
                                       deal.priority === 'high' ? 'bg-red-500/10 text-red-400' :
                                       deal.priority === 'medium' ? 'bg-yellow-500/10 text-yellow-400' :
                                       'bg-slate-500/10 text-slate-400'
-                                    }`}>{deal.priority}</span>
+                                    }`}>{deal.priority === 'high' ? 'Высокий' : deal.priority === 'medium' ? 'Средний' : 'Низкий'}</span>
                                   </div>
                                 </div>
                                 {deal.contact?.phone && (
@@ -205,7 +205,7 @@ export default function PipelinePage() {
                         {provided.placeholder}
                         {deals.length === 0 && !snapshot.isDraggingOver && (
                           <div className="border-2 border-dashed border-slate-700/50 rounded-xl p-4 text-center text-xs text-slate-600">
-                            Drop here
+                            Перетащите сюда
                           </div>
                         )}
                       </div>

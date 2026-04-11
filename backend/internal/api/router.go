@@ -49,13 +49,14 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 	whatsappH := handlers.NewWhatsAppHandler(db)
 	analyticsH := handlers.NewAnalyticsHandler(db, &cfg.AI)
 	activitiesH := handlers.NewActivitiesHandler(db)
+	auditLogH := handlers.NewAuditLogHandler(db)
 
 	r.POST("/api/v1/auth/login", authH.Login)
 	r.GET("/api/v1/webhooks/whatsapp", whatsappH.WebhookVerify)
 	r.POST("/api/v1/webhooks/whatsapp", whatsappH.WebhookHandler)
 	r.POST("/api/v1/webhooks/telephony", telephonyH.WebhookHandler)
 
-	api := r.Group("/api/v1", middleware.AuthMiddleware(jwtManager))
+	api := r.Group("/api/v1", middleware.AuthMiddleware(jwtManager), middleware.AuditLogMiddleware(db))
 	{
 		api.GET("/auth/me", authH.Me)
 
@@ -135,6 +136,11 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 			analytics.GET("/forecast", analyticsH.GetSalesForecast)
 			analytics.GET("/deals/:id", analyticsH.AnalyzeDeal)
 			analytics.GET("/calls/:id", analyticsH.AnalyzeCall)
+		}
+
+		auditLog := api.Group("/audit-log")
+		{
+			auditLog.GET("", middleware.RequireRoles("admin", "manager"), auditLogH.List)
 		}
 	}
 

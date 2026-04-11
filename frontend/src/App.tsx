@@ -15,6 +15,7 @@ import WhatsAppPage from './pages/WhatsAppPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
 import ActivitiesPage from './pages/ActivitiesPage';
+import AuditLogPage from './pages/AuditLogPage';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const token = useAppSelector((s) => s.auth.token);
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="whatsapp" element={<WhatsAppPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="audit-log" element={<AuditLogPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

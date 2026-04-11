@@ -19,7 +19,7 @@ export default function Header() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
         <input
           className="input pl-9 py-1.5 text-sm bg-dark-800"
-          placeholder="Search contacts, deals..."
+          placeholder="Поиск контактов, сделок..."
         />
       </div>
 
@@ -37,7 +37,7 @@ export default function Header() {
         <button
           onClick={handleLogout}
           className="p-1.5 text-slate-500 hover:text-red-400 rounded-lg hover:bg-dark-800 transition"
-          title="Logout"
+          title="Выход"
         >
           <LogOut className="w-4 h-4" />
         </button>

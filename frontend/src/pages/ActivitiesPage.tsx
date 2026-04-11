@@ -42,18 +42,18 @@ export default function ActivitiesPage() {
     e.preventDefault();
     try {
       await activitiesAPI.create(form);
-      toast.success('Activity created');
+      toast.success('Активность создана');
       setShowForm(false);
       setForm({ type: 'call', subject: '', description: '', due_date: '' });
       load();
     } catch {
-      toast.error('Failed to create activity');
+      toast.error('Ошибка создания активности');
     }
   };
 
   const handleComplete = async (id: string) => {
     await activitiesAPI.update(id, { status: 'completed' });
-    toast.success('Marked complete');
+    toast.success('Отмечено как выполнено');
     load();
   };
 
@@ -61,55 +61,55 @@ export default function ActivitiesPage() {
     <div className="space-y-4 animate-in max-w-3xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Activities</h1>
-          <p className="text-slate-500 text-sm">{activities.length} activities</p>
+          <h1 className="text-xl font-bold text-white">Активности</h1>
+          <p className="text-slate-500 text-sm">{activities.length} активностей</p>
         </div>
         <button className="btn-primary" onClick={() => setShowForm(true)}>
-          <Plus className="w-4 h-4" /> Add Activity
+          <Plus className="w-4 h-4" /> Добавить активность
         </button>
       </div>
 
       {showForm && (
         <div className="card p-5">
-          <h3 className="font-semibold text-white mb-4">New Activity</h3>
+          <h3 className="font-semibold text-white mb-4">Новая активность</h3>
           <form onSubmit={handleCreate} className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="label">Type</label>
+                <label className="label">Тип</label>
                 <select className="input" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as ActivityType }))}>
-                  {Object.keys(typeIcons).map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
+                  {[{v:'call',l:'Звонок'},{v:'email',l:'Email'},{v:'meeting',l:'Встреча'},{v:'note',l:'Заметка'},{v:'task',l:'Задача'},{v:'whatsapp',l:'WhatsApp'}].map(t => <option key={t.v} value={t.v}>{t.l}</option>)}
                 </select>
               </div>
               <div>
-                <label className="label">Due Date</label>
+                <label className="label">Срок</label>
                 <input className="input" type="datetime-local" value={form.due_date}
                   onChange={e => setForm(f => ({ ...f, due_date: e.target.value }))} />
               </div>
             </div>
             <div>
-              <label className="label">Subject *</label>
+              <label className="label">Тема *</label>
               <input className="input" required value={form.subject}
                 onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} />
             </div>
             <div>
-              <label className="label">Description</label>
+              <label className="label">Описание</label>
               <textarea className="input resize-none" rows={2} value={form.description}
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
             </div>
             <div className="flex gap-2 justify-end">
-              <button type="button" onClick={() => setShowForm(false)} className="btn-secondary">Cancel</button>
-              <button type="submit" className="btn-primary">Create</button>
+              <button type="button" onClick={() => setShowForm(false)} className="btn-secondary">Отмена</button>
+              <button type="submit" className="btn-primary">Создать</button>
             </div>
           </form>
         </div>
       )}
 
       {loading ? (
-        <div className="text-slate-500 text-sm">Loading...</div>
+        <div className="text-slate-500 text-sm">Загрузка...</div>
       ) : activities.length === 0 ? (
         <div className="card p-8 text-center text-slate-500">
           <ListTodo className="w-10 h-10 mx-auto mb-2 opacity-20" />
-          No activities yet
+          Активностей нет
         </div>
       ) : (
         <div className="space-y-2">
@@ -123,7 +123,7 @@ export default function ActivitiesPage() {
                 {a.description && <div className="text-xs text-slate-500 mt-0.5">{a.description}</div>}
                 <div className="flex items-center gap-3 mt-1.5">
                   <span className={`badge text-xs ${a.status === 'completed' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
-                    {a.status}
+                    {({pending:'Ожидание',completed:'Выполнено',cancelled:'Отменено'}[a.status]||a.status)}
                   </span>
                   {a.due_date && <span className="text-xs text-slate-500">{formatDateTime(a.due_date)}</span>}
                 </div>
@@ -133,7 +133,7 @@ export default function ActivitiesPage() {
                 {a.status === 'pending' && (
                   <button onClick={() => handleComplete(a.id)}
                     className="text-xs text-slate-500 hover:text-green-400 px-2 py-1 rounded hover:bg-dark-700 transition">
-                    Complete
+                    Выполнить
                   </button>
                 )}
               </div>

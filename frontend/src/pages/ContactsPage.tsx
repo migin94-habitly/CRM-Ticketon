@@ -32,9 +32,9 @@ export default function ContactsPage() {
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm('Delete this contact?')) return;
+    if (!confirm('Удалить этот контакт?')) return;
     await contactsAPI.delete(id);
-    toast.success('Contact deleted');
+    toast.success('Контакт удалён');
     load();
   };
 
@@ -42,11 +42,11 @@ export default function ContactsPage() {
     <div className="space-y-4 animate-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Contacts</h1>
-          <p className="text-slate-500 text-sm">{total} total contacts</p>
+          <h1 className="text-xl font-bold text-white">Контакты</h1>
+          <p className="text-slate-500 text-sm">{total} контактов всего</p>
         </div>
         <button className="btn-primary" onClick={() => { setEditContact(null); setShowModal(true); }}>
-          <Plus className="w-4 h-4" /> Add Contact
+          <Plus className="w-4 h-4" /> Добавить контакт
         </button>
       </div>
 
@@ -55,7 +55,7 @@ export default function ContactsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input
             className="input pl-9 py-1.5 text-sm"
-            placeholder="Search name, email, phone..."
+            placeholder="Поиск по имени, email, телефону..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
           />
@@ -67,11 +67,11 @@ export default function ContactsPage() {
             value={status}
             onChange={(e) => { setStatus(e.target.value); setPage(1); }}
           >
-            <option value="">All statuses</option>
-            <option value="new">New</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="lost">Lost</option>
+            <option value="">Все статусы</option>
+            <option value="new">Новый</option>
+            <option value="active">Активный</option>
+            <option value="inactive">Неактивный</option>
+            <option value="lost">Потерян</option>
           </select>
         </div>
       </div>
@@ -80,20 +80,20 @@ export default function ContactsPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-700/50">
-              <th className="text-left px-4 py-3 text-slate-500 font-medium">Contact</th>
-              <th className="text-left px-4 py-3 text-slate-500 font-medium">Company</th>
-              <th className="text-left px-4 py-3 text-slate-500 font-medium">Status</th>
-              <th className="text-left px-4 py-3 text-slate-500 font-medium">Source</th>
-              <th className="text-left px-4 py-3 text-slate-500 font-medium">Deals</th>
-              <th className="text-left px-4 py-3 text-slate-500 font-medium">Added</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Контакт</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Компания</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Статус</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Источник</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Сделки</th>
+              <th className="text-left px-4 py-3 text-slate-500 font-medium">Добавлен</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} className="text-center py-12 text-slate-500">Loading...</td></tr>
+              <tr><td colSpan={7} className="text-center py-12 text-slate-500">Загрузка...</td></tr>
             ) : contacts.length === 0 ? (
-              <tr><td colSpan={7} className="text-center py-12 text-slate-500">No contacts found</td></tr>
+              <tr><td colSpan={7} className="text-center py-12 text-slate-500">Контакты не найдены</td></tr>
             ) : contacts.map((c) => (
               <tr
                 key={c.id}
@@ -122,7 +122,7 @@ export default function ContactsPage() {
                   </div>
                 </td>
                 <td className="px-4 py-3">
-                  <span className={`badge ${statusColor(c.status)}`}>{c.status}</span>
+                  <span className={`badge ${statusColor(c.status)}`}>{{new:'Новый',active:'Активный',inactive:'Неактивный',lost:'Потерян'}[c.status]||c.status}</span>
                 </td>
                 <td className="px-4 py-3 text-slate-400">{c.source || '—'}</td>
                 <td className="px-4 py-3 text-slate-400">{c.deals_count || 0}</td>
@@ -137,11 +137,11 @@ export default function ContactsPage() {
                     <button
                       onClick={(e) => { e.stopPropagation(); setEditContact(c); setShowModal(true); }}
                       className="text-xs text-slate-500 hover:text-primary-400 px-2 py-1 rounded hover:bg-dark-700"
-                    >Edit</button>
+                    >Ред.</button>
                     <button
                       onClick={(e) => handleDelete(c.id, e)}
                       className="text-xs text-slate-500 hover:text-red-400 px-2 py-1 rounded hover:bg-dark-700"
-                    >Del</button>
+                    >Удал.</button>
                   </div>
                 </td>
               </tr>
@@ -152,19 +152,19 @@ export default function ContactsPage() {
         {total > 20 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-slate-700/50">
             <span className="text-xs text-slate-500">
-              Showing {(page - 1) * 20 + 1}–{Math.min(page * 20, total)} of {total}
+              Показано {(page - 1) * 20 + 1}–{Math.min(page * 20, total)} из {total}
             </span>
             <div className="flex gap-1">
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
                 className="btn-secondary py-1 px-3 text-xs"
-              >Prev</button>
+              >Назад</button>
               <button
                 onClick={() => setPage(p => p + 1)}
                 disabled={page * 20 >= total}
                 className="btn-secondary py-1 px-3 text-xs"
-              >Next</button>
+              >Вперёд</button>
             </div>
           </div>
         )}
