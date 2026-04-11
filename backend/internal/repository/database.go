@@ -250,6 +250,43 @@ CREATE TABLE IF NOT EXISTS deal_checklist_items (
 );
 
 CREATE INDEX IF NOT EXISTS idx_checklist_deal_id ON deal_checklist_items(deal_id);
+
+-- Unique index so seed data can use ON CONFLICT DO NOTHING
+CREATE UNIQUE INDEX IF NOT EXISTS idx_cities_name_country ON cities(name, country);
+
+-- Seed: cities of Kazakhstan
+INSERT INTO cities (id, name, country) VALUES
+  (uuid_generate_v4(), 'Астана',        'Kazakhstan'),
+  (uuid_generate_v4(), 'Алматы',        'Kazakhstan'),
+  (uuid_generate_v4(), 'Шымкент',       'Kazakhstan'),
+  (uuid_generate_v4(), 'Актобе',        'Kazakhstan'),
+  (uuid_generate_v4(), 'Қарағанды',     'Kazakhstan'),
+  (uuid_generate_v4(), 'Тараз',         'Kazakhstan'),
+  (uuid_generate_v4(), 'Павлодар',      'Kazakhstan'),
+  (uuid_generate_v4(), 'Өскемен',       'Kazakhstan'),
+  (uuid_generate_v4(), 'Семей',         'Kazakhstan'),
+  (uuid_generate_v4(), 'Атырау',        'Kazakhstan'),
+  (uuid_generate_v4(), 'Қостанай',      'Kazakhstan'),
+  (uuid_generate_v4(), 'Петропавл',     'Kazakhstan'),
+  (uuid_generate_v4(), 'Орал',          'Kazakhstan'),
+  (uuid_generate_v4(), 'Теміртау',      'Kazakhstan'),
+  (uuid_generate_v4(), 'Қызылорда',     'Kazakhstan'),
+  (uuid_generate_v4(), 'Ақтау',         'Kazakhstan'),
+  (uuid_generate_v4(), 'Түркістан',     'Kazakhstan'),
+  (uuid_generate_v4(), 'Екібастұз',     'Kazakhstan'),
+  (uuid_generate_v4(), 'Рудный',        'Kazakhstan'),
+  (uuid_generate_v4(), 'Жезқазған',     'Kazakhstan'),
+  (uuid_generate_v4(), 'Балқаш',        'Kazakhstan'),
+  (uuid_generate_v4(), 'Жаңаөзен',      'Kazakhstan'),
+  (uuid_generate_v4(), 'Талдықорған',   'Kazakhstan'),
+  (uuid_generate_v4(), 'Кентау',        'Kazakhstan'),
+  (uuid_generate_v4(), 'Степногорск',   'Kazakhstan'),
+  (uuid_generate_v4(), 'Арқалық',       'Kazakhstan'),
+  (uuid_generate_v4(), 'Сатпаев',       'Kazakhstan'),
+  (uuid_generate_v4(), 'Қонаев',        'Kazakhstan'),
+  (uuid_generate_v4(), 'Лисаков',       'Kazakhstan'),
+  (uuid_generate_v4(), 'Байқоңыр',      'Kazakhstan')
+ON CONFLICT (name, country) DO NOTHING;
 `
 	_, err := db.Exec(schema)
 	return err
