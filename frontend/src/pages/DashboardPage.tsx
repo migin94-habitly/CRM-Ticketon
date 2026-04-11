@@ -37,8 +37,8 @@ export default function DashboardPage() {
   const PERIOD_LABELS: Record<string, string> = { week: 'Неделя', month: 'Месяц', quarter: 'Квартал', year: 'Год' };
 
   return (
-    <div className="space-y-6 animate-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6 animate-in">
+      <div className="flex flex-wrap items-start gap-3 justify-between">
         <div>
           <h1 className="text-xl font-bold text-white">Главная</h1>
           <p className="text-slate-500 text-sm">Обзор показателей продаж</p>
@@ -48,7 +48,7 @@ export default function DashboardPage() {
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+              className={`px-2 sm:px-3 py-1 rounded text-xs font-medium transition-colors ${
                 period === p ? 'bg-primary-600 text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -58,7 +58,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <KPICard
           title="Общая выручка"
           value={formatCurrency(metrics.won_value)}
@@ -97,8 +97,8 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="card p-5 lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="card p-4 sm:p-5 lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-white">Выручка по месяцам</h3>
             <TrendingUp className="w-4 h-4 text-slate-500" />
@@ -124,7 +124,7 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        <div className="card p-5">
+        <div className="card p-4 sm:p-5">
           <h3 className="font-semibold text-white mb-4">Этапы воронки</h3>
           <div className="space-y-3">
             {pipelineBreakdown.map((s) => (
@@ -165,8 +165,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="card p-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="card p-4 sm:p-5">
           <h3 className="font-semibold text-white mb-4">Активности</h3>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={activityBreakdown}>
@@ -179,7 +179,7 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        <div className="card p-5">
+        <div className="card p-4 sm:p-5">
           <div className="flex items-center gap-2 mb-4">
             <Award className="w-4 h-4 text-yellow-400" />
             <h3 className="font-semibold text-white">Лучшие сотрудники</h3>
@@ -204,7 +204,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="card p-5">
+        <div className="card p-4 sm:p-5 sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2 mb-4">
             <Zap className="w-4 h-4 text-primary-400" />
             <h3 className="font-semibold text-white">ИИ-аналитика</h3>
@@ -257,16 +257,16 @@ function KPICard({ title, value, icon: Icon, color, bg, change, up }: KPICardPro
 
 function DashboardSkeleton() {
   return (
-    <div className="space-y-6 animate-pulse">
+    <div className="space-y-4 sm:space-y-6 animate-pulse">
       <div className="h-7 bg-dark-800 rounded w-48" />
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="card h-28" />
+          <div key={i} className="card h-24 sm:h-28" />
         ))}
       </div>
-      <div className="grid grid-cols-3 gap-4">
-        <div className="card h-64 col-span-2" />
-        <div className="card h-64" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="card h-56 lg:col-span-2" />
+        <div className="card h-56" />
       </div>
     </div>
   );

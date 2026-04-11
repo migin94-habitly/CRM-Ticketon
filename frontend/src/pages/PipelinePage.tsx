@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { Plus, DollarSign, Phone, Settings } from 'lucide-react';
+import { Plus, Phone, Settings } from 'lucide-react';
 import { pipelinesAPI, dealsAPI } from '../api';
 import type { Pipeline, Deal } from '../types';
 import { formatCurrency, initials } from '../utils/format';
@@ -96,14 +96,14 @@ export default function PipelinePage() {
 
   return (
     <div className="space-y-4 animate-in">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-start gap-3 justify-between">
         <div>
           <h1 className="text-xl font-bold text-white">Воронка</h1>
           <p className="text-slate-500 text-sm">Канбан-доска</p>
         </div>
-        <div className="flex gap-2 items-center">
+        <div className="flex flex-wrap gap-2 items-center">
           <select
-            className="input py-1.5 text-sm w-48"
+            className="input py-1.5 text-sm w-44"
             value={selectedPipeline?.id || ''}
             onChange={e => {
               const p = pipelines.find(p => p.id === e.target.value);
@@ -117,7 +117,7 @@ export default function PipelinePage() {
             onClick={() => setShowConfigure(true)}
             disabled={!selectedPipeline}
           >
-            <Settings className="w-4 h-4" /> Настроить
+            <Settings className="w-4 h-4" /> <span className="hidden sm:inline">Настроить</span>
           </button>
           <button className="btn-primary text-sm py-1.5" onClick={() => setShowModal(true)}>
             <Plus className="w-4 h-4" /> Добавить сделку
@@ -178,8 +178,7 @@ export default function PipelinePage() {
                                   </div>
                                 )}
                                 <div className="flex items-center justify-between mt-1">
-                                  <div className="flex items-center gap-1 text-green-400 text-xs font-semibold">
-                                    <DollarSign className="w-3 h-3" />
+                                  <div className="text-green-400 text-xs font-semibold">
                                     {formatCurrency(deal.value, deal.currency)}
                                   </div>
                                   <div className="flex items-center gap-1">
