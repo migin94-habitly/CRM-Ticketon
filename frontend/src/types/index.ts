@@ -280,3 +280,13 @@ export interface PartnerStats {
   conversion_rate: number;
   total_tickets: number;
 }
+
+export interface ChecklistItem {
+  id: string;
+  deal_id: string;
+  text: string;
+  is_done: boolean;
+  position: number;
+  created_at: string;
+  updated_at: string;
+}

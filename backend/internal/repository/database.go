@@ -238,6 +238,18 @@ CREATE INDEX IF NOT EXISTS idx_partners_city_id ON partners(city_id);
 CREATE INDEX IF NOT EXISTS idx_partners_status ON partners(status);
 CREATE INDEX IF NOT EXISTS idx_deals_partner_id ON deals(partner_id);
 CREATE INDEX IF NOT EXISTS idx_deals_venue_id ON deals(venue_id);
+
+CREATE TABLE IF NOT EXISTS deal_checklist_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    deal_id UUID NOT NULL REFERENCES deals(id) ON DELETE CASCADE,
+    text TEXT NOT NULL,
+    is_done BOOLEAN NOT NULL DEFAULT false,
+    position INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_checklist_deal_id ON deal_checklist_items(deal_id);
 `
 	_, err := db.Exec(schema)
 	return err
