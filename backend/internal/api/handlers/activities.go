@@ -42,7 +42,10 @@ func (h *ActivitiesHandler) ListActivities(c *gin.Context) {
 	query += ` ORDER BY a.created_at DESC LIMIT 50`
 
 	var activities []models.Activity
-	h.db.Select(&activities, query, args...)
+	if err := h.db.Select(&activities, query, args...); err != nil {
+		c.JSON(http.StatusInternalServerError, models.APIResponse{Success: false, Error: err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: activities})
 }
 
@@ -58,7 +61,7 @@ func (h *ActivitiesHandler) CreateActivity(c *gin.Context) {
 		INSERT INTO activities (id, type, subject, description, deal_id, contact_id, user_id, due_date, duration)
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
 		id, req.Type, req.Subject, req.Description,
-		req.DealID, req.ContactID, userID, req.DueDate, req.Duration,
+		req.DealID, req.ContactID, userID, req.DueDate.Ptr(), req.Duration,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.APIResponse{Error: err.Error()})

@@ -218,6 +218,7 @@ type Activity struct {
 	DealID      *string        `db:"deal_id" json:"deal_id,omitempty"`
 	ContactID   *string        `db:"contact_id" json:"contact_id,omitempty"`
 	UserID      string         `db:"user_id" json:"user_id"`
+	UserName    *string        `db:"user_name" json:"user_name,omitempty"`
 	DueDate     *time.Time     `db:"due_date" json:"due_date,omitempty"`
 	Duration    int            `db:"duration" json:"duration,omitempty"`
 	CreatedAt   time.Time      `db:"created_at" json:"created_at"`
@@ -231,7 +232,7 @@ type CreateActivityRequest struct {
 	Description string         `json:"description,omitempty"`
 	DealID      *string        `json:"deal_id,omitempty"`
 	ContactID   *string        `json:"contact_id,omitempty"`
-	DueDate     *time.Time     `json:"due_date,omitempty"`
+	DueDate     *FlexibleTime  `json:"due_date,omitempty"`
 	Duration    int            `json:"duration,omitempty"`
 }
 

@@ -93,6 +93,7 @@ export interface Activity {
   deal_id?: string;
   contact_id?: string;
   user_id: string;
+  user_name?: string;
   due_date?: string;
   duration?: number;
   created_at: string;
