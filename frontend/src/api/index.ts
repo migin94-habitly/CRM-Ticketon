@@ -2,6 +2,7 @@ import api from './client';
 import type {
   User, Contact, Pipeline, Deal, Activity, CallRecord,
   WhatsAppMessage, DashboardMetrics, PaginatedResponse, APIResponse,
+  City, Venue, Partner,
 } from '../types';
 
 export const authAPI = {
@@ -85,6 +86,31 @@ export const whatsappAPI = {
 
 export const auditLogAPI = {
   list: () => api.get<APIResponse>('/audit-log'),
+};
+
+export const citiesAPI = {
+  list: () => api.get<APIResponse<City[]>>('/cities'),
+  create: (data: Partial<City>) => api.post<APIResponse>('/cities', data),
+  update: (id: string, data: Partial<City>) => api.put<APIResponse>(`/cities/${id}`, data),
+  delete: (id: string) => api.delete<APIResponse>(`/cities/${id}`),
+};
+
+export const venuesAPI = {
+  list: (params?: Record<string, unknown>) =>
+    api.get<APIResponse<Venue[]>>('/venues', { params }),
+  create: (data: Partial<Venue>) => api.post<APIResponse>('/venues', data),
+  update: (id: string, data: Partial<Venue>) => api.put<APIResponse>(`/venues/${id}`, data),
+  delete: (id: string) => api.delete<APIResponse>(`/venues/${id}`),
+};
+
+export const partnersAPI = {
+  list: (params?: Record<string, unknown>) =>
+    api.get<APIResponse<Partner[]>>('/partners', { params }),
+  get: (id: string) => api.get<APIResponse<Partner>>(`/partners/${id}`),
+  create: (data: Partial<Partner>) => api.post<APIResponse>('/partners', data),
+  update: (id: string, data: Partial<Partner>) => api.put<APIResponse>(`/partners/${id}`, data),
+  delete: (id: string) => api.delete<APIResponse>(`/partners/${id}`),
+  getStats: (id: string) => api.get<APIResponse>(`/partners/${id}/stats`),
 };
 
 export const analyticsAPI = {

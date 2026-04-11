@@ -16,6 +16,9 @@ import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
 import ActivitiesPage from './pages/ActivitiesPage';
 import AuditLogPage from './pages/AuditLogPage';
+import PartnersPage from './pages/PartnersPage';
+import PartnerDetailPage from './pages/PartnerDetailPage';
+import VenuesPage from './pages/VenuesPage';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const token = useAppSelector((s) => s.auth.token);
@@ -48,6 +51,9 @@ export default function App() {
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="audit-log" element={<AuditLogPage />} />
+          <Route path="partners" element={<PartnersPage />} />
+          <Route path="partners/:id" element={<PartnerDetailPage />} />
+          <Route path="venues" element={<VenuesPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

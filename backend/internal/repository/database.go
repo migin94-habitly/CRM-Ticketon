@@ -178,6 +178,47 @@ CREATE TABLE IF NOT EXISTS user_activity_logs (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS cities (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    country VARCHAR(100) NOT NULL DEFAULT 'Kazakhstan',
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS venues (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    address TEXT,
+    city_id UUID REFERENCES cities(id),
+    capacity INTEGER,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS partners (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    contact_person VARCHAR(255),
+    email VARCHAR(255),
+    phone VARCHAR(50),
+    city_id UUID REFERENCES cities(id),
+    status VARCHAR(50) NOT NULL DEFAULT 'active',
+    contract_number VARCHAR(100),
+    contract_date DATE,
+    commission_rate DECIMAL(5,2) NOT NULL DEFAULT 0,
+    notes TEXT,
+    website VARCHAR(500),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE deals ADD COLUMN IF NOT EXISTS partner_id UUID REFERENCES partners(id);
+ALTER TABLE deals ADD COLUMN IF NOT EXISTS venue_id UUID REFERENCES venues(id);
+ALTER TABLE deals ADD COLUMN IF NOT EXISTS event_name VARCHAR(500);
+ALTER TABLE deals ADD COLUMN IF NOT EXISTS event_date TIMESTAMP WITH TIME ZONE;
+ALTER TABLE deals ADD COLUMN IF NOT EXISTS ticket_count INTEGER;
+
 CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email);
 CREATE INDEX IF NOT EXISTS idx_contacts_assigned_to ON contacts(assigned_to);
 CREATE INDEX IF NOT EXISTS idx_deals_pipeline_id ON deals(pipeline_id);
@@ -192,6 +233,11 @@ CREATE INDEX IF NOT EXISTS idx_whatsapp_messages_contact_id ON whatsapp_messages
 CREATE INDEX IF NOT EXISTS idx_ai_scores_entity ON ai_scores(entity_type, entity_id);
 CREATE INDEX IF NOT EXISTS idx_user_activity_logs_user_id ON user_activity_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_activity_logs_created_at ON user_activity_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_venues_city_id ON venues(city_id);
+CREATE INDEX IF NOT EXISTS idx_partners_city_id ON partners(city_id);
+CREATE INDEX IF NOT EXISTS idx_partners_status ON partners(status);
+CREATE INDEX IF NOT EXISTS idx_deals_partner_id ON deals(partner_id);
+CREATE INDEX IF NOT EXISTS idx_deals_venue_id ON deals(venue_id);
 `
 	_, err := db.Exec(schema)
 	return err

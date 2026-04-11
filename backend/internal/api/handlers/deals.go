@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/crm-ticketon/backend/internal/models"
 	"github.com/gin-gonic/gin"
@@ -84,12 +85,23 @@ func (h *DealsHandler) ListDeals(c *gin.Context) {
 			"close_date": row.CloseDate, "notes": row.Notes,
 			"lost_reason": row.LostReason,
 			"created_at": row.CreatedAt, "updated_at": row.UpdatedAt,
-			"stage": map[string]string{"name": row.StageName, "color": row.StageColor},
+			"stage":        map[string]string{"name": row.StageName, "color": row.StageColor},
+			"partner_id":   row.PartnerID,
+			"venue_id":     row.VenueID,
+			"event_name":   row.EventName,
+			"event_date":   row.EventDate,
+			"ticket_count": row.TicketCount,
 		}
 		if row.ContactID != nil {
 			var ct models.Contact
 			if h.db.Get(&ct, `SELECT id, first_name, last_name, email, phone, company FROM contacts WHERE id=$1`, *row.ContactID) == nil {
 				d["contact"] = ct
+			}
+		}
+		if row.PartnerID != nil {
+			var pt models.Partner
+			if h.db.Get(&pt, `SELECT id, name, contact_person, email, phone, status FROM partners WHERE id=$1`, *row.PartnerID) == nil {
+				d["partner"] = pt
 			}
 		}
 		if row.AssignedTo != nil {
@@ -131,6 +143,18 @@ func (h *DealsHandler) GetDeal(c *gin.Context) {
 	if h.db.Get(&score, `SELECT * FROM ai_scores WHERE entity_type='deal' AND entity_id=$1 ORDER BY generated_at DESC LIMIT 1`, id) == nil {
 		deal.AIScore = &score
 	}
+	if deal.PartnerID != nil {
+		var partner models.Partner
+		if h.db.Get(&partner, `SELECT * FROM partners WHERE id=$1`, *deal.PartnerID) == nil {
+			deal.Partner = &partner
+		}
+	}
+	if deal.VenueID != nil {
+		var venue models.Venue
+		if h.db.Get(&venue, `SELECT * FROM venues WHERE id=$1`, *deal.VenueID) == nil {
+			deal.Venue = &venue
+		}
+	}
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: deal})
 }
 
@@ -151,12 +175,23 @@ func (h *DealsHandler) CreateDeal(c *gin.Context) {
 	contactID := models.NilIfEmptyUUIDPtr(req.ContactID)
 	assignedTo := models.NilIfEmptyUUIDPtr(req.AssignedTo)
 
+	partnerID := models.NilIfEmptyUUIDPtr(req.PartnerID)
+	venueID := models.NilIfEmptyUUIDPtr(req.VenueID)
+	var eventDate *time.Time
+	if req.EventDate != nil && *req.EventDate != "" {
+		t, parseErr := time.Parse(time.RFC3339, *req.EventDate)
+		if parseErr != nil {
+			t, parseErr = time.Parse("2006-01-02", *req.EventDate)
+		}
+		if parseErr == nil { eventDate = &t }
+	}
 	id := uuid.New().String()
 	_, err = h.db.Exec(`
-		INSERT INTO deals (id, title, value, currency, pipeline_id, stage_id, contact_id, assigned_to, priority, close_date, notes)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+		INSERT INTO deals (id, title, value, currency, pipeline_id, stage_id, contact_id, assigned_to, priority, close_date, notes, partner_id, venue_id, event_name, event_date, ticket_count)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
 		id, req.Title, float64(req.Value), req.Currency, req.PipelineID, req.StageID,
 		contactID, assignedTo, req.Priority, closeDate, req.Notes,
+		partnerID, venueID, nilIfEmptyStr(req.EventName), eventDate, req.TicketCount,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.APIResponse{Error: err.Error()})
@@ -180,12 +215,25 @@ func (h *DealsHandler) UpdateDeal(c *gin.Context) {
 	contactID := models.NilIfEmptyUUIDPtr(req.ContactID)
 	assignedTo := models.NilIfEmptyUUIDPtr(req.AssignedTo)
 
+	partnerID := models.NilIfEmptyUUIDPtr(req.PartnerID)
+	venueID := models.NilIfEmptyUUIDPtr(req.VenueID)
+	var eventDate *time.Time
+	if req.EventDate != nil && *req.EventDate != "" {
+		t, parseErr := time.Parse(time.RFC3339, *req.EventDate)
+		if parseErr != nil {
+			t, parseErr = time.Parse("2006-01-02", *req.EventDate)
+		}
+		if parseErr == nil { eventDate = &t }
+	}
 	_, err = h.db.Exec(`
 		UPDATE deals SET title=$1, value=$2, currency=$3, pipeline_id=$4, stage_id=$5,
-		contact_id=$6, assigned_to=$7, priority=$8, close_date=$9, notes=$10, updated_at=NOW()
-		WHERE id=$11`,
+		contact_id=$6, assigned_to=$7, priority=$8, close_date=$9, notes=$10,
+		partner_id=$11, venue_id=$12, event_name=$13, event_date=$14, ticket_count=$15,
+		updated_at=NOW()
+		WHERE id=$16`,
 		req.Title, float64(req.Value), req.Currency, req.PipelineID, req.StageID,
-		contactID, assignedTo, req.Priority, closeDate, req.Notes, id,
+		contactID, assignedTo, req.Priority, closeDate, req.Notes,
+		partnerID, venueID, nilIfEmptyStr(req.EventName), eventDate, req.TicketCount, id,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.APIResponse{Error: err.Error()})
@@ -238,4 +286,9 @@ func (h *DealsHandler) CreateDealActivity(c *gin.Context) {
 		id, req.Type, req.Subject, req.Description, req.DealID, req.ContactID, userID, req.DueDate, req.Duration,
 	)
 	c.JSON(http.StatusCreated, models.APIResponse{Success: true, Data: gin.H{"id": id}})
+}
+
+func nilIfEmptyStr(s string) *string {
+	if s == "" { return nil }
+	return &s
 }

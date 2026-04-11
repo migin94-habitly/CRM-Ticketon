@@ -152,6 +152,11 @@ type Deal struct {
 	CloseDate   *time.Time   `db:"close_date" json:"close_date,omitempty"`
 	Notes       *string      `db:"notes" json:"notes,omitempty"`
 	LostReason  *string      `db:"lost_reason" json:"lost_reason,omitempty"`
+	PartnerID   *string      `db:"partner_id" json:"partner_id,omitempty"`
+	VenueID     *string      `db:"venue_id" json:"venue_id,omitempty"`
+	EventName   *string      `db:"event_name" json:"event_name,omitempty"`
+	EventDate   *time.Time   `db:"event_date" json:"event_date,omitempty"`
+	TicketCount *int         `db:"ticket_count" json:"ticket_count,omitempty"`
 	CreatedAt   time.Time    `db:"created_at" json:"created_at"`
 	UpdatedAt   time.Time    `db:"updated_at" json:"updated_at"`
 	Contact      *Contact      `db:"-" json:"contact,omitempty"`
@@ -159,6 +164,8 @@ type Deal struct {
 	Stage        *PipelineStage `db:"-" json:"stage,omitempty"`
 	Activities   []Activity    `db:"-" json:"activities,omitempty"`
 	AIScore      *AIScore      `db:"-" json:"ai_score,omitempty"`
+	Partner      *Partner      `db:"-" json:"partner,omitempty"`
+	Venue        *Venue        `db:"-" json:"venue,omitempty"`
 }
 
 type CreateDealRequest struct {
@@ -172,6 +179,11 @@ type CreateDealRequest struct {
 	Priority   DealPriority    `json:"priority,omitempty"`
 	CloseDate  *string         `json:"close_date,omitempty"`
 	Notes      string          `json:"notes,omitempty"`
+	PartnerID   *string         `json:"partner_id,omitempty"`
+	VenueID     *string         `json:"venue_id,omitempty"`
+	EventName   string          `json:"event_name,omitempty"`
+	EventDate   *string         `json:"event_date,omitempty"`
+	TicketCount *int            `json:"ticket_count,omitempty"`
 }
 
 type MoveDealRequest struct {
@@ -392,4 +404,97 @@ type UserActivityLog struct {
 	Description   *string   `db:"description" json:"description,omitempty"`
 	IPAddress     *string   `db:"ip_address" json:"ip_address,omitempty"`
 	CreatedAt     time.Time `db:"created_at" json:"created_at"`
+}
+
+// ── City ────────────────────────────────────────────────────────────────────
+
+type City struct {
+	ID        string    `db:"id" json:"id"`
+	Name      string    `db:"name" json:"name"`
+	Country   string    `db:"country" json:"country"`
+	CreatedAt time.Time `db:"created_at" json:"created_at"`
+}
+
+type CreateCityRequest struct {
+	Name    string `json:"name" binding:"required"`
+	Country string `json:"country,omitempty"`
+}
+
+// ── Venue ───────────────────────────────────────────────────────────────────
+
+type Venue struct {
+	ID          string    `db:"id" json:"id"`
+	Name        string    `db:"name" json:"name"`
+	Address     *string   `db:"address" json:"address,omitempty"`
+	CityID      *string   `db:"city_id" json:"city_id,omitempty"`
+	Capacity    *int      `db:"capacity" json:"capacity,omitempty"`
+	Description *string   `db:"description" json:"description,omitempty"`
+	CreatedAt   time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt   time.Time `db:"updated_at" json:"updated_at"`
+	City        *City     `db:"-" json:"city,omitempty"`
+}
+
+type CreateVenueRequest struct {
+	Name        string  `json:"name" binding:"required"`
+	Address     string  `json:"address,omitempty"`
+	CityID      *string `json:"city_id,omitempty"`
+	Capacity    *int    `json:"capacity,omitempty"`
+	Description string  `json:"description,omitempty"`
+}
+
+// ── Partner ─────────────────────────────────────────────────────────────────
+
+type PartnerStatus string
+
+const (
+	PartnerStatusActive   PartnerStatus = "active"
+	PartnerStatusInactive PartnerStatus = "inactive"
+	PartnerStatusProspect PartnerStatus = "prospect"
+)
+
+type Partner struct {
+	ID             string        `db:"id" json:"id"`
+	Name           string        `db:"name" json:"name"`
+	ContactPerson  *string       `db:"contact_person" json:"contact_person,omitempty"`
+	Email          *string       `db:"email" json:"email,omitempty"`
+	Phone          *string       `db:"phone" json:"phone,omitempty"`
+	CityID         *string       `db:"city_id" json:"city_id,omitempty"`
+	Status         PartnerStatus `db:"status" json:"status"`
+	ContractNumber *string       `db:"contract_number" json:"contract_number,omitempty"`
+	ContractDate   *time.Time    `db:"contract_date" json:"contract_date,omitempty"`
+	CommissionRate float64       `db:"commission_rate" json:"commission_rate"`
+	Notes          *string       `db:"notes" json:"notes,omitempty"`
+	Website        *string       `db:"website" json:"website,omitempty"`
+	CreatedAt      time.Time     `db:"created_at" json:"created_at"`
+	UpdatedAt      time.Time     `db:"updated_at" json:"updated_at"`
+	City           *City         `db:"-" json:"city,omitempty"`
+	DealsCount     int           `db:"-" json:"deals_count,omitempty"`
+	TotalRevenue   float64       `db:"-" json:"total_revenue,omitempty"`
+}
+
+type CreatePartnerRequest struct {
+	Name           string        `json:"name" binding:"required"`
+	ContactPerson  string        `json:"contact_person,omitempty"`
+	Email          string        `json:"email,omitempty"`
+	Phone          string        `json:"phone,omitempty"`
+	CityID         *string       `json:"city_id,omitempty"`
+	Status         PartnerStatus `json:"status,omitempty"`
+	ContractNumber string        `json:"contract_number,omitempty"`
+	ContractDate   *string       `json:"contract_date,omitempty"`
+	CommissionRate float64       `json:"commission_rate,omitempty"`
+	Notes          string        `json:"notes,omitempty"`
+	Website        string        `json:"website,omitempty"`
+}
+
+type PartnerStats struct {
+	PartnerID      string  `json:"partner_id"`
+	PartnerName    string  `json:"partner_name"`
+	TotalDeals     int     `json:"total_deals"`
+	WonDeals       int     `json:"won_deals"`
+	LostDeals      int     `json:"lost_deals"`
+	ActiveDeals    int     `json:"active_deals"`
+	TotalRevenue   float64 `json:"total_revenue"`
+	AvgDealValue   float64 `json:"avg_deal_value"`
+	ConversionRate float64 `json:"conversion_rate"`
+	TotalTickets   int     `json:"total_tickets"`
 }
