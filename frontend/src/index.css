@@ -55,7 +55,6 @@
   overflow-x: auto;
   padding-bottom: 1rem;
   min-height: calc(100vh - 180px);
-  /* Allow horizontal scroll on mobile without hiding scrollbar */
   -webkit-overflow-scrolling: touch;
 }
 .kanban-column {

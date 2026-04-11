@@ -17,7 +17,6 @@ describe('useDebounce', () => {
       { initialProps: { value: 'initial' } },
     );
     rerender({ value: 'updated' });
-    // Advance only 200ms — not enough
     act(() => { vi.advanceTimersByTime(200); });
     expect(result.current).toBe('initial');
   });
@@ -41,7 +40,6 @@ describe('useDebounce', () => {
     act(() => { vi.advanceTimersByTime(200); });
     rerender({ value: 'c' });
     act(() => { vi.advanceTimersByTime(200); });
-    // Only 200ms since last change — still old
     expect(result.current).toBe('a');
     act(() => { vi.advanceTimersByTime(100); });
     expect(result.current).toBe('c');

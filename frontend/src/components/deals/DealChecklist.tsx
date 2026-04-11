@@ -80,7 +80,6 @@ export default function DealChecklist({ dealId }: Props) {
         </button>
       </div>
 
-      {/* Progress bar */}
       {total > 0 && (
         <div className="mb-3">
           <div className="h-1.5 bg-dark-700 rounded-full overflow-hidden">
@@ -100,14 +99,12 @@ export default function DealChecklist({ dealId }: Props) {
         </div>
       )}
 
-      {/* Items */}
       <div className="space-y-1">
         {items.map(item => (
           <div
             key={item.id}
             className="group flex items-start gap-2.5 py-1.5 px-2 rounded-lg hover:bg-dark-700/40 transition"
           >
-            {/* Checkbox */}
             <button
               onClick={() => handleToggle(item)}
               className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
@@ -119,7 +116,6 @@ export default function DealChecklist({ dealId }: Props) {
               {item.is_done && <Check className="w-2.5 h-2.5 text-white" />}
             </button>
 
-            {/* Text / Edit */}
             {editingId === item.id ? (
               <div className="flex-1 flex items-center gap-1.5">
                 <input
@@ -165,7 +161,6 @@ export default function DealChecklist({ dealId }: Props) {
           </div>
         ))}
 
-        {/* Add new */}
         {adding ? (
           <form onSubmit={handleAdd} className="flex items-center gap-2 pt-1">
             <div className="w-4 h-4 rounded border border-slate-700 shrink-0" />

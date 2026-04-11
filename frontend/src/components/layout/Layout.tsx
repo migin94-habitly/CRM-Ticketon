@@ -8,7 +8,6 @@ export default function Layout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-dark-900">
-      {/* Mobile backdrop */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/60 z-20 md:hidden"

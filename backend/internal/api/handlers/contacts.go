@@ -69,7 +69,6 @@ func (h *ContactsHandler) ListContacts(c *gin.Context) {
 	}
 	defer rows.Close()
 
-	// Wrapper needed because the query returns deals_count but Contact has db:"-" on that field
 	type contactRow struct {
 		models.Contact
 		DealsCountDB int `db:"deals_count"`

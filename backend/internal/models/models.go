@@ -406,8 +406,6 @@ type UserActivityLog struct {
 	CreatedAt     time.Time `db:"created_at" json:"created_at"`
 }
 
-// ── City ────────────────────────────────────────────────────────────────────
-
 type City struct {
 	ID        string    `db:"id" json:"id"`
 	Name      string    `db:"name" json:"name"`
@@ -419,8 +417,6 @@ type CreateCityRequest struct {
 	Name    string `json:"name" binding:"required"`
 	Country string `json:"country,omitempty"`
 }
-
-// ── Venue ───────────────────────────────────────────────────────────────────
 
 type Venue struct {
 	ID          string    `db:"id" json:"id"`
@@ -441,8 +437,6 @@ type CreateVenueRequest struct {
 	Capacity    *int    `json:"capacity,omitempty"`
 	Description string  `json:"description,omitempty"`
 }
-
-// ── Partner ─────────────────────────────────────────────────────────────────
 
 type PartnerStatus string
 
@@ -498,8 +492,6 @@ type PartnerStats struct {
 	ConversionRate float64 `json:"conversion_rate"`
 	TotalTickets   int     `json:"total_tickets"`
 }
-
-// ── Checklist ────────────────────────────────────────────────────────────────
 
 type ChecklistItem struct {
 	ID        string    `db:"id" json:"id"`

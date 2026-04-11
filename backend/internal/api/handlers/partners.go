@@ -59,7 +59,6 @@ func (h *PartnersHandler) List(c *gin.Context) {
 		GROUP BY p.id, c.name, c.country
 		ORDER BY p.name ASC`, where)
 
-	// DealsCountDB and TotalRevenueDB handle columns that models.Partner marks db:"-"
 	type PartnerRow struct {
 		models.Partner
 		CityName       *string `db:"city_name"`
