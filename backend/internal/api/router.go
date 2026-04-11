@@ -53,6 +53,7 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 	citiesH := handlers.NewCitiesHandler(db)
 	venuesH := handlers.NewVenuesHandler(db)
 	partnersH := handlers.NewPartnersHandler(db)
+	checklistH := handlers.NewChecklistHandler(db)
 
 	r.POST("/api/v1/auth/login", authH.Login)
 	r.GET("/api/v1/webhooks/whatsapp", whatsappH.WebhookVerify)
@@ -105,6 +106,11 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 			deals.DELETE("/:id", middleware.RequireRoles("admin", "manager"), dealsH.DeleteDeal)
 			deals.GET("/:id/activities", dealsH.GetDealActivities)
 			deals.POST("/:id/activities", dealsH.CreateDealActivity)
+			deals.GET("/:id/checklist", checklistH.List)
+			deals.POST("/:id/checklist", checklistH.Create)
+			deals.PATCH("/:id/checklist/:item_id/toggle", checklistH.Toggle)
+			deals.PUT("/:id/checklist/:item_id", checklistH.Update)
+			deals.DELETE("/:id/checklist/:item_id", checklistH.Delete)
 		}
 
 		activities := api.Group("/activities")

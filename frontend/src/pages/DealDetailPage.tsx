@@ -5,6 +5,7 @@ import { dealsAPI, analyticsAPI } from '../api';
 import type { Deal, AIScore } from '../types';
 import { formatCurrency, formatDate, priorityColor } from '../utils/format';
 import DealModal from '../components/deals/DealModal';
+import DealChecklist from '../components/deals/DealChecklist';
 
 export default function DealDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -140,6 +141,8 @@ export default function DealDetailPage() {
           </button>
         </div>
       </div>
+
+      <DealChecklist dealId={deal.id} />
 
       <div className="card p-5">
         <h3 className="font-semibold text-white mb-3">История активностей</h3>

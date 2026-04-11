@@ -498,3 +498,20 @@ type PartnerStats struct {
 	ConversionRate float64 `json:"conversion_rate"`
 	TotalTickets   int     `json:"total_tickets"`
 }
+
+// ── Checklist ────────────────────────────────────────────────────────────────
+
+type ChecklistItem struct {
+	ID        string    `db:"id" json:"id"`
+	DealID    string    `db:"deal_id" json:"deal_id"`
+	Text      string    `db:"text" json:"text"`
+	IsDone    bool      `db:"is_done" json:"is_done"`
+	Position  int       `db:"position" json:"position"`
+	CreatedAt time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+}
+
+type CreateChecklistItemRequest struct {
+	Text     string `json:"text" binding:"required"`
+	Position int    `json:"position,omitempty"`
+}

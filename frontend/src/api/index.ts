@@ -113,6 +113,18 @@ export const partnersAPI = {
   getStats: (id: string) => api.get<APIResponse>(`/partners/${id}/stats`),
 };
 
+export const checklistAPI = {
+  list: (dealId: string) => api.get<APIResponse>(`/deals/${dealId}/checklist`),
+  create: (dealId: string, text: string) =>
+    api.post<APIResponse>(`/deals/${dealId}/checklist`, { text }),
+  toggle: (dealId: string, itemId: string) =>
+    api.patch<APIResponse>(`/deals/${dealId}/checklist/${itemId}/toggle`, {}),
+  update: (dealId: string, itemId: string, text: string) =>
+    api.put<APIResponse>(`/deals/${dealId}/checklist/${itemId}`, { text }),
+  delete: (dealId: string, itemId: string) =>
+    api.delete<APIResponse>(`/deals/${dealId}/checklist/${itemId}`),
+};
+
 export const analyticsAPI = {
   dashboard: (period?: string) =>
     api.get<APIResponse<DashboardMetrics>>('/analytics/dashboard', { params: { period } }),
