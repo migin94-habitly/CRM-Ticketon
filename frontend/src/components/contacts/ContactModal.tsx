@@ -34,7 +34,8 @@ export default function ContactModal({ contact, onClose, onSaved }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/60 z-50 overflow-y-auto">
+      <div className="min-h-full flex items-center justify-center p-4">
       <div className="card w-full max-w-lg">
         <div className="flex items-center justify-between p-5 border-b border-slate-700">
           <h2 className="font-semibold text-white">{contact ? 'Редактировать контакт' : 'Новый контакт'}</h2>
@@ -105,6 +106,7 @@ export default function ContactModal({ contact, onClose, onSaved }: Props) {
             <button type="submit" className="btn-primary">Сохранить контакт</button>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );

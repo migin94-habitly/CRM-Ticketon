@@ -39,8 +39,9 @@ export default function PartnerModal({ partner, onClose, onSaved }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="card w-full max-w-lg my-4">
+    <div className="fixed inset-0 bg-black/60 z-50 overflow-y-auto">
+      <div className="min-h-full flex items-center justify-center p-4">
+      <div className="card w-full max-w-lg">
         <div className="flex items-center justify-between p-5 border-b border-slate-700">
           <h2 className="font-semibold text-white">
             {partner ? 'Редактировать партнёра' : 'Новый партнёр'}
@@ -116,6 +117,7 @@ export default function PartnerModal({ partner, onClose, onSaved }: Props) {
             <button type="submit" className="btn-primary">Сохранить партнёра</button>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );
