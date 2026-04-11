@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, DollarSign, Phone, Edit, Zap } from 'lucide-react';
+import { ArrowLeft, Phone, Edit, Zap } from 'lucide-react';
 import { dealsAPI, analyticsAPI } from '../api';
 import type { Deal, AIScore } from '../types';
 import { formatCurrency, formatDate, priorityColor } from '../utils/format';
@@ -44,8 +44,8 @@ export default function DealDetailPage() {
         <ArrowLeft className="w-4 h-4" /> Сделки
       </button>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div className="card p-5 col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="card p-4 sm:p-5 md:col-span-2">
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-xl font-bold text-white">{deal.title}</h1>
@@ -63,11 +63,10 @@ export default function DealDetailPage() {
             </button>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mt-5 pt-4 border-t border-slate-700">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-5 pt-4 border-t border-slate-700">
             <div>
               <div className="text-xs text-slate-500">Сумма</div>
-              <div className="flex items-center gap-1 text-xl font-bold text-green-400 mt-0.5">
-                <DollarSign className="w-4 h-4" />
+              <div className="text-xl font-bold text-green-400 mt-0.5">
                 {formatCurrency(deal.value, deal.currency)}
               </div>
             </div>

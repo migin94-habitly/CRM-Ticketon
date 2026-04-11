@@ -51,14 +51,22 @@
 
 .kanban-container {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   overflow-x: auto;
   padding-bottom: 1rem;
-  min-height: calc(100vh - 160px);
+  min-height: calc(100vh - 180px);
+  /* Allow horizontal scroll on mobile without hiding scrollbar */
+  -webkit-overflow-scrolling: touch;
 }
 .kanban-column {
-  min-width: 280px;
-  max-width: 280px;
+  min-width: 260px;
+  max-width: 260px;
+}
+@media (min-width: 640px) {
+  .kanban-column {
+    min-width: 280px;
+    max-width: 280px;
+  }
 }
 
 .wave-player { filter: invert(0.8); }

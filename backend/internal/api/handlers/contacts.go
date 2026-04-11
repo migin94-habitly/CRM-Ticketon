@@ -69,11 +69,18 @@ func (h *ContactsHandler) ListContacts(c *gin.Context) {
 	}
 	defer rows.Close()
 
+	// Wrapper needed because the query returns deals_count but Contact has db:"-" on that field
+	type contactRow struct {
+		models.Contact
+		DealsCountDB int `db:"deals_count"`
+	}
+
 	contacts := []models.Contact{}
 	for rows.Next() {
-		var ct models.Contact
-		if err := rows.StructScan(&ct); err == nil {
-			// Load tags
+		var row contactRow
+		if err := rows.StructScan(&row); err == nil {
+			ct := row.Contact
+			ct.DealsCount = row.DealsCountDB
 			h.db.Select(&ct.Tags, `SELECT tag FROM contact_tags WHERE contact_id=$1`, ct.ID)
 			contacts = append(contacts, ct)
 		}
