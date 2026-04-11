@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Users, Briefcase, GitBranch, Phone, MessageSquare,
-  BarChart3, Settings, Zap, ListTodo, ClipboardList,
+  BarChart3, Settings, Zap, ListTodo, ClipboardList, Building2, MapPin,
 } from 'lucide-react';
 
 const navItems = [
@@ -10,6 +10,8 @@ const navItems = [
   { to: '/deals', icon: Briefcase, label: 'Сделки' },
   { to: '/pipeline', icon: GitBranch, label: 'Воронка' },
   { to: '/activities', icon: ListTodo, label: 'Активности' },
+  { to: '/partners', icon: Building2, label: 'Партнёры' },
+  { to: '/venues', icon: MapPin, label: 'Площадки' },
   { to: '/telephony', icon: Phone, label: 'Телефония' },
   { to: '/whatsapp', icon: MessageSquare, label: 'WhatsApp' },
   { to: '/analytics', icon: BarChart3, label: 'Аналитика' },
@@ -46,7 +48,7 @@ export default function Sidebar() {
         ))}
 
         <div className="text-xs text-slate-600 font-semibold uppercase tracking-wider px-3 py-2 mt-3">
-          Коммуникации
+          Евент-партнёры
         </div>
         {navItems.slice(5, 7).map(({ to, icon: Icon, label }) => (
           <NavLink
@@ -59,9 +61,22 @@ export default function Sidebar() {
         ))}
 
         <div className="text-xs text-slate-600 font-semibold uppercase tracking-wider px-3 py-2 mt-3">
+          Коммуникации
+        </div>
+        {navItems.slice(7, 9).map(({ to, icon: Icon, label }) => (
+          <NavLink
+            key={to} to={to}
+            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+          >
+            <Icon className="w-4 h-4 shrink-0" />
+            {label}
+          </NavLink>
+        ))}
+
+        <div className="text-xs text-slate-600 font-semibold uppercase tracking-wider px-3 py-2 mt-3">
           Аналитика
         </div>
-        {navItems.slice(7).map(({ to, icon: Icon, label }) => (
+        {navItems.slice(9).map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to} to={to}
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}

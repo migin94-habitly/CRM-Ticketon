@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { X } from 'lucide-react';
-import { dealsAPI, pipelinesAPI, contactsAPI } from '../../api';
-import type { Deal, Pipeline, Contact, PipelineStage } from '../../types';
+import { dealsAPI, pipelinesAPI, contactsAPI, partnersAPI, venuesAPI } from '../../api';
+import type { Deal, Pipeline, Contact, PipelineStage, Partner, Venue } from '../../types';
 import toast from 'react-hot-toast';
 
 interface Props {
@@ -16,6 +16,8 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
   const [pipelines, setPipelines] = useState<Pipeline[]>([]);
   const [stages, setStages] = useState<PipelineStage[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [partners, setPartners] = useState<Partner[]>([]);
+  const [venues, setVenues] = useState<Venue[]>([]);
 
   const pipelineId = useWatch({ control, name: 'pipeline_id' }) as string | undefined;
   const prevPipelineId = useRef<string | undefined>(undefined);
@@ -73,6 +75,8 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
         toast.error('Ошибка загрузки контактов');
         setContacts([]);
       });
+    partnersAPI.list().then(r => setPartners((r.data.data as Partner[]) || []));
+    venuesAPI.list().then(r => setVenues((r.data.data as Venue[]) || []));
   }, [deal, reset]);
 
   const normalizeDealPayload = (data: Partial<Deal>): Partial<Deal> => {
@@ -191,6 +195,48 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
             <label className="label">Дата закрытия</label>
             <input className="input" type="date" {...register('close_date')} />
           </div>
+
+          {/* Event Management Fields */}
+          <div className="pt-2 border-t border-slate-700/50">
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Мероприятие</div>
+            <div className="space-y-3">
+              <div>
+                <label className="label">Партнёр (организатор)</label>
+                <select className="input" {...register('partner_id')}>
+                  <option value="">— без партнёра —</option>
+                  {partners.map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="label">Название мероприятия</label>
+                <input className="input" {...register('event_name')} placeholder="Концерт / Фестиваль / Спортивное событие" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">Дата мероприятия</label>
+                  <input className="input" type="date" {...register('event_date')} />
+                </div>
+                <div>
+                  <label className="label">Кол-во билетов</label>
+                  <input className="input" type="number" min="0" {...register('ticket_count', { valueAsNumber: true })} placeholder="0" />
+                </div>
+              </div>
+              <div>
+                <label className="label">Площадка</label>
+                <select className="input" {...register('venue_id')}>
+                  <option value="">— без площадки —</option>
+                  {venues.map(v => (
+                    <option key={v.id} value={v.id}>
+                      {v.name}{v.city ? ` · ${v.city.name}` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
           <div>
             <label className="label">Заметки</label>
             <textarea className="input resize-none" rows={2} {...register('notes')} />

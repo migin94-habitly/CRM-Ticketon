@@ -65,6 +65,11 @@ export interface Deal {
   close_date?: string;
   notes?: string;
   lost_reason?: string;
+  partner_id?: string;
+  venue_id?: string;
+  event_name?: string;
+  event_date?: string;
+  ticket_count?: number;
   created_at: string;
   updated_at: string;
   contact?: Contact;
@@ -72,6 +77,8 @@ export interface Deal {
   stage?: { name: string; color: string };
   activities?: Activity[];
   ai_score?: AIScore;
+  partner?: Partner;
+  venue?: Venue;
 }
 
 export type ActivityType = 'call' | 'email' | 'meeting' | 'note' | 'task' | 'whatsapp';
@@ -218,4 +225,58 @@ export interface AuditLog {
   description?: string;
   ip_address?: string;
   created_at: string;
+}
+
+export interface City {
+  id: string;
+  name: string;
+  country: string;
+  created_at: string;
+}
+
+export interface Venue {
+  id: string;
+  name: string;
+  address?: string;
+  city_id?: string;
+  capacity?: number;
+  description?: string;
+  created_at: string;
+  updated_at: string;
+  city?: City;
+}
+
+export type PartnerStatus = 'active' | 'inactive' | 'prospect';
+
+export interface Partner {
+  id: string;
+  name: string;
+  contact_person?: string;
+  email?: string;
+  phone?: string;
+  city_id?: string;
+  status: PartnerStatus;
+  contract_number?: string;
+  contract_date?: string;
+  commission_rate: number;
+  notes?: string;
+  website?: string;
+  created_at: string;
+  updated_at: string;
+  city?: City;
+  deals_count?: number;
+  total_revenue?: number;
+}
+
+export interface PartnerStats {
+  partner_id: string;
+  partner_name: string;
+  total_deals: number;
+  won_deals: number;
+  lost_deals: number;
+  active_deals: number;
+  total_revenue: number;
+  avg_deal_value: number;
+  conversion_rate: number;
+  total_tickets: number;
 }

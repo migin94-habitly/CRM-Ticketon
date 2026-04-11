@@ -50,6 +50,9 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 	analyticsH := handlers.NewAnalyticsHandler(db, &cfg.AI)
 	activitiesH := handlers.NewActivitiesHandler(db)
 	auditLogH := handlers.NewAuditLogHandler(db)
+	citiesH := handlers.NewCitiesHandler(db)
+	venuesH := handlers.NewVenuesHandler(db)
+	partnersH := handlers.NewPartnersHandler(db)
 
 	r.POST("/api/v1/auth/login", authH.Login)
 	r.GET("/api/v1/webhooks/whatsapp", whatsappH.WebhookVerify)
@@ -141,6 +144,32 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 		auditLog := api.Group("/audit-log")
 		{
 			auditLog.GET("", middleware.RequireRoles("admin", "manager"), auditLogH.List)
+		}
+
+		cities := api.Group("/cities")
+		{
+			cities.GET("", citiesH.List)
+			cities.POST("", middleware.RequireRoles("admin", "manager"), citiesH.Create)
+			cities.PUT("/:id", middleware.RequireRoles("admin", "manager"), citiesH.Update)
+			cities.DELETE("/:id", middleware.RequireRoles("admin"), citiesH.Delete)
+		}
+
+		venues := api.Group("/venues")
+		{
+			venues.GET("", venuesH.List)
+			venues.POST("", middleware.RequireRoles("admin", "manager"), venuesH.Create)
+			venues.PUT("/:id", middleware.RequireRoles("admin", "manager"), venuesH.Update)
+			venues.DELETE("/:id", middleware.RequireRoles("admin", "manager"), venuesH.Delete)
+		}
+
+		partners := api.Group("/partners")
+		{
+			partners.GET("", partnersH.List)
+			partners.POST("", middleware.RequireRoles("admin", "manager"), partnersH.Create)
+			partners.GET("/:id", partnersH.Get)
+			partners.PUT("/:id", middleware.RequireRoles("admin", "manager"), partnersH.Update)
+			partners.DELETE("/:id", middleware.RequireRoles("admin"), partnersH.Delete)
+			partners.GET("/:id/stats", partnersH.GetStats)
 		}
 	}
 
