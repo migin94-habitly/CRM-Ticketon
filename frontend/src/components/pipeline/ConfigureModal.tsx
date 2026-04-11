@@ -66,7 +66,7 @@ export default function ConfigureModal({
       _key: tmpKey(),
       _new: true,
       _deleted: false,
-      name: 'New Stage',
+      name: 'Новая стадия',
       color: '#6366f1',
       probability: 20,
       is_won: false,
@@ -94,7 +94,7 @@ export default function ConfigureModal({
 
   // ── Save ────────────────────────────────────────────────────────────────
   const handleSave = async () => {
-    if (!name.trim()) { toast.error('Pipeline name is required'); return; }
+    if (!name.trim()) { toast.error('Введите название воронки'); return; }
     setSaving(true);
     try {
       // 1. Update pipeline header
@@ -131,10 +131,10 @@ export default function ConfigureModal({
       // 4. Fetch updated pipeline and notify parent
       const updated = await pipelinesAPI.get(pipeline.id);
       const fresh = updated.data.data as Pipeline;
-      toast.success('Pipeline saved');
+      toast.success('Воронка сохранена');
       onSaved(fresh);
     } catch {
-      toast.error('Failed to save pipeline');
+      toast.error('Ошибка сохранения воронки');
     } finally {
       setSaving(false);
     }
@@ -143,16 +143,16 @@ export default function ConfigureModal({
   // ── Delete pipeline ──────────────────────────────────────────────────────
   const handleDelete = async () => {
     if (allPipelines.length <= 1) {
-      toast.error('Cannot delete the only pipeline');
+      toast.error('Нельзя удалить единственную воронку');
       return;
     }
     setDeleting(true);
     try {
       await pipelinesAPI.delete(pipeline.id);
-      toast.success('Pipeline deleted');
+      toast.success('Воронка удалена');
       onDeleted();
     } catch {
-      toast.error('Failed to delete pipeline');
+      toast.error('Ошибка удаления воронки');
     } finally {
       setDeleting(false);
     }
@@ -160,15 +160,15 @@ export default function ConfigureModal({
 
   // ── Create new pipeline ──────────────────────────────────────────────────
   const handleCreatePipeline = async () => {
-    if (!newPipelineName.trim()) { toast.error('Enter a name'); return; }
+    if (!newPipelineName.trim()) { toast.error('Введите название'); return; }
     try {
       await pipelinesAPI.create({ name: newPipelineName.trim(), is_default: false } as Partial<Pipeline>);
-      toast.success('Pipeline created');
+      toast.success('Воронка создана');
       setShowNewPipeline(false);
       setNewPipelineName('');
       onPipelineCreated();
     } catch {
-      toast.error('Failed to create pipeline');
+      toast.error('Ошибка создания воронки');
     }
   };
 
@@ -181,7 +181,7 @@ export default function ConfigureModal({
       <div className="relative h-full w-full max-w-md bg-dark-800 border-l border-slate-700 flex flex-col shadow-2xl animate-in">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700">
-          <h2 className="font-semibold text-white">Configure Pipeline</h2>
+          <h2 className="font-semibold text-white">Настройка воронки</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-white transition">
             <X className="w-4 h-4" />
           </button>
@@ -190,14 +190,14 @@ export default function ConfigureModal({
         <div className="flex-1 overflow-y-auto p-5 space-y-6">
           {/* Pipeline info */}
           <section className="space-y-3">
-            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pipeline</h3>
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Воронка</h3>
             <div>
-              <label className="label">Name</label>
+              <label className="label">Название</label>
               <input
                 className="input"
                 value={name}
                 onChange={e => setName(e.target.value)}
-                placeholder="Pipeline name"
+                placeholder="Название воронки"
               />
             </div>
             <label className="flex items-center gap-3 cursor-pointer select-none">
@@ -207,16 +207,16 @@ export default function ConfigureModal({
               >
                 <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${isDefault ? 'left-[18px]' : 'left-0.5'}`} />
               </div>
-              <span className="text-sm text-slate-300">Default pipeline</span>
+              <span className="text-sm text-slate-300">Воронка по умолчанию</span>
             </label>
           </section>
 
           {/* Stages */}
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Stages</h3>
+              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Стадии</h3>
               <button onClick={addStage} className="flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300 transition">
-                <Plus className="w-3.5 h-3.5" /> Add Stage
+                <Plus className="w-3.5 h-3.5" /> Добавить стадию
               </button>
             </div>
 
@@ -257,7 +257,7 @@ export default function ConfigureModal({
                       className="input py-1 text-sm flex-1"
                       value={s.name || ''}
                       onChange={e => updateStage(s._key, { name: e.target.value })}
-                      placeholder="Stage name"
+                      placeholder="Название стадии"
                     />
 
                     {/* Move up/down */}
@@ -311,7 +311,7 @@ export default function ConfigureModal({
                           : 'bg-slate-700/50 text-slate-500 border-slate-600 hover:border-green-500/40 hover:text-green-400'
                       }`}
                     >
-                      WON
+                      ВЫИГРАН
                     </button>
 
                     <button
@@ -323,7 +323,7 @@ export default function ConfigureModal({
                           : 'bg-slate-700/50 text-slate-500 border-slate-600 hover:border-red-500/40 hover:text-red-400'
                       }`}
                     >
-                      LOST
+                      ПРОИГРАН
                     </button>
                   </div>
                 </div>
@@ -331,7 +331,7 @@ export default function ConfigureModal({
 
               {visibleStages.length === 0 && (
                 <div className="text-center text-slate-600 text-sm py-4 border-2 border-dashed border-slate-700 rounded-lg">
-                  No stages — click "Add Stage"
+                  Стадий нет — нажмите «Добавить стадию»
                 </div>
               )}
             </div>
@@ -339,27 +339,27 @@ export default function ConfigureModal({
 
           {/* Create new pipeline */}
           <section className="space-y-3">
-            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Other Pipelines</h3>
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Другие воронки</h3>
             {!showNewPipeline ? (
               <button
                 type="button"
                 onClick={() => setShowNewPipeline(true)}
                 className="btn-secondary text-sm w-full justify-center"
               >
-                <Plus className="w-4 h-4" /> New Pipeline
+                <Plus className="w-4 h-4" /> Новая воронка
               </button>
             ) : (
               <div className="flex gap-2">
                 <input
                   className="input text-sm flex-1"
-                  placeholder="Pipeline name"
+                  placeholder="Название воронки"
                   value={newPipelineName}
                   onChange={e => setNewPipelineName(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleCreatePipeline()}
                   autoFocus
                 />
                 <button type="button" onClick={handleCreatePipeline} className="btn-primary text-sm px-3">
-                  Create
+                  Создать
                 </button>
                 <button type="button" onClick={() => setShowNewPipeline(false)} className="btn-secondary text-sm px-3">
                   <X className="w-4 h-4" />
@@ -374,8 +374,8 @@ export default function ConfigureModal({
                   p.id === pipeline.id ? 'bg-primary-500/10 text-primary-300' : 'text-slate-400'
                 }`}>
                   <span className="truncate">{p.name}</span>
-                  {p.is_default && <span className="text-[10px] text-slate-500 ml-2 shrink-0">default</span>}
-                  {p.id === pipeline.id && <span className="text-[10px] text-primary-400 ml-2 shrink-0">editing</span>}
+                  {p.is_default && <span className="text-[10px] text-slate-500 ml-2 shrink-0">осн.</span>}
+                  {p.id === pipeline.id && <span className="text-[10px] text-primary-400 ml-2 shrink-0">редактируется</span>}
                 </div>
               ))}
             </div>
@@ -392,26 +392,26 @@ export default function ConfigureModal({
               disabled={allPipelines.length <= 1}
               className="btn-danger text-sm py-1.5 disabled:opacity-40"
             >
-              <Trash2 className="w-3.5 h-3.5" /> Delete
+              <Trash2 className="w-3.5 h-3.5" /> Удалить
             </button>
           ) : (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-red-400">Sure?</span>
+              <span className="text-xs text-red-400">Уверены?</span>
               <button type="button" onClick={handleDelete} disabled={deleting} className="btn-danger text-xs py-1 px-2">
-                {deleting ? '...' : 'Yes'}
+                {deleting ? '...' : 'Да'}
               </button>
               <button type="button" onClick={() => setConfirmDelete(false)} className="btn-secondary text-xs py-1 px-2">
-                No
+                Нет
               </button>
             </div>
           )}
 
           <div className="flex gap-2">
             <button type="button" onClick={onClose} className="btn-secondary text-sm py-1.5">
-              Cancel
+              Отмена
             </button>
             <button type="button" onClick={handleSave} disabled={saving} className="btn-primary text-sm py-1.5">
-              {saving ? 'Saving...' : 'Save'}
+              {saving ? 'Сохранение...' : 'Сохранить'}
             </button>
           </div>
         </div>

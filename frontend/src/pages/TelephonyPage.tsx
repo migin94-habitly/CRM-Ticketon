@@ -29,11 +29,11 @@ export default function TelephonyPage() {
     setCalling(true);
     try {
       await telephonyAPI.initiateCall(toNumber);
-      toast.success(`Calling ${toNumber}...`);
+      toast.success(`Вызов ${toNumber}...`);
       setToNumber('');
       load();
     } catch {
-      toast.error('Failed to initiate call');
+      toast.error('Ошибка вызова');
     } finally {
       setCalling(false);
     }
@@ -48,7 +48,7 @@ export default function TelephonyPage() {
     try {
       const r = await telephonyAPI.getRecordingURL(call.id);
       const url = r.data.data?.url;
-      if (!url) { toast.error('No recording'); return; }
+      if (!url) { toast.error('Запись недоступна'); return; }
       if (audioRef.current) {
         audioRef.current.src = url;
         audioRef.current.play();
@@ -56,7 +56,7 @@ export default function TelephonyPage() {
         audioRef.current.onended = () => setPlayingId(null);
       }
     } catch {
-      toast.error('Recording not available');
+      toast.error('Запись не найдена');
     }
   };
 
@@ -64,9 +64,9 @@ export default function TelephonyPage() {
     setAnalyzing(id);
     try {
       await analyticsAPI.analyzeCall(id);
-      toast.success('AI analysis complete');
+      toast.success('ИИ-анализ завершён');
     } catch {
-      toast.error('Analysis failed');
+      toast.error('Ошибка анализа');
     } finally {
       setAnalyzing(null);
     }
@@ -82,14 +82,14 @@ export default function TelephonyPage() {
     <div className="space-y-4 animate-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Telephony</h1>
-          <p className="text-slate-500 text-sm">Call history & recordings</p>
+          <h1 className="text-xl font-bold text-white">Телефония</h1>
+          <p className="text-slate-500 text-sm">История звонков и записи</p>
         </div>
       </div>
 
       <div className="card p-5">
         <h3 className="font-semibold text-white mb-3 flex items-center gap-2">
-          <Phone className="w-4 h-4 text-green-400" /> Quick Dial
+          <Phone className="w-4 h-4 text-green-400" /> Быстрый набор
         </h3>
         <form onSubmit={handleCall} className="flex gap-3">
           <input
@@ -100,11 +100,11 @@ export default function TelephonyPage() {
             onChange={e => setToNumber(e.target.value)}
           />
           <button type="submit" disabled={calling || !toNumber} className="btn-primary px-6">
-            <Phone className="w-4 h-4" /> {calling ? 'Calling...' : 'Call'}
+            <Phone className="w-4 h-4" /> {calling ? 'Вызов...' : 'Позвонить'}
           </button>
         </form>
         <p className="text-xs text-slate-600 mt-2">
-          Integration: Asterisk / FreeSWITCH / Twilio / Zadarma — configure in Settings
+          Интеграция: Asterisk / FreeSWITCH / Twilio / Zadarma — настройте в Настройках
         </p>
       </div>
 
@@ -112,26 +112,26 @@ export default function TelephonyPage() {
 
       <div className="card overflow-hidden">
         <div className="px-4 py-3 border-b border-slate-700/50">
-          <h3 className="font-semibold text-white">Call Records</h3>
+          <h3 className="font-semibold text-white">История звонков</h3>
         </div>
         {loading ? (
-          <div className="text-center py-12 text-slate-500">Loading...</div>
+          <div className="text-center py-12 text-slate-500">Загрузка...</div>
         ) : calls.length === 0 ? (
           <div className="text-center py-12 text-slate-500">
             <Phone className="w-10 h-10 mx-auto mb-2 opacity-20" />
-            No call records yet
+            Звонков нет
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-700/50">
-                <th className="text-left px-4 py-3 text-slate-500 font-medium">Direction</th>
-                <th className="text-left px-4 py-3 text-slate-500 font-medium">Number</th>
-                <th className="text-left px-4 py-3 text-slate-500 font-medium">Contact</th>
-                <th className="text-left px-4 py-3 text-slate-500 font-medium">Status</th>
-                <th className="text-left px-4 py-3 text-slate-500 font-medium">Duration</th>
-                <th className="text-left px-4 py-3 text-slate-500 font-medium">Date</th>
-                <th className="px-4 py-3 text-slate-500 font-medium">Actions</th>
+                <th className="text-left px-4 py-3 text-slate-500 font-medium">Направление</th>
+                <th className="text-left px-4 py-3 text-slate-500 font-medium">Номер</th>
+                <th className="text-left px-4 py-3 text-slate-500 font-medium">Контакт</th>
+                <th className="text-left px-4 py-3 text-slate-500 font-medium">Статус</th>
+                <th className="text-left px-4 py-3 text-slate-500 font-medium">Длительность</th>
+                <th className="text-left px-4 py-3 text-slate-500 font-medium">Дата</th>
+                <th className="px-4 py-3 text-slate-500 font-medium">Действия</th>
               </tr>
             </thead>
             <tbody>
@@ -151,7 +151,7 @@ export default function TelephonyPage() {
                       call.status === 'completed' ? 'bg-green-500/10 text-green-400' :
                       call.status === 'missed' ? 'bg-red-500/10 text-red-400' :
                       'bg-yellow-500/10 text-yellow-400'
-                    }`}>{call.status}</span>
+                    }`}>{call.status === 'completed' ? 'Завершён' : call.status === 'missed' ? 'Пропущен' : 'В процессе'}</span>
                   </td>
                   <td className="px-4 py-3 text-slate-400">{formatDuration(call.duration)}</td>
                   <td className="px-4 py-3 text-slate-500 text-xs">{formatDateTime(call.created_at)}</td>
@@ -200,7 +200,7 @@ export default function TelephonyPage() {
       {calls.some(c => c.ai_analysis) && (
         <div className="card p-5">
           <h3 className="font-semibold text-white mb-3 flex items-center gap-2">
-            <Zap className="w-4 h-4 text-primary-400" /> Latest AI Analysis
+            <Zap className="w-4 h-4 text-primary-400" /> Последний ИИ-анализ
           </h3>
           {calls.filter(c => c.ai_analysis).slice(0, 1).map(c => (
             <div key={c.id} className="text-sm text-slate-400 whitespace-pre-wrap bg-dark-900 rounded-lg p-3">

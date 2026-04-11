@@ -30,11 +30,11 @@ export default function LoginPage() {
             <Zap className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-white">CRM Ticketon</h1>
-          <p className="text-slate-500 text-sm mt-1">Sales Intelligence Platform</p>
+          <p className="text-slate-500 text-sm mt-1">Платформа управления продажами</p>
         </div>
 
         <form onSubmit={handleSubmit} className="card p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-white text-center mb-2">Sign In</h2>
+          <h2 className="text-lg font-semibold text-white text-center mb-2">Войти</h2>
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-3 py-2 rounded-lg">
@@ -56,7 +56,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="label">Password</label>
+            <label className="label">Пароль</label>
             <div className="relative">
               <input
                 type={showPwd ? 'text' : 'password'}
@@ -78,12 +78,12 @@ export default function LoginPage() {
           </div>
 
           <button type="submit" className="btn-primary w-full justify-center py-2.5" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Вход...' : 'Войти'}
           </button>
         </form>
 
         <p className="text-center text-xs text-slate-600 mt-4">
-          Default: admin@crm.local / admin123
+          По умолчанию: admin@crm.local / admin123
         </p>
       </div>
     </div>

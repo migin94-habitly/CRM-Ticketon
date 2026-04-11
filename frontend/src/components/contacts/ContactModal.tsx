@@ -22,14 +22,14 @@ export default function ContactModal({ contact, onClose, onSaved }: Props) {
     try {
       if (contact?.id) {
         await contactsAPI.update(contact.id, data);
-        toast.success('Contact updated');
+        toast.success('Контакт обновлён');
       } else {
         await contactsAPI.create(data);
-        toast.success('Contact created');
+        toast.success('Контакт создан');
       }
       onSaved();
     } catch {
-      toast.error('Failed to save contact');
+      toast.error('Ошибка сохранения контакта');
     }
   };
 
@@ -37,7 +37,7 @@ export default function ContactModal({ contact, onClose, onSaved }: Props) {
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
       <div className="card w-full max-w-lg">
         <div className="flex items-center justify-between p-5 border-b border-slate-700">
-          <h2 className="font-semibold text-white">{contact ? 'Edit Contact' : 'New Contact'}</h2>
+          <h2 className="font-semibold text-white">{contact ? 'Редактировать контакт' : 'Новый контакт'}</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-white transition">
             <X className="w-4 h-4" />
           </button>
@@ -45,11 +45,11 @@ export default function ContactModal({ contact, onClose, onSaved }: Props) {
         <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label">First Name *</label>
+              <label className="label">Имя *</label>
               <input className="input" {...register('first_name', { required: true })} />
             </div>
             <div>
-              <label className="label">Last Name *</label>
+              <label className="label">Фамилия *</label>
               <input className="input" {...register('last_name', { required: true })} />
             </div>
           </div>
@@ -59,50 +59,50 @@ export default function ContactModal({ contact, onClose, onSaved }: Props) {
               <input className="input" type="email" {...register('email')} />
             </div>
             <div>
-              <label className="label">Phone</label>
+              <label className="label">Телефон</label>
               <input className="input" type="tel" {...register('phone')} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label">Company</label>
+              <label className="label">Компания</label>
               <input className="input" {...register('company')} />
             </div>
             <div>
-              <label className="label">Position</label>
+              <label className="label">Должность</label>
               <input className="input" {...register('position')} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label">Status</label>
+              <label className="label">Статус</label>
               <select className="input" {...register('status')}>
-                <option value="new">New</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="lost">Lost</option>
+                <option value="new">Новый</option>
+                <option value="active">Активный</option>
+                <option value="inactive">Неактивный</option>
+                <option value="lost">Потерян</option>
               </select>
             </div>
             <div>
-              <label className="label">Source</label>
+              <label className="label">Источник</label>
               <select className="input" {...register('source')}>
-                <option value="">None</option>
-                <option value="website">Website</option>
-                <option value="referral">Referral</option>
-                <option value="cold_call">Cold Call</option>
+                <option value="">Нет</option>
+                <option value="website">Веб-сайт</option>
+                <option value="referral">Рекомендация</option>
+                <option value="cold_call">Холодный звонок</option>
                 <option value="linkedin">LinkedIn</option>
-                <option value="event">Event</option>
-                <option value="other">Other</option>
+                <option value="event">Мероприятие</option>
+                <option value="other">Другое</option>
               </select>
             </div>
           </div>
           <div>
-            <label className="label">Notes</label>
+            <label className="label">Заметки</label>
             <textarea className="input resize-none" rows={2} {...register('notes')} />
           </div>
           <div className="flex gap-3 justify-end pt-2">
-            <button type="button" onClick={onClose} className="btn-secondary">Cancel</button>
-            <button type="submit" className="btn-primary">Save Contact</button>
+            <button type="button" onClick={onClose} className="btn-secondary">Отмена</button>
+            <button type="submit" className="btn-primary">Сохранить контакт</button>
           </div>
         </form>
       </div>

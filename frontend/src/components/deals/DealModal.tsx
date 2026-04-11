@@ -63,14 +63,14 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
     pipelinesAPI.list()
       .then((r) => setPipelines(r.data.data || []))
       .catch(() => {
-        toast.error('Failed to load pipelines');
+        toast.error('Ошибка загрузки воронок');
         setPipelines([]);
       });
     contactsAPI
       .list({ limit: 100 })
       .then((r) => setContacts(r.data.data || []))
       .catch(() => {
-        toast.error('Failed to load contacts');
+        toast.error('Ошибка загрузки контактов');
         setContacts([]);
       });
   }, [deal, reset]);
@@ -101,14 +101,14 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
     try {
       if (deal?.id) {
         await dealsAPI.update(deal.id, payload);
-        toast.success('Deal updated');
+        toast.success('Сделка обновлена');
       } else {
         await dealsAPI.create(payload);
-        toast.success('Deal created');
+        toast.success('Сделка создана');
       }
       onSaved();
     } catch {
-      toast.error('Failed to save deal');
+      toast.error('Ошибка сохранения сделки');
     }
   };
 
@@ -116,23 +116,23 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
       <div className="card w-full max-w-lg">
         <div className="flex items-center justify-between p-5 border-b border-slate-700">
-          <h2 className="font-semibold text-white">{deal ? 'Edit Deal' : 'New Deal'}</h2>
+          <h2 className="font-semibold text-white">{deal ? 'Редактировать сделку' : 'Новая сделка'}</h2>
           <button type="button" onClick={onClose} className="text-slate-500 hover:text-white">
             <X className="w-4 h-4" />
           </button>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
           <div>
-            <label className="label">Deal Title *</label>
-            <input className="input" {...register('title', { required: true })} placeholder="e.g. Enterprise License Deal" />
+            <label className="label">Название сделки *</label>
+            <input className="input" {...register('title', { required: true })} placeholder="Например: Корпоративная лицензия" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label">Value</label>
+              <label className="label">Сумма</label>
               <input className="input" type="number" step="0.01" {...register('value', { valueAsNumber: true })} />
             </div>
             <div>
-              <label className="label">Currency</label>
+              <label className="label">Валюта</label>
               <select className="input" {...register('currency')}>
                 <option value="KZT">KZT — ₸</option>
                 <option value="USD">USD — $</option>
@@ -144,9 +144,9 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label">Pipeline *</label>
+              <label className="label">Воронка *</label>
               <select className="input" {...register('pipeline_id', { required: true })}>
-                <option value="">Select pipeline</option>
+                <option value="">Выберите воронку</option>
                 {pipelines.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
@@ -155,9 +155,9 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
               </select>
             </div>
             <div>
-              <label className="label">Stage *</label>
+              <label className="label">Стадия *</label>
               <select className="input" {...register('stage_id', { required: true })}>
-                <option value="">Select stage</option>
+                <option value="">Выберите стадию</option>
                 {stages.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name}
@@ -168,9 +168,9 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label">Contact</label>
+              <label className="label">Контакт</label>
               <select className="input" {...register('contact_id')}>
-                <option value="">None</option>
+                <option value="">Нет</option>
                 {contacts.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.first_name} {c.last_name}
@@ -179,28 +179,28 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
               </select>
             </div>
             <div>
-              <label className="label">Priority</label>
+              <label className="label">Приоритет</label>
               <select className="input" {...register('priority')}>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
+                <option value="low">Низкий</option>
+                <option value="medium">Средний</option>
+                <option value="high">Высокий</option>
               </select>
             </div>
           </div>
           <div>
-            <label className="label">Close Date</label>
+            <label className="label">Дата закрытия</label>
             <input className="input" type="date" {...register('close_date')} />
           </div>
           <div>
-            <label className="label">Notes</label>
+            <label className="label">Заметки</label>
             <textarea className="input resize-none" rows={2} {...register('notes')} />
           </div>
           <div className="flex gap-3 justify-end pt-2">
             <button type="button" onClick={onClose} className="btn-secondary">
-              Cancel
+              Отмена
             </button>
             <button type="submit" className="btn-primary">
-              Save Deal
+              Сохранить сделку
             </button>
           </div>
         </form>

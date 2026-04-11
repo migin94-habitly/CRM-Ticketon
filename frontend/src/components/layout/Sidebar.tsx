@@ -1,18 +1,19 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Users, Briefcase, GitBranch, Phone, MessageSquare,
-  BarChart3, Settings, Zap, ListTodo,
+  BarChart3, Settings, Zap, ListTodo, ClipboardList,
 } from 'lucide-react';
 
 const navItems = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/contacts', icon: Users, label: 'Contacts' },
-  { to: '/deals', icon: Briefcase, label: 'Deals' },
-  { to: '/pipeline', icon: GitBranch, label: 'Pipeline' },
-  { to: '/activities', icon: ListTodo, label: 'Activities' },
-  { to: '/telephony', icon: Phone, label: 'Telephony' },
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Дашборд' },
+  { to: '/contacts', icon: Users, label: 'Контакты' },
+  { to: '/deals', icon: Briefcase, label: 'Сделки' },
+  { to: '/pipeline', icon: GitBranch, label: 'Воронка' },
+  { to: '/activities', icon: ListTodo, label: 'Активности' },
+  { to: '/telephony', icon: Phone, label: 'Телефония' },
   { to: '/whatsapp', icon: MessageSquare, label: 'WhatsApp' },
-  { to: '/analytics', icon: BarChart3, label: 'Analytics' },
+  { to: '/analytics', icon: BarChart3, label: 'Аналитика' },
+  { to: '/audit-log', icon: ClipboardList, label: 'Журнал действий' },
 ];
 
 export default function Sidebar() {
@@ -25,14 +26,14 @@ export default function Sidebar() {
           </div>
           <div>
             <div className="text-sm font-bold text-white">CRM Ticketon</div>
-            <div className="text-xs text-slate-500">Sales Platform</div>
+            <div className="text-xs text-slate-500">Платформа продаж</div>
           </div>
         </div>
       </div>
 
       <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
         <div className="text-xs text-slate-600 font-semibold uppercase tracking-wider px-3 py-2 mt-1">
-          Main
+          Основное
         </div>
         {navItems.slice(0, 5).map(({ to, icon: Icon, label }) => (
           <NavLink
@@ -45,7 +46,7 @@ export default function Sidebar() {
         ))}
 
         <div className="text-xs text-slate-600 font-semibold uppercase tracking-wider px-3 py-2 mt-3">
-          Communications
+          Коммуникации
         </div>
         {navItems.slice(5, 7).map(({ to, icon: Icon, label }) => (
           <NavLink
@@ -58,7 +59,7 @@ export default function Sidebar() {
         ))}
 
         <div className="text-xs text-slate-600 font-semibold uppercase tracking-wider px-3 py-2 mt-3">
-          Intelligence
+          Аналитика
         </div>
         {navItems.slice(7).map(({ to, icon: Icon, label }) => (
           <NavLink
@@ -74,7 +75,7 @@ export default function Sidebar() {
       <div className="p-3 border-t border-slate-800">
         <NavLink to="/settings" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
           <Settings className="w-4 h-4 shrink-0" />
-          Settings
+          Настройки
         </NavLink>
       </div>
     </aside>

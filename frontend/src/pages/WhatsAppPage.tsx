@@ -47,13 +47,13 @@ export default function WhatsAppPage() {
         body: newMsg,
         contact_id: selectedConv.contact_id,
       });
-      toast.success('Message sent');
+      toast.success('Сообщение отправлено');
       setNewMsg('');
       const params: Record<string, unknown> = {};
       if (selectedConv.contact_id) params.contact_id = selectedConv.contact_id;
       whatsappAPI.messages(params).then(r => setMessages(r.data.data || []));
     } catch {
-      toast.error('Failed to send message');
+      toast.error('Ошибка отправки сообщения');
     } finally {
       setSending(false);
     }
@@ -63,21 +63,21 @@ export default function WhatsAppPage() {
     <div className="space-y-4 animate-in">
       <div>
         <h1 className="text-xl font-bold text-white">WhatsApp</h1>
-        <p className="text-slate-500 text-sm">Customer conversations</p>
+        <p className="text-slate-500 text-sm">Переписка с клиентами</p>
       </div>
 
       <div className="card flex h-[calc(100vh-200px)] overflow-hidden">
         <div className="w-80 border-r border-slate-700/50 flex flex-col shrink-0">
           <div className="p-3 border-b border-slate-700/50">
-            <input className="input text-sm py-1.5" placeholder="Search conversations..." />
+            <input className="input text-sm py-1.5" placeholder="Поиск диалогов..." />
           </div>
           <div className="flex-1 overflow-y-auto">
             {loading ? (
-              <div className="text-center py-8 text-slate-500 text-sm">Loading...</div>
+              <div className="text-center py-8 text-slate-500 text-sm">Загрузка...</div>
             ) : conversations.length === 0 ? (
               <div className="text-center py-8 text-slate-500 text-sm">
                 <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                No conversations yet
+                Диалогов нет
               </div>
             ) : conversations.map((conv, i) => (
               <div
@@ -123,7 +123,7 @@ export default function WhatsAppPage() {
 
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {messages.length === 0 ? (
-                <div className="text-center text-slate-500 text-sm mt-8">No messages yet</div>
+                <div className="text-center text-slate-500 text-sm mt-8">Сообщений нет</div>
               ) : messages.map(msg => (
                 <div
                   key={msg.id}
@@ -151,7 +151,7 @@ export default function WhatsAppPage() {
             <form onSubmit={sendMessage} className="p-3 border-t border-slate-700/50 flex gap-2">
               <input
                 className="input flex-1 text-sm"
-                placeholder="Type a message..."
+                placeholder="Напишите сообщение..."
                 value={newMsg}
                 onChange={e => setNewMsg(e.target.value)}
               />
@@ -164,7 +164,7 @@ export default function WhatsAppPage() {
           <div className="flex-1 flex items-center justify-center text-slate-500">
             <div className="text-center">
               <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-20" />
-              <p className="text-sm">Select a conversation</p>
+              <p className="text-sm">Выберите диалог</p>
             </div>
           </div>
         )}
