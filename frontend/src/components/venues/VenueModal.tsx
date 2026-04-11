@@ -21,7 +21,17 @@ export default function VenueModal({ venue, cities, onClose, onSaved }: Props) {
 
   const onSubmit = async (data: Partial<Venue>) => {
     if (!data.city_id) delete data.city_id;
-    if (data.capacity) data.capacity = parseInt(String(data.capacity)) || undefined;
+    const capStr =
+      data.capacity === undefined || data.capacity === null
+        ? ''
+        : String(data.capacity).trim();
+    if (!capStr) {
+      delete data.capacity;
+    } else {
+      const n = parseInt(capStr, 10);
+      if (Number.isNaN(n)) delete data.capacity;
+      else data.capacity = n;
+    }
     try {
       if (venue?.id) {
         await venuesAPI.update(venue.id, data);
