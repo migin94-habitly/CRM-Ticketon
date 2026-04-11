@@ -123,7 +123,7 @@ export default function ContactDetailPage() {
               </div>
               <div className="flex-1">
                 <div className="text-sm text-slate-200">{c.direction === 'inbound' ? c.from_number : c.to_number}</div>
-                <div className="text-xs text-slate-500">{{inbound:'Входящий',outbound:'Исходящий'}[c.direction]||c.direction} · {{completed:'Завершён',missed:'Пропущен',initiated:'Инициирован',answered:'Отвечен'}[c.status]||c.status}</div>
+                <div className="text-xs text-slate-500">{{inbound:'Входящий',outbound:'Исходящий'}[c.direction]||c.direction} · {{initiated:'Инициирован',ringing:'Дозвон',answered:'Отвечен',completed:'Завершён',missed:'Пропущен',failed:'Сбой'}[c.status]||c.status}</div>
               </div>
               <div className="text-xs text-slate-400">{c.duration}s</div>
               <div className="text-xs text-slate-600">{formatDateTime(c.created_at)}</div>
