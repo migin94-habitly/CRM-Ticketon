@@ -9,7 +9,6 @@ import {
   timeAgo,
 } from './format';
 
-// ── formatCurrency ────────────────────────────────────────────────────────────
 describe('formatCurrency', () => {
   it('formats KZT by default', () => {
     const result = formatCurrency(150000);
@@ -30,11 +29,10 @@ describe('formatCurrency', () => {
 
   it('formats negative value', () => {
     const result = formatCurrency(-500);
-    expect(result).toMatch(/-|−/); // minus sign
+    expect(result).toMatch(/-|−/);
   });
 });
 
-// ── formatDuration ────────────────────────────────────────────────────────────
 describe('formatDuration', () => {
   it('shows seconds for values under 60', () => {
     expect(formatDuration(45)).toBe('45s');
@@ -59,7 +57,6 @@ describe('formatDuration', () => {
   });
 });
 
-// ── formatDate ────────────────────────────────────────────────────────────────
 describe('formatDate', () => {
   it('returns a non-empty string for a valid ISO date', () => {
     const result = formatDate('2024-06-15T00:00:00.000Z');
@@ -73,7 +70,6 @@ describe('formatDate', () => {
   });
 });
 
-// ── initials ──────────────────────────────────────────────────────────────────
 describe('initials', () => {
   it('returns uppercase first letters', () => {
     expect(initials('ivan', 'petrov')).toBe('IP');
@@ -93,7 +89,6 @@ describe('initials', () => {
   });
 });
 
-// ── priorityColor ─────────────────────────────────────────────────────────────
 describe('priorityColor', () => {
   it('returns red classes for high priority', () => {
     const cls = priorityColor('high');
@@ -116,7 +111,6 @@ describe('priorityColor', () => {
   });
 });
 
-// ── statusColor ───────────────────────────────────────────────────────────────
 describe('statusColor', () => {
   it('returns blue for new status', () => {
     expect(statusColor('new')).toContain('blue');
@@ -139,7 +133,6 @@ describe('statusColor', () => {
   });
 });
 
-// ── timeAgo ───────────────────────────────────────────────────────────────────
 describe('timeAgo', () => {
   it('returns "just now" for very recent times', () => {
     const now = new Date().toISOString();
@@ -164,7 +157,6 @@ describe('timeAgo', () => {
   it('returns formatted date for times older than a week', () => {
     const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
     const result = timeAgo(twoWeeksAgo);
-    // Should fall back to formatDate — not a "ago" string
     expect(result).not.toContain('ago');
     expect(result.length).toBeGreaterThan(0);
   });

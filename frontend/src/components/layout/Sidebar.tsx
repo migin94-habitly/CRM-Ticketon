@@ -52,7 +52,6 @@ export default function Sidebar({ isOpen, onClose }: Props) {
         isOpen ? 'translate-x-0' : '-translate-x-full',
       ].join(' ')}
     >
-      {/* Logo */}
       <div className="p-4 border-b border-slate-800 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center shrink-0">
@@ -63,7 +62,6 @@ export default function Sidebar({ isOpen, onClose }: Props) {
             <div className="text-xs text-slate-500">Платформа продаж</div>
           </div>
         </div>
-        {/* Close button — only on mobile */}
         <button
           onClick={onClose}
           className="md:hidden p-1 text-slate-500 hover:text-white rounded transition"
@@ -72,7 +70,6 @@ export default function Sidebar({ isOpen, onClose }: Props) {
         </button>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
         <div className="text-xs text-slate-600 font-semibold uppercase tracking-wider px-3 py-2 mt-1">
           Основное
@@ -92,7 +89,6 @@ export default function Sidebar({ isOpen, onClose }: Props) {
         <NavSection label="Аналитика" items={navItems.slice(9)} onClose={onClose} />
       </nav>
 
-      {/* Settings */}
       <div className="p-3 border-t border-slate-800">
         <NavLink
           to="/settings"

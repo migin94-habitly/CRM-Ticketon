@@ -20,8 +20,8 @@ const PRESET_COLORS = [
 ];
 
 interface StageRow extends Partial<PipelineStage> {
-  _key: string;   // local unique key (id or temp uuid)
-  _new: boolean;  // not yet saved to server
+  _key: string;
+  _new: boolean;
   _deleted: boolean;
 }
 
@@ -54,7 +54,6 @@ export default function ConfigureModal({
     );
   }, [pipeline]);
 
-  // ── Stage helpers ────────────────────────────────────────────────────────
   const visibleStages = stages.filter(s => !s._deleted);
 
   const updateStage = (key: string, patch: Partial<StageRow>) => {
@@ -85,31 +84,26 @@ export default function ConfigureModal({
     const reordered = [...vis];
     [reordered[idx], reordered[newIdx]] = [reordered[newIdx], reordered[idx]];
 
-    // Rebuild full array (deleted items stay at end, positions ignored)
     setStages([
       ...reordered.map((s, i) => ({ ...s, position: i })),
       ...stages.filter(s => s._deleted),
     ]);
   };
 
-  // ── Save ────────────────────────────────────────────────────────────────
   const handleSave = async () => {
     if (!name.trim()) { toast.error('Введите название воронки'); return; }
     setSaving(true);
     try {
-      // 1. Update pipeline header
       await pipelinesAPI.update(pipeline.id, {
         name: name.trim(),
         is_default: isDefault,
       } as Partial<Pipeline>);
 
-      // 2. Delete removed stages
       const deleted = stages.filter(s => s._deleted && !s._new);
       for (const s of deleted) {
         await pipelinesAPI.deleteStage(pipeline.id, s.id!);
       }
 
-      // 3. Upsert remaining stages
       const active = stages.filter(s => !s._deleted);
       for (let i = 0; i < active.length; i++) {
         const s = active[i];
@@ -128,7 +122,6 @@ export default function ConfigureModal({
         }
       }
 
-      // 4. Fetch updated pipeline and notify parent
       const updated = await pipelinesAPI.get(pipeline.id);
       const fresh = updated.data.data as Pipeline;
       toast.success('Воронка сохранена');
@@ -140,7 +133,6 @@ export default function ConfigureModal({
     }
   };
 
-  // ── Delete pipeline ──────────────────────────────────────────────────────
   const handleDelete = async () => {
     if (allPipelines.length <= 1) {
       toast.error('Нельзя удалить единственную воронку');
@@ -158,7 +150,6 @@ export default function ConfigureModal({
     }
   };
 
-  // ── Create new pipeline ──────────────────────────────────────────────────
   const handleCreatePipeline = async () => {
     if (!newPipelineName.trim()) { toast.error('Введите название'); return; }
     try {
@@ -174,12 +165,9 @@ export default function ConfigureModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-start justify-end z-50">
-      {/* Click-outside overlay */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      {/* Side panel */}
       <div className="relative h-full w-full max-w-md bg-dark-800 border-l border-slate-700 flex flex-col shadow-2xl animate-in">
-        {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700">
           <h2 className="font-semibold text-white">Настройка воронки</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-white transition">
@@ -188,7 +176,6 @@ export default function ConfigureModal({
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 space-y-6">
-          {/* Pipeline info */}
           <section className="space-y-3">
             <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Воронка</h3>
             <div>
@@ -211,7 +198,6 @@ export default function ConfigureModal({
             </label>
           </section>
 
-          {/* Stages */}
           <section className="space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Стадии</h3>
@@ -223,11 +209,9 @@ export default function ConfigureModal({
             <div className="space-y-2">
               {visibleStages.map((s, idx) => (
                 <div key={s._key} className="bg-dark-900 border border-slate-700 rounded-lg p-3 space-y-2">
-                  {/* Row 1: handle + color + name + move + delete */}
                   <div className="flex items-center gap-2">
                     <GripVertical className="w-3.5 h-3.5 text-slate-600 shrink-0" />
 
-                    {/* Color swatch */}
                     <div className="relative">
                       <button
                         type="button"
@@ -252,7 +236,6 @@ export default function ConfigureModal({
                       )}
                     </div>
 
-                    {/* Name */}
                     <input
                       className="input py-1 text-sm flex-1"
                       value={s.name || ''}
@@ -260,7 +243,6 @@ export default function ConfigureModal({
                       placeholder="Название стадии"
                     />
 
-                    {/* Move up/down */}
                     <button
                       type="button"
                       onClick={() => moveStage(s._key, -1)}
@@ -278,7 +260,6 @@ export default function ConfigureModal({
                       <ChevronDown className="w-3.5 h-3.5" />
                     </button>
 
-                    {/* Delete */}
                     <button
                       type="button"
                       onClick={() => updateStage(s._key, { _deleted: true })}
@@ -288,7 +269,6 @@ export default function ConfigureModal({
                     </button>
                   </div>
 
-                  {/* Row 2: probability + won/lost toggles */}
                   <div className="flex items-center gap-3 pl-7">
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs text-slate-500">Win %</span>
@@ -337,7 +317,6 @@ export default function ConfigureModal({
             </div>
           </section>
 
-          {/* Create new pipeline */}
           <section className="space-y-3">
             <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Другие воронки</h3>
             {!showNewPipeline ? (
@@ -367,7 +346,6 @@ export default function ConfigureModal({
               </div>
             )}
 
-            {/* Existing pipelines list */}
             <div className="space-y-1">
               {allPipelines.map(p => (
                 <div key={p.id} className={`flex items-center justify-between px-3 py-1.5 rounded-lg text-sm ${
@@ -382,9 +360,7 @@ export default function ConfigureModal({
           </section>
         </div>
 
-        {/* Footer */}
         <div className="border-t border-slate-700 px-5 py-4 flex items-center justify-between gap-3">
-          {/* Delete */}
           {!confirmDelete ? (
             <button
               type="button"

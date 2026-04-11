@@ -197,7 +197,6 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
             <input className="input" type="date" {...register('close_date')} />
           </div>
 
-          {/* Event Management Fields */}
           <div className="pt-2 border-t border-slate-700/50">
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Мероприятие</div>
             <div className="space-y-3">

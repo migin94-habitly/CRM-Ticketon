@@ -7,15 +7,15 @@ import { Zap, Eye, EyeOff } from 'lucide-react';
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { loading, error, token } = useAppSelector((s) => s.auth);
+  const { loading, error, token, user } = useAppSelector((s) => s.auth);
 
   const [email, setEmail] = useState('admin@crm.local');
   const [password, setPassword] = useState('admin123');
   const [showPwd, setShowPwd] = useState(false);
 
   useEffect(() => {
-    if (token) navigate('/dashboard', { replace: true });
-  }, [token, navigate]);
+    if (token && user) navigate('/dashboard', { replace: true });
+  }, [token, user, navigate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

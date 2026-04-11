@@ -58,7 +58,6 @@ export default function PartnerDetailPage() {
 
   return (
     <div className="space-y-6 animate-in">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <Link to="/partners" className="text-slate-500 hover:text-white transition">
           <ArrowLeft className="w-4 h-4" />
@@ -80,7 +79,6 @@ export default function PartnerDetailPage() {
         </button>
       </div>
 
-      {/* Stats cards */}
       {stats && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="stat-card">
@@ -111,7 +109,6 @@ export default function PartnerDetailPage() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Partner info */}
         <div className="card p-5 space-y-4">
           <h3 className="font-semibold text-white">Информация о партнёре</h3>
           <div className="space-y-2.5">
@@ -145,7 +142,6 @@ export default function PartnerDetailPage() {
           )}
         </div>
 
-        {/* Recent deals */}
         <div className="card p-5 lg:col-span-2">
           <h3 className="font-semibold text-white mb-4">Сделки партнёра</h3>
           {recentDeals.length === 0 ? (

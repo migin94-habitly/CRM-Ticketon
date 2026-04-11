@@ -78,7 +78,6 @@ export default function ContactsPage() {
         </div>
       </div>
 
-      {/* Desktop table */}
       <div className="card overflow-hidden hidden sm:block">
         <table className="w-full text-sm">
           <thead>
@@ -154,7 +153,6 @@ export default function ContactsPage() {
         )}
       </div>
 
-      {/* Mobile card list */}
       <div className="sm:hidden space-y-2">
         {loading ? (
           <div className="text-center py-12 text-slate-500">Загрузка...</div>

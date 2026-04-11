@@ -21,7 +21,6 @@ export default function PartnerModal({ partner, onClose, onSaved }: Props) {
   }, [partner, reset]);
 
   const onSubmit = async (data: Partial<Partner>) => {
-    // Normalize commission_rate
     data.commission_rate = parseFloat(String(data.commission_rate ?? 0)) || 0;
     if (!data.city_id) delete data.city_id;
     try {

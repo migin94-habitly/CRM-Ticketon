@@ -283,7 +283,7 @@ func (h *DealsHandler) CreateDealActivity(c *gin.Context) {
 	h.db.Exec(`
 		INSERT INTO activities (id, type, subject, description, deal_id, contact_id, user_id, due_date, duration)
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
-		id, req.Type, req.Subject, req.Description, req.DealID, req.ContactID, userID, req.DueDate, req.Duration,
+		id, req.Type, req.Subject, req.Description, req.DealID, req.ContactID, userID, req.DueDate.Ptr(), req.Duration,
 	)
 	c.JSON(http.StatusCreated, models.APIResponse{Success: true, Data: gin.H{"id": id}})
 }

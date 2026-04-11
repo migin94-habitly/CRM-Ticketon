@@ -41,7 +41,6 @@ func (h *ChecklistHandler) Create(c *gin.Context) {
 		return
 	}
 
-	// auto position = max + 1
 	var maxPos int
 	h.db.QueryRow(`SELECT COALESCE(MAX(position),0) FROM deal_checklist_items WHERE deal_id=$1`, dealID).Scan(&maxPos)
 
