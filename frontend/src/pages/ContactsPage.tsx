@@ -6,6 +6,7 @@ import { useDebounce } from '../hooks/useDebounce';
 import type { Contact } from '../types';
 import { formatDate, statusColor, initials } from '../utils/format';
 import ContactModal from '../components/contacts/ContactModal';
+import ImportExportBar from '../components/ImportExportBar';
 import toast from 'react-hot-toast';
 
 export default function ContactsPage() {
@@ -47,9 +48,18 @@ export default function ContactsPage() {
           <h1 className="text-xl font-bold text-white">Контакты</h1>
           <p className="text-slate-500 text-sm">{total} контактов всего</p>
         </div>
-        <button className="btn-primary text-sm py-1.5" onClick={() => { setEditContact(null); setShowModal(true); }}>
-          <Plus className="w-4 h-4" /> Добавить контакт
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <ImportExportBar
+            entityName="контактов"
+            filename="contacts"
+            onExport={() => contactsAPI.exportCSV() as Promise<{ data: Blob }>}
+            onImport={(file) => contactsAPI.importCSV(file) as ReturnType<typeof contactsAPI.importCSV>}
+            onImportSuccess={load}
+          />
+          <button className="btn-primary text-sm py-1.5" onClick={() => { setEditContact(null); setShowModal(true); }}>
+            <Plus className="w-4 h-4" /> Добавить контакт
+          </button>
+        </div>
       </div>
 
       <div className="card p-3 flex flex-wrap gap-3">

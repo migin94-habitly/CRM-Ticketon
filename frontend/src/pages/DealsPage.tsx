@@ -6,6 +6,7 @@ import type { Deal } from '../types';
 import { formatCurrency, formatDate, priorityColor } from '../utils/format';
 import { useDebounce } from '../hooks/useDebounce';
 import DealModal from '../components/deals/DealModal';
+import ImportExportBar from '../components/ImportExportBar';
 import toast from 'react-hot-toast';
 
 export default function DealsPage() {
@@ -48,7 +49,14 @@ export default function DealsPage() {
           <h1 className="text-xl font-bold text-white">Сделки</h1>
           <p className="text-slate-500 text-sm">{total} сделок · {formatCurrency(totalValue)} в воронке</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <ImportExportBar
+            entityName="сделок"
+            filename="deals"
+            onExport={() => dealsAPI.exportCSV() as Promise<{ data: Blob }>}
+            onImport={(file) => dealsAPI.importCSV(file) as ReturnType<typeof dealsAPI.importCSV>}
+            onImportSuccess={load}
+          />
           <button className="btn-secondary text-sm py-1.5" onClick={() => navigate('/pipeline')}>
             Воронка
           </button>
