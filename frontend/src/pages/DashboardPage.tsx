@@ -36,6 +36,15 @@ export default function DashboardPage() {
 
   const PERIOD_LABELS: Record<string, string> = { week: 'Неделя', month: 'Месяц', quarter: 'Квартал', year: 'Год' };
 
+  const ACTIVITY_LABELS: Record<string, string> = {
+    call: 'Звонки', email: 'Email', meeting: 'Встречи',
+    note: 'Заметки', task: 'Задачи', whatsapp: 'WhatsApp',
+  };
+  const translatedActivity = activityBreakdown.map(a => ({ ...a, type: ACTIVITY_LABELS[a.type] ?? a.type }));
+
+  // Use sum of funnel stage counts as denominator to avoid skew from orphaned deals
+  const totalInFunnel = pipelineBreakdown.reduce((sum, s) => sum + s.count, 0);
+
   return (
     <div className="space-y-4 sm:space-y-6 animate-in">
       <div className="flex flex-wrap items-start gap-3 justify-between">
@@ -130,15 +139,15 @@ export default function DashboardPage() {
             {pipelineBreakdown.map((s) => (
               <div key={s.stage_id}>
                 <div className="flex justify-between text-xs text-slate-400 mb-1">
-                  <span>{s.stage_name}</span>
+                  <span>{s.stage_name || '—'}</span>
                   <span>{s.count} сделок</span>
                 </div>
                 <div className="h-1.5 bg-dark-700 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all"
                     style={{
-                      width: `${metrics.total_deals > 0 ? (s.count / metrics.total_deals) * 100 : 0}%`,
-                      background: s.color,
+                      width: `${totalInFunnel > 0 ? (s.count / totalInFunnel) * 100 : 0}%`,
+                      background: s.color || '#6366f1',
                     }}
                   />
                 </div>
@@ -168,15 +177,22 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         <div className="card p-4 sm:p-5">
           <h3 className="font-semibold text-white mb-4">Активности</h3>
-          <ResponsiveContainer width="100%" height={160}>
-            <BarChart data={activityBreakdown}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-              <XAxis dataKey="type" tick={{ fill: '#64748b', fontSize: 10 }} />
-              <YAxis tick={{ fill: '#64748b', fontSize: 10 }} />
-              <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }} />
-              <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {translatedActivity.every(a => a.count === 0) ? (
+            <div className="flex items-center justify-center h-40 text-slate-500 text-xs">
+              Нет активностей за выбранный период
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={160}>
+              <BarChart data={translatedActivity}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                <XAxis dataKey="type" tick={{ fill: '#64748b', fontSize: 10 }} />
+                <YAxis tick={{ fill: '#64748b', fontSize: 10 }} allowDecimals={false} />
+                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
+                  formatter={(v: number) => [v, 'Кол-во']} />
+                <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
 
         <div className="card p-4 sm:p-5">

@@ -87,6 +87,11 @@ func (h *AnalyticsHandler) GetDashboard(c *gin.Context) {
 		rows.Close()
 	}
 
+	allActivityTypes := []string{"call", "email", "meeting", "note", "task", "whatsapp"}
+	actCountMap := make(map[string]int)
+	for _, t := range allActivityTypes {
+		actCountMap[t] = 0
+	}
 	actRows, _ := h.db.Queryx(`
 		SELECT type, COUNT(*) as count FROM activities
 		WHERE created_at >= $1 GROUP BY type ORDER BY count DESC`, since)
@@ -94,9 +99,14 @@ func (h *AnalyticsHandler) GetDashboard(c *gin.Context) {
 		for actRows.Next() {
 			var am models.ActivityMetric
 			actRows.StructScan(&am)
-			m.ActivityBreakdown = append(m.ActivityBreakdown, am)
+			actCountMap[am.Type] = am.Count
 		}
 		actRows.Close()
+	}
+	for _, t := range allActivityTypes {
+		m.ActivityBreakdown = append(m.ActivityBreakdown, models.ActivityMetric{
+			Type: t, Count: actCountMap[t],
+		})
 	}
 
 	revRows, _ := h.db.Queryx(`
