@@ -6,7 +6,7 @@ import {
 import { Zap, TrendingUp, Target, BarChart3 } from 'lucide-react';
 import { analyticsAPI } from '../api';
 import type { DashboardMetrics } from '../types';
-import { formatCurrency } from '../utils/format';
+import { formatCurrency, formatCurrencyCompact } from '../utils/format';
 
 interface ForecastItem { month: string; forecast: number; pipeline: number; }
 
@@ -115,7 +115,7 @@ export default function AnalyticsPage() {
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
             <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 11 }} />
-            <YAxis tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+            <YAxis tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={formatCurrencyCompact} />
             <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
               formatter={(v: number) => [formatCurrency(v)]} />
             <Area type="monotone" dataKey="won" stroke="#10b981" strokeWidth={2} fill="url(#wonG)" name="Revenue" />
@@ -132,7 +132,7 @@ export default function AnalyticsPage() {
             <ComposedChart data={forecast}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
               <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 11 }} />
-              <YAxis tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+              <YAxis tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={formatCurrencyCompact} />
               <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
                 formatter={(v: number) => [formatCurrency(v)]} />
               <Legend wrapperStyle={{ color: '#94a3b8', fontSize: 12 }} />

@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { analyticsAPI } from '../api';
 import type { DashboardMetrics } from '../types';
-import { formatCurrency, formatDuration } from '../utils/format';
+import { formatCurrency, formatCurrencyCompact, formatDuration } from '../utils/format';
 
 export default function DashboardPage() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
@@ -122,7 +122,7 @@ export default function DashboardPage() {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
               <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 11 }} />
-              <YAxis tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={(v) => `$${(v/1000).toFixed(0)}k`} />
+              <YAxis tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={formatCurrencyCompact} />
               <Tooltip
                 contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
                 labelStyle={{ color: '#94a3b8' }}
