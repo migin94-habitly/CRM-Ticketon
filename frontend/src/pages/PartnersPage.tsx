@@ -5,6 +5,7 @@ import type { Partner } from '../types';
 import { formatCurrency } from '../utils/format';
 import toast from 'react-hot-toast';
 import PartnerModal from '../components/partners/PartnerModal';
+import ImportExportBar from '../components/ImportExportBar';
 
 const statusRu: Record<string, { label: string; cls: string }> = {
   active:   { label: 'Активный',  cls: 'bg-green-500/10 text-green-400' },
@@ -50,9 +51,18 @@ export default function PartnersPage() {
           </h1>
           <p className="text-slate-500 text-sm">{partners.length} организаторов мероприятий</p>
         </div>
-        <button className="btn-primary text-sm" onClick={() => { setEditing(null); setModalOpen(true); }}>
-          <Plus className="w-4 h-4" /> Добавить партнёра
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <ImportExportBar
+            entityName="партнёров"
+            filename="partners"
+            onExport={() => partnersAPI.exportCSV() as Promise<{ data: Blob }>}
+            onImport={(file) => partnersAPI.importCSV(file) as ReturnType<typeof partnersAPI.importCSV>}
+            onImportSuccess={load}
+          />
+          <button className="btn-primary text-sm" onClick={() => { setEditing(null); setModalOpen(true); }}>
+            <Plus className="w-4 h-4" /> Добавить партнёра
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-3">

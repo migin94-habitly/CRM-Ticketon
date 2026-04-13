@@ -27,6 +27,11 @@ export const contactsAPI = {
   activities: (id: string) => api.get<APIResponse<Activity[]>>(`/contacts/${id}/activities`),
   calls: (id: string) => api.get<APIResponse<CallRecord[]>>(`/contacts/${id}/calls`),
   messages: (id: string) => api.get<APIResponse<WhatsAppMessage[]>>(`/contacts/${id}/messages`),
+  exportCSV: () => api.get('/contacts/export', { responseType: 'blob' }),
+  importCSV: (file: File) => {
+    const form = new FormData(); form.append('file', file);
+    return api.post<APIResponse>('/contacts/import', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
 };
 
 export const pipelinesAPI = {
@@ -54,6 +59,11 @@ export const dealsAPI = {
   activities: (id: string) => api.get<APIResponse<Activity[]>>(`/deals/${id}/activities`),
   createActivity: (dealId: string, data: Partial<Activity>) =>
     api.post<APIResponse>(`/deals/${dealId}/activities`, data),
+  exportCSV: () => api.get('/deals/export', { responseType: 'blob' }),
+  importCSV: (file: File) => {
+    const form = new FormData(); form.append('file', file);
+    return api.post<APIResponse>('/deals/import', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
 };
 
 export const activitiesAPI = {
@@ -101,6 +111,11 @@ export const venuesAPI = {
   create: (data: Partial<Venue>) => api.post<APIResponse>('/venues', data),
   update: (id: string, data: Partial<Venue>) => api.put<APIResponse>(`/venues/${id}`, data),
   delete: (id: string) => api.delete<APIResponse>(`/venues/${id}`),
+  exportCSV: () => api.get('/venues/export', { responseType: 'blob' }),
+  importCSV: (file: File) => {
+    const form = new FormData(); form.append('file', file);
+    return api.post<APIResponse>('/venues/import', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
 };
 
 export const partnersAPI = {
@@ -111,6 +126,11 @@ export const partnersAPI = {
   update: (id: string, data: Partial<Partner>) => api.put<APIResponse>(`/partners/${id}`, data),
   delete: (id: string) => api.delete<APIResponse>(`/partners/${id}`),
   getStats: (id: string) => api.get<APIResponse>(`/partners/${id}/stats`),
+  exportCSV: () => api.get('/partners/export', { responseType: 'blob' }),
+  importCSV: (file: File) => {
+    const form = new FormData(); form.append('file', file);
+    return api.post<APIResponse>('/partners/import', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
 };
 
 export const checklistAPI = {

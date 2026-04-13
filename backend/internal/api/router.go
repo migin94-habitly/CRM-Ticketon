@@ -54,6 +54,7 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 	venuesH := handlers.NewVenuesHandler(db)
 	partnersH := handlers.NewPartnersHandler(db)
 	checklistH := handlers.NewChecklistHandler(db)
+	importExportH := handlers.NewImportExportHandler(db)
 
 	r.POST("/api/v1/auth/login", authH.Login)
 	r.GET("/api/v1/webhooks/whatsapp", whatsappH.WebhookVerify)
@@ -75,7 +76,8 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 		{
 			contacts.GET("", contactsH.ListContacts)
 			contacts.POST("", contactsH.CreateContact)
-			contacts.GET("/export", contactsH.ExportContacts)
+			contacts.GET("/export", importExportH.ExportContactsCSV)
+			contacts.POST("/import", importExportH.ImportContactsCSV)
 			contacts.GET("/:id", contactsH.GetContact)
 			contacts.PUT("/:id", contactsH.UpdateContact)
 			contacts.DELETE("/:id", middleware.RequireRoles("admin", "manager"), contactsH.DeleteContact)
@@ -100,6 +102,8 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 		{
 			deals.GET("", dealsH.ListDeals)
 			deals.POST("", dealsH.CreateDeal)
+			deals.GET("/export", importExportH.ExportDealsCSV)
+			deals.POST("/import", importExportH.ImportDealsCSV)
 			deals.GET("/:id", dealsH.GetDeal)
 			deals.PUT("/:id", dealsH.UpdateDeal)
 			deals.PATCH("/:id/move", dealsH.MoveDeal)
@@ -164,6 +168,8 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 		{
 			venues.GET("", venuesH.List)
 			venues.POST("", middleware.RequireRoles("admin", "manager"), venuesH.Create)
+			venues.GET("/export", importExportH.ExportVenuesCSV)
+			venues.POST("/import", middleware.RequireRoles("admin", "manager"), importExportH.ImportVenuesCSV)
 			venues.PUT("/:id", middleware.RequireRoles("admin", "manager"), venuesH.Update)
 			venues.DELETE("/:id", middleware.RequireRoles("admin", "manager"), venuesH.Delete)
 		}
@@ -172,6 +178,8 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 		{
 			partners.GET("", partnersH.List)
 			partners.POST("", middleware.RequireRoles("admin", "manager"), partnersH.Create)
+			partners.GET("/export", importExportH.ExportPartnersCSV)
+			partners.POST("/import", middleware.RequireRoles("admin", "manager"), importExportH.ImportPartnersCSV)
 			partners.GET("/:id", partnersH.Get)
 			partners.PUT("/:id", middleware.RequireRoles("admin", "manager"), partnersH.Update)
 			partners.DELETE("/:id", middleware.RequireRoles("admin"), partnersH.Delete)
