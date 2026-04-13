@@ -31,6 +31,17 @@ export default function AnalyticsPage() {
   if (loading) return <div className="text-slate-500 animate-pulse">Загрузка аналитики...</div>;
   if (!metrics) return <div className="text-slate-500">Ошибка загрузки</div>;
 
+  const ACTIVITY_LABELS: Record<string, string> = {
+    call: 'Звонки', email: 'Email', meeting: 'Встречи',
+    note: 'Заметки', task: 'Задачи', whatsapp: 'WhatsApp',
+  };
+  const translatedActivity = (metrics.activity_breakdown ?? []).map(a => ({
+    ...a, type: ACTIVITY_LABELS[a.type] ?? a.type,
+  }));
+  const hasActivity = translatedActivity.some(a => a.count > 0);
+
+  const totalInFunnel = (metrics.pipeline_breakdown ?? []).reduce((sum, s) => sum + s.count, 0);
+
   return (
     <div className="space-y-6 animate-in">
       <div className="flex items-center justify-between">
@@ -136,15 +147,22 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="card p-5">
           <h3 className="font-semibold text-white mb-4">Разбивка активностей</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={metrics.activity_breakdown} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-              <XAxis type="number" tick={{ fill: '#64748b', fontSize: 11 }} />
-              <YAxis dataKey="type" type="category" tick={{ fill: '#64748b', fontSize: 11 }} width={70} />
-              <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }} />
-              <Bar dataKey="count" fill="#6366f1" radius={[0, 4, 4, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {!hasActivity ? (
+            <div className="flex items-center justify-center h-48 text-slate-500 text-sm">
+              Нет активностей за выбранный период
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={translatedActivity} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 11 }} allowDecimals={false} />
+                <YAxis dataKey="type" type="category" tick={{ fill: '#64748b', fontSize: 11 }} width={80} />
+                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
+                  formatter={(v: number) => [v, 'Кол-во']} />
+                <Bar dataKey="count" fill="#6366f1" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
 
         <div className="card p-5">
@@ -180,15 +198,31 @@ export default function AnalyticsPage() {
 
       <div className="card p-5">
         <h3 className="font-semibold text-white mb-4">Здоровье воронки</h3>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {metrics.pipeline_breakdown.map(stage => (
-            <div key={stage.stage_id} className="p-3 rounded-lg border border-slate-700/50" style={{ borderLeftColor: stage.color, borderLeftWidth: 3 }}>
-              <div className="text-xs text-slate-500">{stage.stage_name}</div>
-              <div className="text-lg font-bold text-white mt-1">{stage.count}</div>
-              <div className="text-xs text-slate-400">{formatCurrency(stage.value)}</div>
+        {(metrics.pipeline_breakdown ?? []).length === 0 ? (
+          <div className="text-slate-500 text-sm">Нет данных по этапам воронки</div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {(metrics.pipeline_breakdown ?? []).map(stage => (
+                <div key={stage.stage_id || stage.stage_name} className="p-3 rounded-lg border border-slate-700/50"
+                  style={{ borderLeftColor: stage.color || '#6366f1', borderLeftWidth: 3 }}>
+                  <div className="text-xs text-slate-500">{stage.stage_name || '—'}</div>
+                  <div className="text-lg font-bold text-white mt-1">{stage.count}</div>
+                  <div className="text-xs text-slate-400">{formatCurrency(stage.value)}</div>
+                  {totalInFunnel > 0 && (
+                    <div className="mt-2 h-1 bg-dark-700 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full"
+                        style={{ width: `${(stage.count / totalInFunnel) * 100}%`, background: stage.color || '#6366f1' }} />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+            {totalInFunnel > 0 && (
+              <p className="text-xs text-slate-600 mt-3">Итого в воронке: {totalInFunnel} сделок</p>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

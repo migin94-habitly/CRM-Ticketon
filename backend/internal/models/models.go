@@ -342,32 +342,32 @@ type DashboardMetrics struct {
 }
 
 type PipelineMetric struct {
-	StageID   string  `json:"stage_id"`
-	StageName string  `json:"stage_name"`
-	Color     string  `json:"color"`
-	Count     int     `json:"count"`
-	Value     float64 `json:"value"`
+	StageID   string  `db:"stage_id" json:"stage_id"`
+	StageName string  `db:"stage_name" json:"stage_name"`
+	Color     string  `db:"color" json:"color"`
+	Count     int     `db:"count" json:"count"`
+	Value     float64 `db:"value" json:"value"`
 }
 
 type ActivityMetric struct {
-	Type  string `json:"type"`
-	Count int    `json:"count"`
+	Type  string `db:"type" json:"type"`
+	Count int    `db:"count" json:"count"`
 }
 
 type MonthlyRevenue struct {
-	Month  string  `json:"month"`
-	Won    float64 `json:"won"`
-	Target float64 `json:"target"`
+	Month  string  `db:"month" json:"month"`
+	Won    float64 `db:"won" json:"won"`
+	Target float64 `db:"target" json:"target"`
 }
 
 type UserPerformance struct {
-	UserID    string  `json:"user_id"`
-	Name      string  `json:"name"`
-	Avatar    string  `json:"avatar"`
-	DealsWon  int     `json:"deals_won"`
-	Revenue   float64 `json:"revenue"`
-	CallsMade int     `json:"calls_made"`
-	Score     float64 `json:"ai_score"`
+	UserID    string  `db:"user_id" json:"user_id"`
+	Name      string  `db:"name" json:"name"`
+	Avatar    string  `db:"avatar" json:"avatar"`
+	DealsWon  int     `db:"deals_won" json:"deals_won"`
+	Revenue   float64 `db:"revenue" json:"revenue"`
+	CallsMade int     `db:"calls_made" json:"calls_made"`
+	Score     float64 `db:"score" json:"ai_score"`
 }
 
 type PaginationQuery struct {

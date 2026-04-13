@@ -121,24 +121,32 @@ func (h *AuthHandler) UpdateUser(c *gin.Context) {
 		PhoneNumber string `json:"phone_number"`
 		Avatar      string `json:"avatar"`
 		Role        string `json:"role"`
+		IsActive    *bool  `json:"is_active"`
 	}
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, models.APIResponse{Error: err.Error()})
 		return
 	}
 
-	query := `UPDATE users SET first_name=$1, last_name=$2, phone_number=$3, avatar=$4, updated_at=NOW() WHERE id=$5`
-	args := []interface{}{body.FirstName, body.LastName, body.PhoneNumber, body.Avatar, id}
-
-	if callerRole == "admin" && body.Role != "" {
-		query = `UPDATE users SET first_name=$1, last_name=$2, phone_number=$3, avatar=$4, role=$6, updated_at=NOW() WHERE id=$5`
-		args = append(args, body.Role)
-	}
-
-	if _, err := h.db.Exec(query, args...); err != nil {
+	// Update basic profile fields
+	if _, err := h.db.Exec(
+		`UPDATE users SET first_name=$1, last_name=$2, phone_number=$3, avatar=$4, updated_at=NOW() WHERE id=$5`,
+		body.FirstName, body.LastName, body.PhoneNumber, body.Avatar, id,
+	); err != nil {
 		c.JSON(http.StatusInternalServerError, models.APIResponse{Error: err.Error()})
 		return
 	}
+
+	// Admin-only: update role and/or active status
+	if callerRole == "admin" {
+		if body.Role != "" {
+			h.db.Exec(`UPDATE users SET role=$1, updated_at=NOW() WHERE id=$2`, body.Role, id)
+		}
+		if body.IsActive != nil {
+			h.db.Exec(`UPDATE users SET is_active=$1, updated_at=NOW() WHERE id=$2`, *body.IsActive, id)
+		}
+	}
+
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "user updated"})
 }
 
