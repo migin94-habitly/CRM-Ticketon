@@ -51,8 +51,13 @@ export default function ActivitiesPage() {
     }
   };
 
-  const handleComplete = async (id: string) => {
-    await activitiesAPI.update(id, { status: 'completed' });
+  const handleComplete = async (a: Activity) => {
+    // Always send current subject/description so the backend doesn't wipe them
+    await activitiesAPI.update(a.id, {
+      status: 'completed',
+      subject: a.subject,
+      description: a.description ?? '',
+    });
     toast.success('Отмечено как выполнено');
     load();
   };
@@ -114,7 +119,7 @@ export default function ActivitiesPage() {
       ) : (
         <div className="space-y-2">
           {activities.map(a => (
-            <div key={a.id} className={`card p-4 flex items-start gap-3 ${a.status === 'completed' ? 'opacity-50' : ''}`}>
+            <div key={a.id} className={`card p-4 flex items-start gap-3 ${a.status === 'completed' ? 'opacity-60 border-l-2 border-green-500/30' : ''}`}>
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${typeColors[a.type] || 'bg-slate-500/10 text-slate-400'}`}>
                 {typeIcons[a.type]}
               </div>
@@ -131,7 +136,7 @@ export default function ActivitiesPage() {
               <div className="flex items-center gap-2 shrink-0">
                 <div className="text-xs text-slate-600">{formatDateTime(a.created_at)}</div>
                 {a.status === 'pending' && (
-                  <button onClick={() => handleComplete(a.id)}
+                  <button onClick={() => handleComplete(a)}
                     className="text-xs text-slate-500 hover:text-green-400 px-2 py-1 rounded hover:bg-dark-700 transition">
                     Выполнить
                   </button>

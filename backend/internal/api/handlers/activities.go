@@ -39,6 +39,13 @@ func (h *ActivitiesHandler) ListActivities(c *gin.Context) {
 		args = append(args, activityType)
 	}
 
+	statusFilter := c.Query("status")
+	if statusFilter != "" {
+		n := len(args) + 1
+		query += ` AND a.status=$` + string(rune('0'+n))
+		args = append(args, statusFilter)
+	}
+
 	query += ` ORDER BY a.created_at DESC LIMIT 50`
 
 	var activities []models.Activity
@@ -93,10 +100,17 @@ func (h *ActivitiesHandler) UpdateActivity(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.APIResponse{Error: err.Error()})
 		return
 	}
+	// Preserve subject/description if not provided in the request (partial update support)
 	h.db.Exec(`
-		UPDATE activities SET subject=$1, description=$2, status=$3, due_date=$4, duration=$5, updated_at=NOW()
+		UPDATE activities SET
+			subject      = CASE WHEN $1 = '' THEN subject ELSE $1 END,
+			description  = CASE WHEN $2 = '' THEN description ELSE $2 END,
+			status       = CASE WHEN $3 = '' THEN status ELSE $3::activity_status END,
+			due_date     = COALESCE($4::timestamptz, due_date),
+			duration     = CASE WHEN $5 = 0 THEN duration ELSE $5 END,
+			updated_at   = NOW()
 		WHERE id=$6`,
-		req.Subject, req.Description, req.Status, req.DueDate, req.Duration, id,
+		req.Subject, req.Description, string(req.Status), req.DueDate, req.Duration, id,
 	)
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "activity updated"})
 }

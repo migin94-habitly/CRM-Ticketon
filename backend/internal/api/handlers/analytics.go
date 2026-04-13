@@ -153,25 +153,49 @@ func (h *AnalyticsHandler) GetDashboard(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: m})
 }
 
+func formatKZT(v float64) string {
+	if v >= 1_000_000 {
+		return fmt.Sprintf("%.1f млн ₸", v/1_000_000)
+	}
+	if v >= 1_000 {
+		return fmt.Sprintf("%.0f К ₸", v/1_000)
+	}
+	return fmt.Sprintf("%.0f ₸", v)
+}
+
 func (h *AnalyticsHandler) generateInsights(m *models.DashboardMetrics) []string {
 	insights := []string{}
 	if m.ConversionRate < 20 {
-		insights = append(insights, "Conversion rate is below 20% — review qualification stage criteria")
+		insights = append(insights, "Конверсия ниже 20% — пересмотрите критерии квалификации на первых этапах")
 	}
 	if m.ConversionRate >= 40 {
-		insights = append(insights, fmt.Sprintf("Strong conversion rate of %.1f%% — pipeline is healthy", m.ConversionRate))
+		insights = append(insights, fmt.Sprintf("Высокая конверсия %.1f%% — воронка работает эффективно", m.ConversionRate))
 	}
 	if m.TotalCalls > 0 && m.TotalCallDuration/m.TotalCalls < 60 {
-		insights = append(insights, "Average call duration is under 1 minute — consider longer discovery calls")
+		insights = append(insights, "Средняя длительность звонка менее 1 минуты — увеличьте глубину диалога")
 	}
 	if m.NewContactsToday == 0 {
-		insights = append(insights, "No new contacts today — consider lead generation activities")
+		insights = append(insights, "Сегодня нет новых контактов — запустите активности по привлечению лидов")
 	}
 	if m.AvgDealValue > 0 {
-		insights = append(insights, fmt.Sprintf("Average deal value: $%.0f", m.AvgDealValue))
+		insights = append(insights, fmt.Sprintf("Средняя сумма сделки: %s", formatKZT(m.AvgDealValue)))
+	}
+	if m.WonValue > 0 {
+		insights = append(insights, fmt.Sprintf("Выручка за период: %s (%d сделок)", formatKZT(m.WonValue), m.WonDeals))
+	}
+	if len(m.PipelineBreakdown) > 0 {
+		maxStage := m.PipelineBreakdown[0]
+		for _, s := range m.PipelineBreakdown[1:] {
+			if s.Count > maxStage.Count {
+				maxStage = s
+			}
+		}
+		if maxStage.Count > 0 {
+			insights = append(insights, fmt.Sprintf("Больше всего сделок на этапе «%s» — %d шт.", maxStage.StageName, maxStage.Count))
+		}
 	}
 	if len(insights) == 0 {
-		insights = append(insights, "Pipeline looks healthy — keep up the momentum!")
+		insights = append(insights, "Воронка в хорошем состоянии — продолжайте в том же темпе!")
 	}
 	return insights
 }
