@@ -213,6 +213,11 @@ export interface APIResponse<T = unknown> {
   message?: string;
 }
 
+export interface CSVImportStats {
+  inserted: number;
+  skipped: number;
+}
+
 
 export interface AuditLog {
   id: string;

@@ -56,7 +56,7 @@ export default function PartnersPage() {
             entityName="партнёров"
             filename="partners"
             onExport={() => partnersAPI.exportCSV() as Promise<{ data: Blob }>}
-            onImport={(file) => partnersAPI.importCSV(file) as ReturnType<typeof partnersAPI.importCSV>}
+            onImport={partnersAPI.importCSV}
             onImportSuccess={load}
           />
           <button className="btn-primary text-sm" onClick={() => { setEditing(null); setModalOpen(true); }}>

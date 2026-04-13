@@ -53,7 +53,7 @@ export default function ContactsPage() {
             entityName="контактов"
             filename="contacts"
             onExport={() => contactsAPI.exportCSV() as Promise<{ data: Blob }>}
-            onImport={(file) => contactsAPI.importCSV(file) as ReturnType<typeof contactsAPI.importCSV>}
+            onImport={contactsAPI.importCSV}
             onImportSuccess={load}
           />
           <button className="btn-primary text-sm py-1.5" onClick={() => { setEditContact(null); setShowModal(true); }}>

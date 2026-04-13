@@ -54,7 +54,7 @@ export default function VenuesPage() {
             entityName="площадок"
             filename="venues"
             onExport={() => venuesAPI.exportCSV() as Promise<{ data: Blob }>}
-            onImport={(file) => venuesAPI.importCSV(file) as ReturnType<typeof venuesAPI.importCSV>}
+            onImport={venuesAPI.importCSV}
             onImportSuccess={load}
           />
           <button className="btn-primary text-sm" onClick={() => { setEditing(null); setModalOpen(true); }}>

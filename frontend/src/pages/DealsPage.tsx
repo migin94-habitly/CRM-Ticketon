@@ -54,7 +54,7 @@ export default function DealsPage() {
             entityName="сделок"
             filename="deals"
             onExport={() => dealsAPI.exportCSV() as Promise<{ data: Blob }>}
-            onImport={(file) => dealsAPI.importCSV(file) as ReturnType<typeof dealsAPI.importCSV>}
+            onImport={dealsAPI.importCSV}
             onImportSuccess={load}
           />
           <button className="btn-secondary text-sm py-1.5" onClick={() => navigate('/pipeline')}>

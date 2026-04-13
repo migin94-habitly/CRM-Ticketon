@@ -2,7 +2,7 @@ import api from './client';
 import type {
   User, Contact, Pipeline, Deal, Activity, CallRecord,
   WhatsAppMessage, DashboardMetrics, PaginatedResponse, APIResponse,
-  City, Venue, Partner,
+  City, Venue, Partner, CSVImportStats,
 } from '../types';
 
 export const authAPI = {
@@ -30,7 +30,7 @@ export const contactsAPI = {
   exportCSV: () => api.get('/contacts/export', { responseType: 'blob' }),
   importCSV: (file: File) => {
     const form = new FormData(); form.append('file', file);
-    return api.post<APIResponse>('/contacts/import', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+    return api.post<APIResponse<CSVImportStats>>('/contacts/import', form, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
 };
 
@@ -62,7 +62,7 @@ export const dealsAPI = {
   exportCSV: () => api.get('/deals/export', { responseType: 'blob' }),
   importCSV: (file: File) => {
     const form = new FormData(); form.append('file', file);
-    return api.post<APIResponse>('/deals/import', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+    return api.post<APIResponse<CSVImportStats>>('/deals/import', form, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
 };
 
@@ -114,7 +114,7 @@ export const venuesAPI = {
   exportCSV: () => api.get('/venues/export', { responseType: 'blob' }),
   importCSV: (file: File) => {
     const form = new FormData(); form.append('file', file);
-    return api.post<APIResponse>('/venues/import', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+    return api.post<APIResponse<CSVImportStats>>('/venues/import', form, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
 };
 
@@ -129,7 +129,7 @@ export const partnersAPI = {
   exportCSV: () => api.get('/partners/export', { responseType: 'blob' }),
   importCSV: (file: File) => {
     const form = new FormData(); form.append('file', file);
-    return api.post<APIResponse>('/partners/import', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+    return api.post<APIResponse<CSVImportStats>>('/partners/import', form, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
 };
 
