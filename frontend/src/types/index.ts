@@ -287,6 +287,17 @@ export interface PartnerStats {
   total_tickets: number;
 }
 
+export interface PartnerDocument {
+  id: string;
+  partner_id: string;
+  filename: string;
+  file_size: number;
+  mime_type: string;
+  uploaded_by?: string;
+  uploader_name?: string;
+  created_at: string;
+}
+
 export interface ChecklistItem {
   id: string;
   deal_id: string;

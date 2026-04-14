@@ -2,7 +2,7 @@ import api from './client';
 import type {
   User, Contact, Pipeline, Deal, Activity, CallRecord,
   WhatsAppMessage, DashboardMetrics, PaginatedResponse, APIResponse,
-  City, Venue, Partner, CSVImportStats,
+  City, Venue, Partner, CSVImportStats, PartnerDocument,
 } from '../types';
 
 export const authAPI = {
@@ -131,6 +131,24 @@ export const partnersAPI = {
     const form = new FormData(); form.append('file', file);
     return api.post<APIResponse<CSVImportStats>>('/partners/import', form, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
+};
+
+export const partnerDocumentsAPI = {
+  list: (partnerId: string) =>
+    api.get<APIResponse<PartnerDocument[]>>(`/partners/${partnerId}/documents`),
+  upload: (partnerId: string, file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return api.post<APIResponse<PartnerDocument>>(
+      `/partners/${partnerId}/documents`,
+      form,
+      { headers: { 'Content-Type': 'multipart/form-data' } },
+    );
+  },
+  download: (partnerId: string, docId: string) =>
+    api.get(`/partners/${partnerId}/documents/${docId}`, { responseType: 'blob' }),
+  delete: (partnerId: string, docId: string) =>
+    api.delete<APIResponse>(`/partners/${partnerId}/documents/${docId}`),
 };
 
 export const checklistAPI = {

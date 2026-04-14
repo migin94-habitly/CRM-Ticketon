@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/crm-ticketon/backend/internal/api/handlers"
 	"github.com/crm-ticketon/backend/internal/api/middleware"
@@ -53,6 +54,11 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 	citiesH := handlers.NewCitiesHandler(db)
 	venuesH := handlers.NewVenuesHandler(db)
 	partnersH := handlers.NewPartnersHandler(db)
+	uploadsDir := os.Getenv("UPLOADS_DIR")
+	if uploadsDir == "" {
+		uploadsDir = "/app/uploads"
+	}
+	partnerDocsH := handlers.NewPartnerDocumentsHandler(db, uploadsDir)
 	checklistH := handlers.NewChecklistHandler(db)
 	importExportH := handlers.NewImportExportHandler(db)
 	settingsH := handlers.NewSettingsHandler(db)
@@ -192,6 +198,10 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 			partners.PUT("/:id", middleware.RequireRoles("admin", "manager"), partnersH.Update)
 			partners.DELETE("/:id", middleware.RequireRoles("admin"), partnersH.Delete)
 			partners.GET("/:id/stats", partnersH.GetStats)
+			partners.GET("/:id/documents", partnerDocsH.List)
+			partners.POST("/:id/documents", middleware.RequireRoles("admin", "manager", "sales"), partnerDocsH.Upload)
+			partners.GET("/:id/documents/:doc_id", partnerDocsH.Download)
+			partners.DELETE("/:id/documents/:doc_id", middleware.RequireRoles("admin", "manager"), partnerDocsH.Delete)
 		}
 	}
 
