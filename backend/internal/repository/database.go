@@ -218,6 +218,9 @@ ALTER TABLE deals ADD COLUMN IF NOT EXISTS venue_id UUID REFERENCES venues(id);
 ALTER TABLE deals ADD COLUMN IF NOT EXISTS event_name VARCHAR(500);
 ALTER TABLE deals ADD COLUMN IF NOT EXISTS event_date TIMESTAMP WITH TIME ZONE;
 ALTER TABLE deals ADD COLUMN IF NOT EXISTS ticket_count INTEGER;
+ALTER TABLE deals ADD COLUMN IF NOT EXISTS category VARCHAR(100);
+
+ALTER TABLE activities ADD COLUMN IF NOT EXISTS partner_id UUID REFERENCES partners(id);
 
 CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email);
 CREATE INDEX IF NOT EXISTS idx_contacts_assigned_to ON contacts(assigned_to);
@@ -238,6 +241,7 @@ CREATE INDEX IF NOT EXISTS idx_partners_city_id ON partners(city_id);
 CREATE INDEX IF NOT EXISTS idx_partners_status ON partners(status);
 CREATE INDEX IF NOT EXISTS idx_deals_partner_id ON deals(partner_id);
 CREATE INDEX IF NOT EXISTS idx_deals_venue_id ON deals(venue_id);
+CREATE INDEX IF NOT EXISTS idx_activities_partner_id ON activities(partner_id);
 
 CREATE TABLE IF NOT EXISTS deal_checklist_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

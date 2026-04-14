@@ -22,9 +22,13 @@ func (h *ActivitiesHandler) ListActivities(c *gin.Context) {
 	userID := middleware.GetUserID(c)
 	role := middleware.GetUserRole(c)
 
-	query := `SELECT a.*, u.first_name || ' ' || u.last_name as user_name
+	query := `SELECT a.*,
+	          u.first_name || ' ' || u.last_name as user_name,
+	          p.name as partner_name
 	          FROM activities a
-	          LEFT JOIN users u ON u.id = a.user_id WHERE 1=1`
+	          LEFT JOIN users u ON u.id = a.user_id
+	          LEFT JOIN partners p ON p.id = a.partner_id
+	          WHERE 1=1`
 	args := []interface{}{}
 
 	if role == "sales" || role == "viewer" {
@@ -46,6 +50,13 @@ func (h *ActivitiesHandler) ListActivities(c *gin.Context) {
 		args = append(args, statusFilter)
 	}
 
+	partnerID := c.Query("partner_id")
+	if partnerID != "" {
+		n := len(args) + 1
+		query += ` AND a.partner_id=$` + string(rune('0'+n))
+		args = append(args, partnerID)
+	}
+
 	query += ` ORDER BY a.created_at DESC LIMIT 50`
 
 	var activities []models.Activity
@@ -63,12 +74,13 @@ func (h *ActivitiesHandler) CreateActivity(c *gin.Context) {
 		return
 	}
 	userID := middleware.GetUserID(c)
+	partnerID := models.NilIfEmptyUUIDPtr(req.PartnerID)
 	id := uuid.New().String()
 	_, err := h.db.Exec(`
-		INSERT INTO activities (id, type, subject, description, deal_id, contact_id, user_id, due_date, duration)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+		INSERT INTO activities (id, type, subject, description, deal_id, contact_id, partner_id, user_id, due_date, duration)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
 		id, req.Type, req.Subject, req.Description,
-		req.DealID, req.ContactID, userID, req.DueDate.Ptr(), req.Duration,
+		req.DealID, req.ContactID, partnerID, userID, req.DueDate.Ptr(), req.Duration,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.APIResponse{Error: err.Error()})
@@ -80,7 +92,7 @@ func (h *ActivitiesHandler) CreateActivity(c *gin.Context) {
 func (h *ActivitiesHandler) GetActivity(c *gin.Context) {
 	id := c.Param("id")
 	var a models.Activity
-	if err := h.db.Get(&a, `SELECT * FROM activities WHERE id=$1`, id); err != nil {
+	if err := h.db.Get(&a, `SELECT a.*, p.name as partner_name FROM activities a LEFT JOIN partners p ON p.id = a.partner_id WHERE a.id=$1`, id); err != nil {
 		c.JSON(http.StatusNotFound, models.APIResponse{Error: "activity not found"})
 		return
 	}
@@ -95,11 +107,13 @@ func (h *ActivitiesHandler) UpdateActivity(c *gin.Context) {
 		Status      models.ActivityStatus `json:"status"`
 		DueDate     *string               `json:"due_date"`
 		Duration    int                   `json:"duration"`
+		PartnerID   *string               `json:"partner_id"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, models.APIResponse{Error: err.Error()})
 		return
 	}
+	partnerID := models.NilIfEmptyUUIDPtr(req.PartnerID)
 	// Preserve subject/description if not provided in the request (partial update support)
 	h.db.Exec(`
 		UPDATE activities SET
@@ -108,9 +122,10 @@ func (h *ActivitiesHandler) UpdateActivity(c *gin.Context) {
 			status       = CASE WHEN $3 = '' THEN status ELSE $3::activity_status END,
 			due_date     = COALESCE($4::timestamptz, due_date),
 			duration     = CASE WHEN $5 = 0 THEN duration ELSE $5 END,
+			partner_id   = COALESCE($6, partner_id),
 			updated_at   = NOW()
-		WHERE id=$6`,
-		req.Subject, req.Description, string(req.Status), req.DueDate, req.Duration, id,
+		WHERE id=$7`,
+		req.Subject, req.Description, string(req.Status), req.DueDate, req.Duration, partnerID, id,
 	)
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "activity updated"})
 }

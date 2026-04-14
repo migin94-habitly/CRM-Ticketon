@@ -121,15 +121,15 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
       <div className="min-h-full flex items-center justify-center p-4">
       <div className="card w-full max-w-lg">
         <div className="flex items-center justify-between p-5 border-b border-slate-700">
-          <h2 className="font-semibold text-white">{deal ? 'Редактировать сделку' : 'Новая сделка'}</h2>
+          <h2 className="font-semibold text-white">{deal ? 'Редактировать мероприятие' : 'Новое мероприятие'}</h2>
           <button type="button" onClick={onClose} className="text-slate-500 hover:text-white">
             <X className="w-4 h-4" />
           </button>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
           <div>
-            <label className="label">Название сделки *</label>
-            <input className="input" {...register('title', { required: true })} placeholder="Например: Корпоративная лицензия" />
+            <label className="label">Название мероприятия *</label>
+            <input className="input" {...register('title', { required: true })} placeholder="Например: Концерт группы / Спортивный матч" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -201,6 +201,22 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Мероприятие</div>
             <div className="space-y-3">
               <div>
+                <label className="label">Категория</label>
+                <select className="input" {...register('category')}>
+                  <option value="">— выберите категорию —</option>
+                  <option value="concert">Концерт</option>
+                  <option value="sport">Спорт</option>
+                  <option value="standup">Стендап</option>
+                  <option value="circus">Цирк</option>
+                  <option value="theater">Театр</option>
+                  <option value="festival">Фестиваль</option>
+                  <option value="exhibition">Выставка</option>
+                  <option value="conference">Конференция</option>
+                  <option value="children">Детское шоу</option>
+                  <option value="other">Другое</option>
+                </select>
+              </div>
+              <div>
                 <label className="label">Партнёр (организатор)</label>
                 <select className="input" {...register('partner_id')}>
                   <option value="">— без партнёра —</option>
@@ -208,10 +224,6 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
                     <option key={p.id} value={p.id}>{p.name}</option>
                   ))}
                 </select>
-              </div>
-              <div>
-                <label className="label">Название мероприятия</label>
-                <input className="input" {...register('event_name')} placeholder="Концерт / Фестиваль / Спортивное событие" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -246,7 +258,7 @@ export default function DealModal({ deal, onClose, onSaved }: Props) {
               Отмена
             </button>
             <button type="submit" className="btn-primary">
-              Сохранить сделку
+              Сохранить
             </button>
           </div>
         </form>

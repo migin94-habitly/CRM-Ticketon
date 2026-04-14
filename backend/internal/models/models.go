@@ -157,6 +157,7 @@ type Deal struct {
 	EventName   *string      `db:"event_name" json:"event_name,omitempty"`
 	EventDate   *time.Time   `db:"event_date" json:"event_date,omitempty"`
 	TicketCount *int         `db:"ticket_count" json:"ticket_count,omitempty"`
+	Category    *string      `db:"category" json:"category,omitempty"`
 	CreatedAt   time.Time    `db:"created_at" json:"created_at"`
 	UpdatedAt   time.Time    `db:"updated_at" json:"updated_at"`
 	Contact      *Contact      `db:"-" json:"contact,omitempty"`
@@ -184,6 +185,7 @@ type CreateDealRequest struct {
 	EventName   string          `json:"event_name,omitempty"`
 	EventDate   *string         `json:"event_date,omitempty"`
 	TicketCount *int            `json:"ticket_count,omitempty"`
+	Category    string          `json:"category,omitempty"`
 }
 
 type MoveDealRequest struct {
@@ -217,6 +219,8 @@ type Activity struct {
 	Status      ActivityStatus `db:"status" json:"status"`
 	DealID      *string        `db:"deal_id" json:"deal_id,omitempty"`
 	ContactID   *string        `db:"contact_id" json:"contact_id,omitempty"`
+	PartnerID   *string        `db:"partner_id" json:"partner_id,omitempty"`
+	PartnerName *string        `db:"partner_name" json:"partner_name,omitempty"`
 	UserID      string         `db:"user_id" json:"user_id"`
 	UserName    *string        `db:"user_name" json:"user_name,omitempty"`
 	DueDate     *time.Time     `db:"due_date" json:"due_date,omitempty"`
@@ -232,6 +236,7 @@ type CreateActivityRequest struct {
 	Description string         `json:"description,omitempty"`
 	DealID      *string        `json:"deal_id,omitempty"`
 	ContactID   *string        `json:"contact_id,omitempty"`
+	PartnerID   *string        `json:"partner_id,omitempty"`
 	DueDate     *FlexibleTime  `json:"due_date,omitempty"`
 	Duration    int            `json:"duration,omitempty"`
 }

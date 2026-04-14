@@ -208,6 +208,25 @@ func (h *PartnersHandler) Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "partner deleted"})
 }
 
+func (h *PartnersHandler) GetActivities(c *gin.Context) {
+	id := c.Param("id")
+	var activities []models.Activity
+	err := h.db.Select(&activities, `
+		SELECT a.*, u.first_name || ' ' || u.last_name as user_name
+		FROM activities a
+		LEFT JOIN users u ON u.id = a.user_id
+		WHERE a.partner_id=$1
+		ORDER BY a.created_at DESC LIMIT 50`, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.APIResponse{Error: err.Error()})
+		return
+	}
+	if activities == nil {
+		activities = []models.Activity{}
+	}
+	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: activities})
+}
+
 func (h *PartnersHandler) GetStats(c *gin.Context) {
 	id := c.Param("id")
 

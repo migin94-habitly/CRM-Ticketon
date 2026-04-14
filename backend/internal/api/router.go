@@ -198,6 +198,7 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 			partners.PUT("/:id", middleware.RequireRoles("admin", "manager"), partnersH.Update)
 			partners.DELETE("/:id", middleware.RequireRoles("admin"), partnersH.Delete)
 			partners.GET("/:id/stats", partnersH.GetStats)
+			partners.GET("/:id/activities", partnersH.GetActivities)
 			partners.GET("/:id/documents", partnerDocsH.List)
 			partners.POST("/:id/documents", middleware.RequireRoles("admin", "manager", "sales"), partnerDocsH.Upload)
 			partners.GET("/:id/documents/:doc_id", partnerDocsH.Download)

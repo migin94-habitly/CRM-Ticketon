@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Plus, Phone, Mail, Calendar, FileText, ListTodo, MessageSquare } from 'lucide-react';
-import { activitiesAPI } from '../api';
-import type { Activity, ActivityType } from '../types';
+import { Plus, Phone, Mail, Calendar, FileText, ListTodo, MessageSquare, Building2 } from 'lucide-react';
+import { activitiesAPI, partnersAPI } from '../api';
+import type { Activity, ActivityType, Partner } from '../types';
 import { formatDateTime } from '../utils/format';
 import toast from 'react-hot-toast';
 
@@ -23,11 +23,26 @@ const typeColors: Record<string, string> = {
   whatsapp: 'bg-emerald-500/10 text-emerald-400',
 };
 
+type FormState = {
+  type: ActivityType;
+  subject: string;
+  description: string;
+  due_date: string;
+  partner_id: string;
+};
+
 export default function ActivitiesPage() {
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState<{ type: ActivityType; subject: string; description: string; due_date: string }>({ type: "call", subject: "", description: "", due_date: "" });
+  const [form, setForm] = useState<FormState>({
+    type: 'call',
+    subject: '',
+    description: '',
+    due_date: '',
+    partner_id: '',
+  });
 
   const load = () => {
     setLoading(true);
@@ -36,15 +51,25 @@ export default function ActivitiesPage() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    partnersAPI.list().then(r => setPartners((r.data.data as Partner[]) || []));
+  }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await activitiesAPI.create(form);
+      const payload: Record<string, unknown> = {
+        type: form.type,
+        subject: form.subject,
+        description: form.description,
+        due_date: form.due_date || undefined,
+      };
+      if (form.partner_id) payload.partner_id = form.partner_id;
+      await activitiesAPI.create(payload as Partial<Activity>);
       toast.success('Активность создана');
       setShowForm(false);
-      setForm({ type: 'call', subject: '', description: '', due_date: '' });
+      setForm({ type: 'call', subject: '', description: '', due_date: '', partner_id: '' });
       load();
     } catch {
       toast.error('Ошибка создания активности');
@@ -52,7 +77,6 @@ export default function ActivitiesPage() {
   };
 
   const handleComplete = async (a: Activity) => {
-    // Always send current subject/description so the backend doesn't wipe them
     await activitiesAPI.update(a.id, {
       status: 'completed',
       subject: a.subject,
@@ -82,7 +106,9 @@ export default function ActivitiesPage() {
               <div>
                 <label className="label">Тип</label>
                 <select className="input" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as ActivityType }))}>
-                  {[{v:'call',l:'Звонок'},{v:'email',l:'Email'},{v:'meeting',l:'Встреча'},{v:'note',l:'Заметка'},{v:'task',l:'Задача'},{v:'whatsapp',l:'WhatsApp'}].map(t => <option key={t.v} value={t.v}>{t.l}</option>)}
+                  {[{v:'call',l:'Звонок'},{v:'email',l:'Email'},{v:'meeting',l:'Встреча'},{v:'note',l:'Заметка'},{v:'task',l:'Задача'},{v:'whatsapp',l:'WhatsApp'}].map(t => (
+                    <option key={t.v} value={t.v}>{t.l}</option>
+                  ))}
                 </select>
               </div>
               <div>
@@ -95,6 +121,16 @@ export default function ActivitiesPage() {
               <label className="label">Тема *</label>
               <input className="input" required value={form.subject}
                 onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} />
+            </div>
+            <div>
+              <label className="label">Партнёр</label>
+              <select className="input" value={form.partner_id}
+                onChange={e => setForm(f => ({ ...f, partner_id: e.target.value }))}>
+                <option value="">— без партнёра —</option>
+                {partners.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="label">Описание</label>
@@ -126,10 +162,15 @@ export default function ActivitiesPage() {
               <div className="flex-1">
                 <div className="font-medium text-sm text-slate-200">{a.subject}</div>
                 {a.description && <div className="text-xs text-slate-500 mt-0.5">{a.description}</div>}
-                <div className="flex items-center gap-3 mt-1.5">
+                <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                   <span className={`badge text-xs ${a.status === 'completed' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
                     {({pending:'Ожидание',completed:'Выполнено',cancelled:'Отменено'}[a.status]||a.status)}
                   </span>
+                  {a.partner_name && (
+                    <span className="flex items-center gap-1 text-xs text-primary-400">
+                      <Building2 className="w-3 h-3" />{a.partner_name}
+                    </span>
+                  )}
                   {a.due_date && <span className="text-xs text-slate-500">{formatDateTime(a.due_date)}</span>}
                 </div>
               </div>

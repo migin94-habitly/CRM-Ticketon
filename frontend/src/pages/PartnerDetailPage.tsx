@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   Building2, Phone, Mail, MapPin, Globe, FileText,
-  TrendingUp, Target, Percent, Ticket, ArrowLeft, Edit2
+  TrendingUp, Target, Percent, Ticket, ArrowLeft, Edit2,
+  Calendar, MessageSquare, ListTodo, CheckCircle2, Clock
 } from 'lucide-react';
 import { partnersAPI } from '../api';
-import type { Partner, PartnerStats, Deal } from '../types';
-import { formatCurrency } from '../utils/format';
+import type { Partner, PartnerStats, Deal, Activity } from '../types';
+import { formatCurrency, formatDateTime } from '../utils/format';
 import PartnerModal from '../components/partners/PartnerModal';
 import PartnerDocuments from '../components/partners/PartnerDocuments';
 import { useAppSelector } from '../hooks/useAppDispatch';
@@ -21,6 +22,29 @@ const priorityRu: Record<string, string> = {
   high: 'Высокий', medium: 'Средний', low: 'Низкий'
 };
 
+const activityTypeIcons: Record<string, React.ReactNode> = {
+  call:     <Phone className="w-3.5 h-3.5" />,
+  email:    <Mail className="w-3.5 h-3.5" />,
+  meeting:  <Calendar className="w-3.5 h-3.5" />,
+  note:     <FileText className="w-3.5 h-3.5" />,
+  task:     <ListTodo className="w-3.5 h-3.5" />,
+  whatsapp: <MessageSquare className="w-3.5 h-3.5" />,
+};
+
+const activityTypeColors: Record<string, string> = {
+  call:     'bg-green-500/10 text-green-400',
+  email:    'bg-blue-500/10 text-blue-400',
+  meeting:  'bg-purple-500/10 text-purple-400',
+  note:     'bg-yellow-500/10 text-yellow-400',
+  task:     'bg-orange-500/10 text-orange-400',
+  whatsapp: 'bg-emerald-500/10 text-emerald-400',
+};
+
+const activityTypeRu: Record<string, string> = {
+  call: 'Звонок', email: 'Email', meeting: 'Встреча',
+  note: 'Заметка', task: 'Задача', whatsapp: 'WhatsApp',
+};
+
 interface DealSummary extends Partial<Deal> {
   stage_name: string;
   stage_color: string;
@@ -31,6 +55,7 @@ export default function PartnerDetailPage() {
   const [partner, setPartner] = useState<Partner | null>(null);
   const [stats, setStats] = useState<PartnerStats | null>(null);
   const [recentDeals, setRecentDeals] = useState<DealSummary[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
   const userRole = useAppSelector((s) => s.auth.user?.role ?? '');
@@ -39,14 +64,16 @@ export default function PartnerDetailPage() {
     if (!id) return;
     setLoading(true);
     try {
-      const [pr, sr] = await Promise.all([
+      const [pr, sr, ar] = await Promise.all([
         partnersAPI.get(id),
         partnersAPI.getStats(id),
+        partnersAPI.getActivities(id),
       ]);
       setPartner(pr.data.data as Partner);
       const sd = sr.data.data as { stats: PartnerStats; recent_deals: DealSummary[] };
       setStats(sd.stats);
       setRecentDeals(sd.recent_deals || []);
+      setActivities((ar.data.data as Activity[]) || []);
     } finally {
       setLoading(false);
     }
@@ -185,6 +212,47 @@ export default function PartnerDetailPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Активности партнёра */}
+      <div className="card p-5">
+        <h3 className="font-semibold text-white mb-4">Активности партнёра</h3>
+        {activities.length === 0 ? (
+          <div className="text-slate-500 text-sm text-center py-6">Активностей нет</div>
+        ) : (
+          <div className="space-y-2">
+            {activities.map(a => (
+              <div
+                key={a.id}
+                className={`flex items-start gap-3 p-3 rounded-lg border border-slate-700/30 ${a.status === 'completed' ? 'opacity-60' : ''}`}
+              >
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${activityTypeColors[a.type] || 'bg-slate-500/10 text-slate-400'}`}>
+                  {activityTypeIcons[a.type]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-slate-200">{a.subject}</div>
+                  {a.description && <div className="text-xs text-slate-500 mt-0.5">{a.description}</div>}
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    <span className="text-xs text-slate-600">{activityTypeRu[a.type] || a.type}</span>
+                    {a.due_date && (
+                      <span className="flex items-center gap-0.5 text-xs text-slate-500">
+                        <Clock className="w-3 h-3" />{formatDateTime(a.due_date)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-2">
+                  {a.status === 'completed' ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <span className="badge text-xs bg-yellow-500/10 text-yellow-400">Ожидание</span>
+                  )}
+                  <span className="text-xs text-slate-600">{formatDateTime(a.created_at)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <PartnerDocuments
