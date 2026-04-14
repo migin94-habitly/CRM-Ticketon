@@ -55,6 +55,7 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 	partnersH := handlers.NewPartnersHandler(db)
 	checklistH := handlers.NewChecklistHandler(db)
 	importExportH := handlers.NewImportExportHandler(db)
+	settingsH := handlers.NewSettingsHandler(db)
 
 	r.POST("/api/v1/auth/login", authH.Login)
 	r.GET("/api/v1/webhooks/whatsapp", whatsappH.WebhookVerify)
@@ -154,6 +155,13 @@ func NewRouter(db *sqlx.DB, cfg *config.Config, log *zap.Logger) *gin.Engine {
 		auditLog := api.Group("/audit-log")
 		{
 			auditLog.GET("", middleware.RequireRoles("admin", "manager"), auditLogH.List)
+		}
+
+		settings := api.Group("/settings", middleware.RequireRoles("admin"))
+		{
+			settings.GET("/:category", settingsH.GetSettings)
+			settings.PUT("/:category", settingsH.SaveSettings)
+			settings.POST("/:category/test", settingsH.TestSettings)
 		}
 
 		cities := api.Group("/cities")

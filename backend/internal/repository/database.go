@@ -251,6 +251,14 @@ CREATE TABLE IF NOT EXISTS deal_checklist_items (
 
 CREATE INDEX IF NOT EXISTS idx_checklist_deal_id ON deal_checklist_items(deal_id);
 
+CREATE TABLE IF NOT EXISTS system_settings (
+    category VARCHAR(50)  NOT NULL,
+    key      VARCHAR(100) NOT NULL,
+    value    TEXT         NOT NULL DEFAULT '',
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (category, key)
+);
+
 -- Unique index so seed data can use ON CONFLICT DO NOTHING
 CREATE UNIQUE INDEX IF NOT EXISTS idx_cities_name_country ON cities(name, country);
 
