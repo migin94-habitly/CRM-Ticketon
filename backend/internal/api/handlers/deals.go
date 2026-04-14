@@ -91,6 +91,7 @@ func (h *DealsHandler) ListDeals(c *gin.Context) {
 			"event_name":   row.EventName,
 			"event_date":   row.EventDate,
 			"ticket_count": row.TicketCount,
+			"category":     row.Category,
 		}
 		if row.ContactID != nil {
 			var ct models.Contact
@@ -187,11 +188,12 @@ func (h *DealsHandler) CreateDeal(c *gin.Context) {
 	}
 	id := uuid.New().String()
 	_, err = h.db.Exec(`
-		INSERT INTO deals (id, title, value, currency, pipeline_id, stage_id, contact_id, assigned_to, priority, close_date, notes, partner_id, venue_id, event_name, event_date, ticket_count)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
+		INSERT INTO deals (id, title, value, currency, pipeline_id, stage_id, contact_id, assigned_to, priority, close_date, notes, partner_id, venue_id, event_name, event_date, ticket_count, category)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
 		id, req.Title, float64(req.Value), req.Currency, req.PipelineID, req.StageID,
 		contactID, assignedTo, req.Priority, closeDate, req.Notes,
 		partnerID, venueID, nilIfEmptyStr(req.EventName), eventDate, req.TicketCount,
+		nilIfEmptyStr(req.Category),
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.APIResponse{Error: err.Error()})
@@ -229,11 +231,12 @@ func (h *DealsHandler) UpdateDeal(c *gin.Context) {
 		UPDATE deals SET title=$1, value=$2, currency=$3, pipeline_id=$4, stage_id=$5,
 		contact_id=$6, assigned_to=$7, priority=$8, close_date=$9, notes=$10,
 		partner_id=$11, venue_id=$12, event_name=$13, event_date=$14, ticket_count=$15,
-		updated_at=NOW()
-		WHERE id=$16`,
+		category=$16, updated_at=NOW()
+		WHERE id=$17`,
 		req.Title, float64(req.Value), req.Currency, req.PipelineID, req.StageID,
 		contactID, assignedTo, req.Priority, closeDate, req.Notes,
-		partnerID, venueID, nilIfEmptyStr(req.EventName), eventDate, req.TicketCount, id,
+		partnerID, venueID, nilIfEmptyStr(req.EventName), eventDate, req.TicketCount,
+		nilIfEmptyStr(req.Category), id,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.APIResponse{Error: err.Error()})

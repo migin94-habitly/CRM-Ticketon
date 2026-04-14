@@ -1,11 +1,24 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Phone, Edit, Zap } from 'lucide-react';
+import { ArrowLeft, Phone, Edit, Zap, Tag } from 'lucide-react';
 import { dealsAPI, analyticsAPI } from '../api';
 import type { Deal, AIScore } from '../types';
 import { formatCurrency, formatDate, priorityColor } from '../utils/format';
 import DealModal from '../components/deals/DealModal';
 import DealChecklist from '../components/deals/DealChecklist';
+
+const categoryRu: Record<string, string> = {
+  concert: 'Концерт',
+  sport: 'Спорт',
+  standup: 'Стендап',
+  circus: 'Цирк',
+  theater: 'Театр',
+  festival: 'Фестиваль',
+  exhibition: 'Выставка',
+  conference: 'Конференция',
+  children: 'Детское шоу',
+  other: 'Другое',
+};
 
 export default function DealDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -85,6 +98,21 @@ export default function DealDetailPage() {
               <div className="text-xs text-slate-500">Дата закрытия</div>
               <div className="text-sm text-slate-200 mt-0.5">{deal.close_date ? formatDate(deal.close_date) : 'Не задана'}</div>
             </div>
+            {deal.category && (
+              <div>
+                <div className="text-xs text-slate-500">Категория</div>
+                <div className="flex items-center gap-1 text-sm text-slate-200 mt-0.5">
+                  <Tag className="w-3.5 h-3.5 text-primary-400" />
+                  {categoryRu[deal.category] || deal.category}
+                </div>
+              </div>
+            )}
+            {deal.partner && (
+              <div>
+                <div className="text-xs text-slate-500">Партнёр</div>
+                <div className="text-sm text-slate-200 mt-0.5">{deal.partner.name}</div>
+              </div>
+            )}
           </div>
 
           {deal.notes && (

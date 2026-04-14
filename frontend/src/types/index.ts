@@ -70,6 +70,7 @@ export interface Deal {
   event_name?: string;
   event_date?: string;
   ticket_count?: number;
+  category?: string;
   created_at: string;
   updated_at: string;
   contact?: Contact;
@@ -92,6 +93,8 @@ export interface Activity {
   status: ActivityStatus;
   deal_id?: string;
   contact_id?: string;
+  partner_id?: string;
+  partner_name?: string;
   user_id: string;
   user_name?: string;
   due_date?: string;

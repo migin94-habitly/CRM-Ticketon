@@ -126,6 +126,7 @@ export const partnersAPI = {
   update: (id: string, data: Partial<Partner>) => api.put<APIResponse>(`/partners/${id}`, data),
   delete: (id: string) => api.delete<APIResponse>(`/partners/${id}`),
   getStats: (id: string) => api.get<APIResponse>(`/partners/${id}/stats`),
+  getActivities: (id: string) => api.get<APIResponse<Activity[]>>(`/partners/${id}/activities`),
   exportCSV: () => api.get('/partners/export', { responseType: 'blob' }),
   importCSV: (file: File) => {
     const form = new FormData(); form.append('file', file);
