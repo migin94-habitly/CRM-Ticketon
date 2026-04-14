@@ -251,6 +251,19 @@ CREATE TABLE IF NOT EXISTS deal_checklist_items (
 
 CREATE INDEX IF NOT EXISTS idx_checklist_deal_id ON deal_checklist_items(deal_id);
 
+CREATE TABLE IF NOT EXISTS partner_documents (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    partner_id UUID NOT NULL REFERENCES partners(id) ON DELETE CASCADE,
+    filename VARCHAR(500) NOT NULL,
+    storage_path VARCHAR(1000) NOT NULL,
+    file_size BIGINT NOT NULL DEFAULT 0,
+    mime_type VARCHAR(100) NOT NULL,
+    uploaded_by UUID REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_partner_documents_partner_id ON partner_documents(partner_id);
+
 CREATE TABLE IF NOT EXISTS system_settings (
     category VARCHAR(50)  NOT NULL,
     key      VARCHAR(100) NOT NULL,

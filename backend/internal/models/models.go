@@ -508,3 +508,15 @@ type CreateChecklistItemRequest struct {
 	Text     string `json:"text" binding:"required"`
 	Position int    `json:"position,omitempty"`
 }
+
+type PartnerDocument struct {
+	ID           string    `db:"id" json:"id"`
+	PartnerID    string    `db:"partner_id" json:"partner_id"`
+	Filename     string    `db:"filename" json:"filename"`
+	StoragePath  string    `db:"storage_path" json:"-"`
+	FileSize     int64     `db:"file_size" json:"file_size"`
+	MimeType     string    `db:"mime_type" json:"mime_type"`
+	UploadedBy   *string   `db:"uploaded_by" json:"uploaded_by,omitempty"`
+	CreatedAt    time.Time `db:"created_at" json:"created_at"`
+	UploaderName *string   `db:"-" json:"uploader_name,omitempty"`
+}

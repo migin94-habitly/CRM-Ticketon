@@ -8,6 +8,8 @@ import { partnersAPI } from '../api';
 import type { Partner, PartnerStats, Deal } from '../types';
 import { formatCurrency } from '../utils/format';
 import PartnerModal from '../components/partners/PartnerModal';
+import PartnerDocuments from '../components/partners/PartnerDocuments';
+import { useAppSelector } from '../hooks/useAppDispatch';
 
 const statusRu: Record<string, { label: string; cls: string }> = {
   active:   { label: 'Активный',  cls: 'bg-green-500/10 text-green-400' },
@@ -31,6 +33,7 @@ export default function PartnerDetailPage() {
   const [recentDeals, setRecentDeals] = useState<DealSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
+  const userRole = useAppSelector((s) => s.auth.user?.role ?? '');
 
   const load = async () => {
     if (!id) return;
@@ -183,6 +186,12 @@ export default function PartnerDetailPage() {
           )}
         </div>
       </div>
+
+      <PartnerDocuments
+        partnerId={partner.id}
+        canUpload={['admin', 'manager', 'sales'].includes(userRole)}
+        canDelete={['admin', 'manager'].includes(userRole)}
+      />
 
       {editOpen && (
         <PartnerModal
