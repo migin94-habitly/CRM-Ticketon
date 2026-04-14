@@ -298,10 +298,29 @@ type aiResult struct {
 }
 
 func (h *AnalyticsHandler) openAICall(prompt string) *aiResult {
-	url := h.cfg.BaseURL
-	if url == "" { url = "https://api.openai.com/v1/chat/completions" }
-	model := h.cfg.Model
-	if model == "" { model = "gpt-4o-mini" }
+	// Prefer settings saved by the admin in the DB; fall back to file/env config.
+	dbCfg := LoadSettingsFromDB(h.db, "ai")
+
+	apiKey := dbCfg["api_key"]
+	if apiKey == "" {
+		apiKey = h.cfg.APIKey
+	}
+
+	url := dbCfg["base_url"]
+	if url == "" {
+		url = h.cfg.BaseURL
+	}
+	if url == "" {
+		url = "https://api.openai.com/v1/chat/completions"
+	}
+
+	model := dbCfg["model"]
+	if model == "" {
+		model = h.cfg.Model
+	}
+	if model == "" {
+		model = "gpt-4o-mini"
+	}
 
 	body, _ := json.Marshal(map[string]interface{}{
 		"model": model,
@@ -316,7 +335,7 @@ func (h *AnalyticsHandler) openAICall(prompt string) *aiResult {
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	if err != nil { return nil }
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+h.cfg.APIKey)
+	req.Header.Set("Authorization", "Bearer "+apiKey)
 
 	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Do(req)

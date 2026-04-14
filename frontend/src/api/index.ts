@@ -152,3 +152,14 @@ export const analyticsAPI = {
   analyzeDeal: (id: string) => api.get<APIResponse>(`/analytics/deals/${id}`),
   analyzeCall: (id: string) => api.get<APIResponse>(`/analytics/calls/${id}`),
 };
+
+export type SettingsCategory = 'telephony' | 'whatsapp' | 'ai';
+
+export const settingsAPI = {
+  get: (category: SettingsCategory) =>
+    api.get<APIResponse<Record<string, string>>>(`/settings/${category}`),
+  save: (category: SettingsCategory, data: Record<string, string>) =>
+    api.put<APIResponse>(`/settings/${category}`, data),
+  test: (category: SettingsCategory) =>
+    api.post<{ success: boolean; message: string }>(`/settings/${category}/test`, {}),
+};
